@@ -17,6 +17,7 @@ from pathlib import Path
 
 from companion_bench import __version__
 from companion_bench.adapters.base import ChatAdapter, create_adapter
+from companion_bench.config.pricing import PricingTable
 from companion_bench.config.providers import ProviderSettings
 from companion_bench.runner.conversation import ConversationDriver
 from companion_bench.runner.events import (
@@ -57,6 +58,26 @@ class RunResult:
     n_probes: int
     n_model_calls: int
     n_failures: int
+    total_estimated_cost_usd: float | None = None
+    total_tokens: int | None = None
+    budget_exceeded: bool = False
+
+
+@dataclass
+class _RunContext:
+    """Per-run invariants plus mutable cost accumulators (mutated single-threaded)."""
+
+    run_id: str
+    model: ModelSpec
+    config: RunConfig
+    adapter: ChatAdapter
+    limiter: RateLimiter
+    pricing: PricingTable | None
+    max_cost_usd: float | None
+    total_cost: float = 0.0
+    total_tokens: int = 0
+    priced_any: bool = False
+    budget_exceeded: bool = False
 
 
 class RunEngine:
@@ -91,6 +112,8 @@ class RunEngine:
         run_id: str | None = None,
         settings: ProviderSettings | None = None,
         requests_per_second: float | None = None,
+        pricing: PricingTable | None = None,
+        max_cost_usd: float | None = None,
     ) -> RunResult:
         # Output dirs are created lazily by EventWriter / write_model_json (both mkdir
         # their parents), so there is no blocking filesystem call on the event loop here.
@@ -101,13 +124,21 @@ class RunEngine:
         adapter = self._adapter_override or create_adapter(
             model.provider, self._env, settings=settings
         )
-        limiter = RateLimiter(requests_per_second, self._sleep)
+        ctx = _RunContext(
+            run_id=run_id,
+            model=model,
+            config=config,
+            adapter=adapter,
+            limiter=RateLimiter(requests_per_second, self._sleep),
+            pricing=pricing,
+            max_cost_usd=max_cost_usd,
+        )
         try:
             semaphore = asyncio.Semaphore(config.concurrency)
 
             async def guarded(task: Task) -> list[Event]:
                 async with semaphore:
-                    return await self._run_task(run_id, task, model, config, adapter, limiter)
+                    return await self._run_task(ctx, task)
 
             per_task_events = await asyncio.gather(*(guarded(task) for task in tasks_to_run))
         finally:
@@ -116,43 +147,46 @@ class RunEngine:
 
         return self._write_artifacts(
             out=out,
-            run_id=run_id,
+            ctx=ctx,
             manifest=manifest,
             manifest_path=manifest_path,
-            model=model,
-            config=config,
             tasks_to_run=tasks_to_run,
             per_task_events=per_task_events,
         )
 
     # -- per-task / per-probe execution ------------------------------------
-    async def _run_task(
-        self,
-        run_id: str,
-        task: Task,
-        model: ModelSpec,
-        config: RunConfig,
-        adapter: ChatAdapter,
-        limiter: RateLimiter,
-    ) -> list[Event]:
-        driver = ConversationDriver(task, model, config)
+    async def _run_task(self, ctx: _RunContext, task: Task) -> list[Event]:
+        driver = ConversationDriver(task, ctx.model, ctx.config)
         events: list[Event] = []
         while (step := driver.next_probe()) is not None:
+            # Best-effort budget guard: stop issuing new calls once spend reaches the cap.
+            # In-flight calls may overshoot by at most the concurrency width; pair with
+            # --limit-tasks/--limit-models for a hard cap.
+            if ctx.max_cost_usd is not None and ctx.total_cost >= ctx.max_cost_usd:
+                ctx.budget_exceeded = True
+                break
             response, error, attempts, retry_wait_ms = await self._call_with_retries(
-                adapter, step.request, config, limiter, task.task_id, step.probe.probe_id
+                ctx.adapter,
+                step.request,
+                ctx.config,
+                ctx.limiter,
+                task.task_id,
+                step.probe.probe_id,
             )
             if response is not None:
+                cost = self._record_cost(ctx, response)
                 events.append(
                     model_call_event(
-                        run_id,
+                        ctx.run_id,
                         self._clock,
                         task.task_id,
                         step.probe.probe_id,
-                        model,
+                        ctx.model,
                         step.request.messages,
                         response,
                         attempts,
                         retry_wait_ms=retry_wait_ms,
+                        cost_usd=cost,
                     )
                 )
                 driver.record_response(response.companion_turn)
@@ -160,11 +194,11 @@ class RunEngine:
                 err = error if error is not None else AdapterError("unknown adapter failure")
                 events.append(
                     model_failure_event(
-                        run_id,
+                        ctx.run_id,
                         self._clock,
                         task.task_id,
                         step.probe.probe_id,
-                        model,
+                        ctx.model,
                         step.request.messages,
                         err,
                         attempts,
@@ -173,6 +207,21 @@ class RunEngine:
                 )
                 driver.record_response(None)
         return events
+
+    def _record_cost(self, ctx: _RunContext, response: ChatResponse) -> float | None:
+        """Resolve cost from the pricing table (falling back to the adapter) and accumulate."""
+        usage = response.token_usage
+        if usage and usage.total_tokens:
+            ctx.total_tokens += usage.total_tokens
+        cost = (
+            ctx.pricing.cost(ctx.model.provider, ctx.model.model, usage)
+            if ctx.pricing is not None
+            else response.estimated_cost_usd
+        )
+        if cost is not None:
+            ctx.total_cost += cost
+            ctx.priced_any = True
+        return cost
 
     async def _call_with_retries(
         self,
@@ -211,17 +260,19 @@ class RunEngine:
         self,
         *,
         out: Path,
-        run_id: str,
+        ctx: _RunContext,
         manifest: Manifest,
         manifest_path: str,
-        model: ModelSpec,
-        config: RunConfig,
         tasks_to_run: list[Task],
         per_task_events: list[list[Event]],
     ) -> RunResult:
+        run_id, model, config = ctx.run_id, ctx.model, ctx.config
         ids = IdFactory(run_id)
         events_path = out / "events.jsonl"
         events_path.unlink(missing_ok=True)
+
+        total_cost = round(ctx.total_cost, 8) if ctx.priced_any else None
+        total_tokens = ctx.total_tokens or None
 
         n_calls = n_failures = n_probes = 0
         start = run_start_event(
@@ -241,7 +292,15 @@ class RunEngine:
                         n_probes += 1
                     writer.write(event)
             end = run_end_event(
-                run_id, self._clock, len(tasks_to_run), n_probes, n_calls, n_failures
+                run_id,
+                self._clock,
+                len(tasks_to_run),
+                n_probes,
+                n_calls,
+                n_failures,
+                total_estimated_cost_usd=total_cost,
+                total_tokens=total_tokens,
+                budget_exceeded=ctx.budget_exceeded,
             )
             end.event_id = ids.next_event_id()
             writer.write(end)
@@ -270,4 +329,7 @@ class RunEngine:
             n_probes=n_probes,
             n_model_calls=n_calls,
             n_failures=n_failures,
+            total_estimated_cost_usd=total_cost,
+            total_tokens=total_tokens,
+            budget_exceeded=ctx.budget_exceeded,
         )

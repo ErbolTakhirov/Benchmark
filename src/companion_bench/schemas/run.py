@@ -98,6 +98,9 @@ class RunEndEvent(BaseEvent):
     n_model_calls: int
     n_failures: int
     wall_ms: float | None = None
+    total_estimated_cost_usd: float | None = None
+    total_tokens: int | None = None
+    budget_exceeded: bool = False
 
 
 Event = Annotated[

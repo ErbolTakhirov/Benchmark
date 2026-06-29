@@ -65,6 +65,7 @@ class TaskScore(BaseModel):
     total: float = Field(ge=0.0, le=1.0)
     pass_threshold: float
     passed: bool
+    cost_usd: float | None = None
 
 
 class RunScores(BaseModel):
@@ -82,3 +83,5 @@ class RunScores(BaseModel):
     overall: float = Field(ge=0.0, le=1.0)
     n_tasks: int
     n_passed: int
+    total_cost_usd: float | None = None
+    total_tokens: int | None = None

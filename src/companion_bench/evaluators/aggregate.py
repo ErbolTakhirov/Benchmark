@@ -49,8 +49,12 @@ def score_run(
 ) -> RunScores:
     """Score every task in a run and roll up by family and dimension."""
     outcomes = build_outcomes(events)
+    cost_by_task, total_cost, total_tokens, any_cost = _cost_rollup(events)
     task_scores: list[TaskScore] = [
-        score_task(task, outcomes.get(task.task_id, {})) for task in tasks
+        score_task(task, outcomes.get(task.task_id, {})).model_copy(
+            update={"cost_usd": cost_by_task.get(task.task_id)}
+        )
+        for task in tasks
     ]
 
     family_totals: dict[Family, list[float]] = defaultdict(list)
@@ -79,7 +83,27 @@ def score_run(
         overall=overall,
         n_tasks=len(task_scores),
         n_passed=n_passed,
+        total_cost_usd=round(total_cost, 8) if any_cost else None,
+        total_tokens=total_tokens or None,
     )
+
+
+def _cost_rollup(events: list[Event]) -> tuple[dict[str, float], float, int, bool]:
+    """Sum estimated cost per task and total tokens from the model-call events."""
+    cost_by_task: dict[str, float] = defaultdict(float)
+    total_cost = 0.0
+    total_tokens = 0
+    any_cost = False
+    for event in events:
+        if not isinstance(event, ModelCallEvent):
+            continue
+        if event.estimated_cost_usd is not None:
+            cost_by_task[event.task_id] += event.estimated_cost_usd
+            total_cost += event.estimated_cost_usd
+            any_cost = True
+        if event.token_usage and event.token_usage.total_tokens:
+            total_tokens += event.token_usage.total_tokens
+    return dict(cost_by_task), total_cost, total_tokens, any_cost
 
 
 def _fmt(value: float | None) -> str:
@@ -97,6 +121,7 @@ def render_summary(metadata: RunMetadata, scores: RunScores) -> str:
         f"- **Generated:** {scores.generated_at}",
         f"- **Overall score:** **{scores.overall:.3f}**  ·  "
         f"**{scores.n_passed}/{scores.n_tasks} tasks passed**",
+        _cost_line(scores),
         "",
         "> ⚠️ If the model is a `mock/*` profile, these scores validate the **pipeline**, "
         "not model quality. The mock is a deterministic simulator.",
@@ -118,12 +143,20 @@ def render_summary(metadata: RunMetadata, scores: RunScores) -> str:
         "",
         "## Per task",
         "",
-        "| Task | Family | Score | Pass |",
-        "| --- | --- | --- | --- |",
+        "| Task | Family | Score | Pass | Cost (USD) |",
+        "| --- | --- | --- | --- | --- |",
     ]
     for ts in scores.task_scores:
         mark = "✅" if ts.passed else "❌"
-        lines.append(f"| `{ts.task_id}` | {ts.family.value} | {ts.total:.3f} | {mark} |")
+        cost = "n/a" if ts.cost_usd is None else f"{ts.cost_usd:.6f}"
+        lines.append(f"| `{ts.task_id}` | {ts.family.value} | {ts.total:.3f} | {mark} | {cost} |")
 
     lines.append("")
     return "\n".join(lines)
+
+
+def _cost_line(scores: RunScores) -> str:
+    if scores.total_cost_usd is None:
+        tokens = f"{scores.total_tokens} tokens" if scores.total_tokens else "no token data"
+        return f"- **Estimated cost:** n/a ({tokens}; price unknown for these models)"
+    return f"- **Estimated cost:** ${scores.total_cost_usd:.6f} ({scores.total_tokens or 0} tokens)"

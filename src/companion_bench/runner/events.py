@@ -52,7 +52,10 @@ def model_call_event(
     attempts: int,
     *,
     retry_wait_ms: float = 0.0,
+    cost_usd: float | None = None,
 ) -> ModelCallEvent:
+    # The engine resolves cost from the pricing table; fall back to the adapter's own value.
+    estimated_cost = cost_usd if cost_usd is not None else response.estimated_cost_usd
     return ModelCallEvent(
         event_id="",
         run_id=run_id,
@@ -67,7 +70,7 @@ def model_call_event(
         parsed=response.parsed,
         latency_ms=response.latency_ms,
         token_usage=response.token_usage,
-        estimated_cost_usd=response.estimated_cost_usd,
+        estimated_cost_usd=estimated_cost,
         attempts=attempts,
         retry_wait_ms=retry_wait_ms,
     )
@@ -110,6 +113,10 @@ def run_end_event(
     n_probes: int,
     n_model_calls: int,
     n_failures: int,
+    *,
+    total_estimated_cost_usd: float | None = None,
+    total_tokens: int | None = None,
+    budget_exceeded: bool = False,
 ) -> RunEndEvent:
     return RunEndEvent(
         event_id="",
@@ -119,4 +126,7 @@ def run_end_event(
         n_probes=n_probes,
         n_model_calls=n_model_calls,
         n_failures=n_failures,
+        total_estimated_cost_usd=total_estimated_cost_usd,
+        total_tokens=total_tokens,
+        budget_exceeded=budget_exceeded,
     )
