@@ -35,7 +35,14 @@ uv run companion-bench providers                            # key presence (neve
 uv run companion-bench models validate --model-set configs/model_sets/example.yaml
 uv run companion-bench run -m manifests/smoke.yaml --model-set configs/model_sets/mock-profiles.yaml --out runs/multi
 
+# Repeats + bootstrap CIs + cost-quality frontier (offline mock):
+uv run companion-bench run -m manifests/emotomo_smoke.yaml --model-set configs/model_sets/mock-profiles.yaml --out runs/multi --repeats 3 --shuffle-seed 42  # --stratified for family-balanced --limit-tasks
+uv run companion-bench score --run runs/multi --bootstrap --bootstrap-resamples 5000 --bootstrap-seed 42
+uv run companion-bench frontier --run runs/multi             # frontier.md + frontier.csv (Pareto)
+
 # Real providers (LIVE, opt-in): needs --live AND COMPANIONBENCH_LIVE=1 (+ a key, + --yes/confirm)
+# COMPANIONBENCH_LIVE=1 companion-bench pricing sync-openrouter --out configs/pricing.openrouter.yaml  # network; real prices
+# COMPANIONBENCH_LIVE=1 companion-bench models validate --model-set <set> --online                     # network; live_verified/unavailable
 # COMPANIONBENCH_LIVE=1 companion-bench run -m manifests/smoke.yaml --model-set <set> --out runs/live --live --yes --max-cost-usd 1 --limit-tasks 2 --limit-models 2
 ```
 
@@ -48,11 +55,14 @@ Both `companion-bench <cmd>` and `uv run python -m companion_bench.cli <cmd>` wo
   adapters (`openai_compatible`, `openai`, `anthropic`, `openrouter`).
 - `runner/` — `manifest` (load/validate/resolve), `conversation` (scripted replay → requests),
   `engine` (async, bounded concurrency, retries, failure capture), `events` (builders).
-- `evaluators/` — `rule_based` (6 dimension scorers), `aggregate` (rollups + summary), `rubric`
-  (future LLM-judge interface, intentionally not implemented).
+- `evaluators/` — `rule_based` (6 dimension scorers), `aggregate` (rollups + summary +
+  repeats/bootstrap CIs), `flags` (named behavior flags from scorer signals), `frontier`
+  (cost-quality Pareto), `rubric` (future LLM-judge interface, intentionally not implemented).
+- `runner/` also has `selection` (deterministic family-balanced/shuffled task selection).
 - `storage/` — `jsonl` (append-only events + JSON helpers), `export` (optional Parquet).
-- `config/` — versioned YAML config: `pricing` (cost table), `providers` (per-provider
-  overrides), `model_sets` (which models to run). Bundled defaults in `config/data/`.
+- `config/` — versioned YAML config: `pricing` (cost table) + `openrouter_pricing` (sync from
+  the OpenRouter API), `providers` (per-provider overrides), `model_sets` (which models to run;
+  offline + optional `--online` verification). Bundled defaults in `config/data/`.
 - `utils/` — `ids`, `timing` (Clock/FrozenClock), `errors`, `secrets` (redact/scan).
 
 Full notes: [`docs/architecture.md`](docs/architecture.md). Scoring: [`docs/scoring.md`](docs/scoring.md).

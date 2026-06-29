@@ -1,0 +1,4 @@
+model_id,overall,ci_low,ci_high,total_cost_usd,cost_per_successful_probe,total_tokens,latency_ms_avg,n_successful_probes,pareto_optimal,notes
+mock/empathetic-v1,1.000000,1.000000,1.000000,,,19662,6.000,42,n/a,cost unknown (unpriced)
+mock/silent-v1,0.622168,0.558297,0.691299,,,18225,2.000,42,n/a,cost unknown (unpriced)
+mock/intrusive-v1,0.404312,0.340206,0.466889,,,19875,4.000,42,n/a,cost unknown (unpriced)
