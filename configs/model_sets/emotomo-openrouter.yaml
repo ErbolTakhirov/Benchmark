@@ -22,18 +22,18 @@ models:
     temperature: 0.7
     max_completion_tokens: 500
     enabled: true
-    needs_mapping: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo roleplay/free default)"
-    notes: "Established OpenRouter slug; verify with a live probe."
+    notes: "live_verified 2026-06-29 via emotomo_smoke (run ...-7b662f77); 4/4 envelopes parsed, 0 failures."
   - id: mistral-nemo
     provider: openrouter
     model: mistralai/mistral-nemo
     temperature: 0.7
     max_completion_tokens: 500
     enabled: true
-    needs_mapping: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo casual/free default)"
-    notes: "Established OpenRouter slug; verify with a live probe."
+    notes: "live_verified 2026-06-29 via emotomo_smoke (run ...-a4ddfbd7); 4/4 envelopes parsed, 0 failures."
 
   # --- the rest of EMOTomo's set (disabled here; enable for the full run) ---
   - id: deepseek-v4-flash
