@@ -120,6 +120,22 @@ def test_empathy_low_with_wrong_style_and_generic_phrase() -> None:
     assert value == 0.0
 
 
+def test_empathy_style_only_reflects_style_when_no_signals() -> None:
+    # Regression: a probe with a preferred style but no positive signals must not get a
+    # vacuous 0.5 floor for a wrong style (the empty-coverage 1.0 used to mask it).
+    t = make_task([probe(preferred_style="gentle")])  # no positive/negative signals
+    wrong = outcome(
+        CompanionTurn(decision=Decision.INTERVENE, style=Style.DIRECT, message="just do it")
+    )
+    right = outcome(
+        CompanionTurn(
+            decision=Decision.INTERVENE, style=Style.GENTLE, message="whenever you're ready"
+        )
+    )
+    assert dim_value(t, {}, wrong, Dimension.EMPATHY) == 0.0
+    assert dim_value(t, {}, right, Dimension.EMPATHY) == 1.0
+
+
 # --------------------------------------------------------------------------- adaptation
 def test_adaptation_zero_on_recurrence_one_otherwise() -> None:
     t = make_task([probe(disliked_behaviors=["sweetie"])], family="adaptation")

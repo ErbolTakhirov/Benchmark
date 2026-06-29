@@ -12,11 +12,13 @@ Reads ``ANTHROPIC_API_KEY`` (required) and optional ``ANTHROPIC_BASE_URL``.
 
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Mapping
 from typing import Any
 
 import httpx
+from pydantic import ValidationError
 
 from companion_bench.adapters.base import ChatAdapter, register_adapter
 from companion_bench.schemas.model import (
@@ -110,6 +112,12 @@ class AnthropicAdapter(ChatAdapter):
                 f"anthropic transport error: {exc}", provider=self.provider
             ) from exc
 
+        if response.status_code in (401, 403):
+            raise ProviderAuthError(
+                f"anthropic authentication failed (HTTP {response.status_code}); "
+                "check ANTHROPIC_API_KEY.",
+                provider=self.provider,
+            )
         if response.status_code >= 400:
             retryable = response.status_code == 429 or response.status_code >= 500
             raise ProviderResponseError(
@@ -118,7 +126,7 @@ class AnthropicAdapter(ChatAdapter):
                 retryable=retryable,
             )
 
-        data: dict[str, Any] = response.json()
+        data = self._parse_json_object(response)
         content = self._extract_text(data)
         turn = CompanionTurn.from_text(content)
         usage = self._extract_usage(data)
@@ -134,6 +142,24 @@ class AnthropicAdapter(ChatAdapter):
             raw=data,
         )
 
+    def _parse_json_object(self, response: httpx.Response) -> dict[str, Any]:
+        """Decode a JSON object body, mapping malformed bodies to a typed error."""
+        try:
+            data = response.json()
+        except (json.JSONDecodeError, ValueError) as exc:
+            raise ProviderResponseError(
+                f"anthropic: response body was not valid JSON: {response.text[:300]}",
+                provider=self.provider,
+                retryable=False,
+            ) from exc
+        if not isinstance(data, dict):
+            raise ProviderResponseError(
+                f"anthropic: response JSON was not an object (got {type(data).__name__}).",
+                provider=self.provider,
+                retryable=False,
+            )
+        return data
+
     def _extract_text(self, data: dict[str, Any]) -> str:
         blocks = data.get("content")
         if not isinstance(blocks, list):
@@ -143,7 +169,7 @@ class AnthropicAdapter(ChatAdapter):
                 retryable=False,
             )
         texts = [
-            b.get("text", "") for b in blocks if isinstance(b, dict) and b.get("type") == "text"
+            b.get("text") or "" for b in blocks if isinstance(b, dict) and b.get("type") == "text"
         ]
         return "".join(texts)
 
@@ -153,8 +179,15 @@ class AnthropicAdapter(ChatAdapter):
             return None
         prompt = usage.get("input_tokens")
         completion = usage.get("output_tokens")
-        total = None if prompt is None or completion is None else prompt + completion
-        return TokenUsage(prompt_tokens=prompt, completion_tokens=completion, total_tokens=total)
+        try:
+            # `prompt + completion` must stay inside the guard: a non-conforming provider
+            # could send non-addable token types, which would otherwise escape untyped.
+            total = None if prompt is None or completion is None else prompt + completion
+            return TokenUsage(
+                prompt_tokens=prompt, completion_tokens=completion, total_tokens=total
+            )
+        except (ValidationError, TypeError):
+            return None
 
     def _estimate_cost(self, usage: TokenUsage | None) -> float | None:
         if self._pricing is None or usage is None:

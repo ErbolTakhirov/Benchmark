@@ -193,11 +193,15 @@ def _empathy(task: Task, probe: ProbeTurn, outcome: ProbeOutcome) -> _Raw:
         components.append(sm)
         if sm < 0.5:
             flags.append("style_mismatch")
-    positive_cov = _coverage(message, positive)
-    components.append(positive_cov)
-    if positive and positive_cov < 1.0:
-        flags.append("weak_positive_signals")
-    base = sum(components) / len(components)
+    # Only fold in positive-signal coverage when there are positives to match; otherwise
+    # an empty signal set scores a vacuous 1.0 and would mask a wrong style.
+    if positive:
+        positive_cov = _coverage(message, positive)
+        components.append(positive_cov)
+        if positive_cov < 1.0:
+            flags.append("weak_positive_signals")
+    # No style and no positives (a negatives-only probe) starts from a clean 1.0.
+    base = sum(components) / len(components) if components else 1.0
     penalty = _fraction_present(message, negative)
     if penalty > 0:
         flags.append("generic_or_off_empathy")

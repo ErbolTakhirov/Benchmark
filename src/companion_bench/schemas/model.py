@@ -156,9 +156,10 @@ class ModelSpec(BaseModel):
     @field_validator("provider", "model")
     @classmethod
     def _non_empty(cls, value: str) -> str:
-        if not value or not value.strip():
+        stripped = value.strip()
+        if not stripped:
             raise ValueError("provider and model must be non-empty")
-        return value
+        return stripped
 
     @classmethod
     def parse(cls, ref: str, *, params: dict[str, Any] | None = None) -> ModelSpec:

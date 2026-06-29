@@ -80,6 +80,12 @@ def test_modelspec_slug_is_filesystem_safe() -> None:
     )
 
 
+def test_modelspec_strips_surrounding_whitespace() -> None:
+    spec = ModelSpec.parse("  openai/gpt-4o-mini  ")
+    assert spec.provider == "openai"
+    assert spec.model == "gpt-4o-mini"
+
+
 # --------------------------------------------------------------------------- CompanionTurn
 def test_companion_turn_from_plain_json() -> None:
     turn = CompanionTurn.from_text('{"decision": "intervene", "message": "Hi", "style": "gentle"}')

@@ -212,6 +212,107 @@ async def test_openai_adapter_from_env_sets_defaults() -> None:
 
 
 # --------------------------------------------------------------------------- Anthropic
+async def test_openai_compatible_non_json_body_is_typed_error() -> None:
+    transport = httpx.MockTransport(lambda req: httpx.Response(200, text="<html>gateway</html>"))
+    client = httpx.AsyncClient(transport=transport)
+    adapter = OpenAICompatibleAdapter(base_url="https://x/v1", api_key="k", client=client)
+    try:
+        with pytest.raises(ProviderResponseError) as excinfo:
+            await adapter.generate(
+                ChatRequest(
+                    model=ModelSpec.parse("openai_compatible/m"),
+                    messages=(ChatMessage(role=Role.USER, content="hi"),),
+                )
+            )
+        assert excinfo.value.retryable is False
+    finally:
+        await client.aclose()
+
+
+async def test_openai_compatible_401_maps_to_auth_error() -> None:
+    transport = httpx.MockTransport(lambda req: httpx.Response(401, text="nope"))
+    client = httpx.AsyncClient(transport=transport)
+    adapter = OpenAICompatibleAdapter(base_url="https://x/v1", api_key="bad", client=client)
+    try:
+        with pytest.raises(ProviderAuthError):
+            await adapter.generate(
+                ChatRequest(
+                    model=ModelSpec.parse("openai_compatible/m"),
+                    messages=(ChatMessage(role=Role.USER, content="hi"),),
+                )
+            )
+    finally:
+        await client.aclose()
+
+
+async def test_openai_compatible_list_content_is_joined() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {"message": {"content": [{"type": "text", "text": '{"decision": "wait"}'}]}}
+                ]
+            },
+        )
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    adapter = OpenAICompatibleAdapter(base_url="https://x/v1", api_key="k", client=client)
+    try:
+        resp = await adapter.generate(
+            ChatRequest(
+                model=ModelSpec.parse("openai_compatible/m"),
+                messages=(ChatMessage(role=Role.USER, content="hi"),),
+            )
+        )
+        assert resp.companion_turn is not None and resp.companion_turn.decision is Decision.WAIT
+    finally:
+        await client.aclose()
+
+
+async def test_anthropic_non_dict_body_is_typed_error() -> None:
+    client = httpx.AsyncClient(
+        transport=httpx.MockTransport(lambda req: httpx.Response(200, json=[1, 2]))
+    )
+    adapter = AnthropicAdapter(api_key="k", client=client)
+    try:
+        with pytest.raises(ProviderResponseError):
+            await adapter.generate(
+                ChatRequest(
+                    model=ModelSpec.parse("anthropic/c"),
+                    messages=(ChatMessage(role=Role.USER, content="hi"),),
+                )
+            )
+    finally:
+        await client.aclose()
+
+
+async def test_anthropic_tolerates_malformed_usage() -> None:
+    # Regression: mismatched token types must not raise out of generate().
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "content": [{"type": "text", "text": '{"decision": "wait"}'}],
+                "usage": {"input_tokens": "12", "output_tokens": 5},
+            },
+        )
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    adapter = AnthropicAdapter(api_key="k", client=client)
+    try:
+        resp = await adapter.generate(
+            ChatRequest(
+                model=ModelSpec.parse("anthropic/c"),
+                messages=(ChatMessage(role=Role.USER, content="hi"),),
+            )
+        )
+        assert resp.companion_turn is not None and resp.companion_turn.decision is Decision.WAIT
+        assert resp.token_usage is None  # malformed usage tolerated, not crashed
+    finally:
+        await client.aclose()
+
+
 async def test_anthropic_maps_system_and_parses_blocks() -> None:
     captured: dict[str, Any] = {}
 

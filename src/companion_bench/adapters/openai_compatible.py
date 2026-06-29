@@ -11,11 +11,13 @@ network access anywhere in the test suite.
 
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Mapping
 from typing import Any
 
 import httpx
+from pydantic import ValidationError
 
 from companion_bench.adapters.base import ChatAdapter, register_adapter
 from companion_bench.schemas.model import (
@@ -125,6 +127,12 @@ class OpenAICompatibleAdapter(ChatAdapter):
                 f"{self.provider} transport error: {exc}", provider=self.provider
             ) from exc
 
+        if response.status_code in (401, 403):
+            raise ProviderAuthError(
+                f"{self.provider} authentication failed (HTTP {response.status_code}); "
+                f"check {self.API_KEY_ENV}.",
+                provider=self.provider,
+            )
         if response.status_code >= 400:
             retryable = response.status_code == 429 or response.status_code >= 500
             raise ProviderResponseError(
@@ -136,7 +144,7 @@ class OpenAICompatibleAdapter(ChatAdapter):
 
     # -- response parsing (overridable) ------------------------------------
     def _build_response(self, request: ChatRequest, response: httpx.Response) -> ChatResponse:
-        data: dict[str, Any] = response.json()
+        data = self._parse_json_object(response)
         content = self._extract_content(data)
         turn = CompanionTurn.from_text(content)
         usage = self._extract_usage(data)
@@ -152,6 +160,24 @@ class OpenAICompatibleAdapter(ChatAdapter):
             raw=data,
         )
 
+    def _parse_json_object(self, response: httpx.Response) -> dict[str, Any]:
+        """Decode a JSON object body, mapping malformed bodies to a typed error."""
+        try:
+            data = response.json()
+        except (json.JSONDecodeError, ValueError) as exc:
+            raise ProviderResponseError(
+                f"{self.provider}: response body was not valid JSON: {response.text[:300]}",
+                provider=self.provider,
+                retryable=False,
+            ) from exc
+        if not isinstance(data, dict):
+            raise ProviderResponseError(
+                f"{self.provider}: response JSON was not an object (got {type(data).__name__}).",
+                provider=self.provider,
+                retryable=False,
+            )
+        return data
+
     def _extract_content(self, data: dict[str, Any]) -> str:
         try:
             content = data["choices"][0]["message"]["content"]
@@ -161,17 +187,38 @@ class OpenAICompatibleAdapter(ChatAdapter):
                 provider=self.provider,
                 retryable=False,
             ) from exc
-        return content or ""
+        if content is None:
+            return ""
+        if isinstance(content, list):
+            # Some servers return content as a list of typed parts; join only the text
+            # parts (skip parts explicitly typed non-text that carry a stray text field).
+            return "".join(
+                p["text"]
+                for p in content
+                if isinstance(p, dict)
+                and p.get("type") in (None, "text")
+                and isinstance(p.get("text"), str)
+            )
+        if not isinstance(content, str):
+            raise ProviderResponseError(
+                f"{self.provider}: message content was not text (got {type(content).__name__}).",
+                provider=self.provider,
+                retryable=False,
+            )
+        return content
 
     def _extract_usage(self, data: dict[str, Any]) -> TokenUsage | None:
         usage = data.get("usage")
         if not isinstance(usage, dict):
             return None
-        return TokenUsage(
-            prompt_tokens=usage.get("prompt_tokens"),
-            completion_tokens=usage.get("completion_tokens"),
-            total_tokens=usage.get("total_tokens"),
-        )
+        try:
+            return TokenUsage(
+                prompt_tokens=usage.get("prompt_tokens"),
+                completion_tokens=usage.get("completion_tokens"),
+                total_tokens=usage.get("total_tokens"),
+            )
+        except ValidationError:
+            return None
 
     def _estimate_cost(self, usage: TokenUsage | None) -> float | None:
         if self._pricing is None or usage is None:

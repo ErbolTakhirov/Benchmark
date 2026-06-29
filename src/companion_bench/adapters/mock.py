@@ -73,6 +73,8 @@ class _Situation:
             value = ctx.get(key)
             if not value:
                 return ()
+            if isinstance(value, str):  # guard against a bare string exploding into chars
+                return (value,)
             return tuple(str(item) for item in cast(Iterable[object], value))
 
         style_raw = ctx.get("preferred_style")
