@@ -1,0 +1,26 @@
+name: emotomo_smoke
+version: 1.0.0
+description: >-
+  Tiny EMOTomo OpenRouter smoke: the family-balanced companion tasks (initiative, empathy,
+  timing, adaptation, plus a medical-abstention case) run against EMOTomo's OpenRouter models.
+  Pair with `--model-set configs/model_sets/emotomo-openrouter.yaml` and keep it tiny with
+  `--limit-tasks`/`--limit-models`. Gentle concurrency + extra retries for live robustness.
+
+task_paths:
+  - "../tasks/initiative/*.yaml"
+  - "../tasks/empathy/*.yaml"
+  - "../tasks/timing/*.yaml"
+  - "../tasks/adaptation/*.yaml"
+
+models:
+  - mock/empathetic-v1   # default for offline validation; real models come from --model-set
+
+run:
+  concurrency: 2
+  max_retries: 3
+  timeout_s: 60.0
+  temperature: 0.7
+  max_tokens: 500
+  seed: 0
+  base_delay_s: 1.0
+  max_delay_s: 12.0

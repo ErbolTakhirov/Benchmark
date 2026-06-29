@@ -1,0 +1,102 @@
+# EMOTomo's OpenRouter model set, extracted (read-only) from the EMOTomo repo.
+# Source of truth: emotomo-v2/services/llm-router/app/model_registry.json (the "SINGLE
+# SOURCE OF TRUTH loader"). Router defaults: temperature 0.7 (OPENROUTER_TEMPERATURE),
+# max_tokens 500 (emotomo-v2/services/llm-router/app/router.py).
+#
+# NO SECRETS were read or copied: only model slugs + non-secret params were extracted.
+# Every slug is marked needs_mapping: true — they are EMOTomo's configured slugs but have
+# NOT been verified against OpenRouter here; a live probe (run --live) confirms them.
+# For the tiny Sprint 2.5 smoke, only the two most-established free slugs are enabled; the
+# rest (incl. EMOTomo's newer/premium tiers) are listed but disabled for a later full run.
+set_id: emotomo-openrouter
+description: >-
+  EMOTomo's OpenRouter LLM models (emotomo-v2 llm-router registry). Two free slugs enabled
+  for a tiny smoke; enable the rest for a full Sprint 3 run.
+source_repo_path: /home/erbol/EMOTomo
+extracted_at: "2026-06-29"
+models:
+  # --- enabled for the tiny smoke (well-established, cheap free slugs) ---
+  - id: deepseek-chat-v3-0324
+    provider: openrouter
+    model: deepseek/deepseek-chat-v3-0324
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: true
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo roleplay/free default)"
+    notes: "Established OpenRouter slug; verify with a live probe."
+  - id: mistral-nemo
+    provider: openrouter
+    model: mistralai/mistral-nemo
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: true
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo casual/free default)"
+    notes: "Established OpenRouter slug; verify with a live probe."
+
+  # --- the rest of EMOTomo's set (disabled here; enable for the full run) ---
+  - id: deepseek-v4-flash
+    provider: openrouter
+    model: deepseek/deepseek-v4-flash
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: false
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo auto/flirt free default)"
+  - id: deepseek-chat-v3-1
+    provider: openrouter
+    model: deepseek/deepseek-chat-v3.1
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: false
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo deep/free default)"
+  - id: glm-4-5-air
+    provider: openrouter
+    model: z-ai/glm-4.5-air
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: false
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo playful/free default)"
+  - id: deepseek-v3-2
+    provider: openrouter
+    model: deepseek/deepseek-v3.2
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: false
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo premium default)"
+  - id: glm-4-6
+    provider: openrouter
+    model: z-ai/glm-4.6
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: false
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo playful/premium)"
+  - id: gemini-2-5-flash-lite
+    provider: openrouter
+    model: google/gemini-2.5-flash-lite
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: false
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo casual/premium)"
+  - id: cydonia-24b
+    provider: openrouter
+    model: thedrummer/cydonia-24b-v4.1
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: false
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo english_rp/premium)"
+  - id: euryale-70b
+    provider: openrouter
+    model: sao10k/l3.3-euryale-70b
+    temperature: 0.7
+    max_completion_tokens: 500
+    enabled: false
+    needs_mapping: true
+    source: "model_registry.json (EMOTomo premium)"
