@@ -8,6 +8,7 @@ environment. Both ``companion-bench <cmd>`` and ``python -m companion_bench.cli 
 from __future__ import annotations
 
 import asyncio
+import os
 from pathlib import Path
 from typing import NoReturn, cast
 
@@ -17,6 +18,7 @@ from rich.console import Console
 from rich.table import Table
 
 from companion_bench import __version__
+from companion_bench.adapters import describe_providers, probe_models
 from companion_bench.config.model_sets import load_model_set, validate_model_set
 from companion_bench.config.pricing import default_pricing, load_pricing
 from companion_bench.evaluators.aggregate import render_summary, score_run
@@ -45,6 +47,15 @@ models_app = typer.Typer(
 app.add_typer(models_app)
 
 _RUN_META_ADAPTER: TypeAdapter[RunMetadata] = TypeAdapter(RunMetadata)
+
+# Live network calls are opt-in: every live path requires this env var set to "1".
+LIVE_ENV = "COMPANIONBENCH_LIVE"
+# Default tiny models used by `providers --probe` (override/extend with --probe-model).
+_PROBE_MODELS = {"openai": "gpt-4o-mini", "anthropic": "claude-haiku-4-5-20251001"}
+
+
+def _live_enabled() -> bool:
+    return os.environ.get(LIVE_ENV) == "1"
 
 
 def _fail(message: str) -> NoReturn:
@@ -192,6 +203,71 @@ def export(
     console.print(f"[green]✓[/] exported {len(written)} file(s):")
     for path in written:
         console.print(f"  {path}")
+
+
+@app.command()
+def providers(
+    probe: bool = typer.Option(
+        False, "--probe", help=f"Send one tiny LIVE request per target (requires {LIVE_ENV}=1)."
+    ),
+    probe_model: list[str] = typer.Option(
+        [], "--probe-model", help="Extra provider/model refs to probe (repeatable)."
+    ),
+) -> None:
+    """List registered providers and whether their API keys are present (never values)."""
+    infos = describe_providers()
+    table = Table(title="Providers")
+    table.add_column("provider")
+    table.add_column("requires key", justify="center")
+    table.add_column("key env")
+    table.add_column("key present", justify="center")
+    table.add_column("base url")
+    for info in infos:
+        table.add_row(
+            info.provider,
+            "yes" if info.requires_key else "no",
+            info.key_env_var or "—",
+            "yes" if info.key_present else "no",
+            info.base_url or "—",
+        )
+    console.print(table)
+
+    if not probe:
+        return
+    if not _live_enabled():
+        _fail(f"--probe makes live network calls; set {LIVE_ENV}=1 to allow it.")
+
+    refs = list(probe_model)
+    for info in infos:
+        if info.provider in _PROBE_MODELS and info.key_present:
+            refs.append(f"{info.provider}/{_PROBE_MODELS[info.provider]}")
+    if not refs:
+        console.print(
+            "[yellow]no probeable targets[/] — set a provider key, or pass "
+            "--probe-model provider/model."
+        )
+        return
+
+    console.print(f"[bold]Probing[/] {len(refs)} target(s) (live)…")
+    results = asyncio.run(probe_models(refs))
+    ptable = Table(title="Live probe")
+    ptable.add_column("provider/model")
+    ptable.add_column("ok", justify="center")
+    ptable.add_column("latency ms", justify="right")
+    ptable.add_column("tokens", justify="right")
+    ptable.add_column("note")
+    for r in results:
+        note = r.error or ("parsed" if r.parsed else "ok (envelope not parsed)")
+        ptable.add_row(
+            r.ref,
+            "✅" if r.ok else "❌",
+            f"{r.latency_ms:.0f}" if r.latency_ms is not None else "—",
+            str(r.total_tokens) if r.total_tokens is not None else "—",
+            note,
+        )
+    console.print(ptable)
+    if any(not r.ok for r in results):
+        raise typer.Exit(code=1)
 
 
 @models_app.command("validate")

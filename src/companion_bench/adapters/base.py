@@ -11,8 +11,10 @@ provider directly. This is the single seam new providers plug into.
 
 from __future__ import annotations
 
+import os
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Mapping
+from dataclasses import dataclass
 from typing import ClassVar
 
 from companion_bench.config.providers import ProviderSettings
@@ -21,8 +23,10 @@ from companion_bench.utils.errors import ConfigError
 
 __all__ = [
     "ChatAdapter",
+    "ProviderInfo",
     "available_providers",
     "create_adapter",
+    "describe_providers",
     "get_adapter_class",
     "register_adapter",
 ]
@@ -103,3 +107,36 @@ def create_adapter(
 ) -> ChatAdapter:
     """Instantiate the adapter for ``provider`` from the environment + provider settings."""
     return get_adapter_class(provider).from_env(env, settings=settings)
+
+
+@dataclass(frozen=True)
+class ProviderInfo:
+    """Non-secret configuration status for a registered provider."""
+
+    provider: str
+    requires_key: bool
+    key_env_var: str | None
+    base_url: str | None
+    key_present: bool
+
+
+def describe_providers(env: Mapping[str, str] | None = None) -> list[ProviderInfo]:
+    """Report each registered provider's config status — **never the key value itself**."""
+    source = env if env is not None else os.environ
+    infos: list[ProviderInfo] = []
+    for name, cls in sorted(_REGISTRY.items()):
+        key_env = getattr(cls, "API_KEY_ENV", None)
+        base_env = getattr(cls, "BASE_URL_ENV", None)
+        base_url = getattr(cls, "DEFAULT_BASE_URL", None)
+        if base_env and source.get(base_env):
+            base_url = source[base_env]
+        infos.append(
+            ProviderInfo(
+                provider=name,
+                requires_key=bool(getattr(cls, "REQUIRES_KEY", False)),
+                key_env_var=key_env,
+                base_url=base_url,
+                key_present=bool(key_env and source.get(key_env)),
+            )
+        )
+    return infos

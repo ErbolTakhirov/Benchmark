@@ -113,6 +113,7 @@ testpaths = ["tests"]
 addopts = "-ra"
 asyncio_mode = "auto"
 filterwarnings = ["error"]
+markers = ["live: makes real network calls; skipped unless COMPANIONBENCH_LIVE=1"]
 
 [tool.mypy]
 python_version = "3.12"
