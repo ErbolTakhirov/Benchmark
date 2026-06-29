@@ -55,9 +55,12 @@ class AdapterError(CompanionBenchError):
         *,
         provider: str | None = None,
         retryable: bool | None = None,
+        retry_after: float | None = None,
     ) -> None:
         super().__init__(message)
         self.provider = provider
+        # Server-suggested minimum wait before retrying (e.g. from a Retry-After header).
+        self.retry_after = retry_after
         if retryable is not None:
             self.retryable = retryable
 

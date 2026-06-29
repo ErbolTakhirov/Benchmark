@@ -151,10 +151,16 @@ class OpenAICompatibleAdapter(ChatAdapter):
             )
         if response.status_code >= 400:
             retryable = response.status_code == 429 or response.status_code >= 500
+            retry_after = (
+                _parse_retry_after(response.headers.get("retry-after"))
+                if response.status_code == 429
+                else None
+            )
             raise ProviderResponseError(
                 f"{self.provider} returned HTTP {response.status_code}: {response.text[:300]}",
                 provider=self.provider,
                 retryable=retryable,
+                retry_after=retry_after,
             )
         return self._build_response(request, response)
 
@@ -257,4 +263,14 @@ def _elapsed_ms(response: httpx.Response) -> float | None:
     try:
         return response.elapsed.total_seconds() * 1000.0
     except RuntimeError:  # pragma: no cover - elapsed not yet available
+        return None
+
+
+def _parse_retry_after(value: str | None) -> float | None:
+    """Parse a numeric Retry-After (seconds). HTTP-date form is unsupported (returns None)."""
+    if not value:
+        return None
+    try:
+        return max(0.0, float(value))
+    except ValueError:
         return None

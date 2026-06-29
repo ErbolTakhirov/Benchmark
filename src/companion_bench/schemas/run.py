@@ -72,6 +72,7 @@ class ModelCallEvent(BaseEvent):
     token_usage: TokenUsage | None = None
     estimated_cost_usd: float | None = None
     attempts: int = 1
+    retry_wait_ms: float = 0.0
 
 
 class ModelFailureEvent(BaseEvent):
@@ -87,6 +88,7 @@ class ModelFailureEvent(BaseEvent):
     error_message: str
     retryable: bool
     attempts: int
+    retry_wait_ms: float = 0.0
 
 
 class RunEndEvent(BaseEvent):
@@ -119,6 +121,10 @@ class RunConfig(BaseModel):
     max_tokens: int | None = 512
     seed: int = 0
     limit: int | None = Field(default=None, ge=1)
+    # Retry backoff (exponential + full jitter); deadline caps total wait per request.
+    base_delay_s: float = Field(default=0.5, ge=0.0)
+    max_delay_s: float = Field(default=8.0, ge=0.0)
+    deadline_s: float | None = Field(default=None, gt=0.0)
 
 
 class RunMetadata(BaseModel):

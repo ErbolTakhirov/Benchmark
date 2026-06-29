@@ -17,6 +17,7 @@ from pathlib import Path
 
 from companion_bench import __version__
 from companion_bench.adapters.base import ChatAdapter, create_adapter
+from companion_bench.config.providers import ProviderSettings
 from companion_bench.runner.conversation import ConversationDriver
 from companion_bench.runner.events import (
     model_call_event,
@@ -25,6 +26,7 @@ from companion_bench.runner.events import (
     run_start_event,
 )
 from companion_bench.runner.manifest import Manifest
+from companion_bench.runner.retry import RateLimiter, Sleeper, backoff_delay
 from companion_bench.schemas.model import ChatRequest, ChatResponse, ModelSpec
 from companion_bench.schemas.run import (
     Event,
@@ -70,10 +72,12 @@ class RunEngine:
         clock: Clock | None = None,
         env: Mapping[str, str] | None = None,
         adapter: ChatAdapter | None = None,
+        sleep: Sleeper | None = None,
     ) -> None:
         self._clock = clock or RealClock()
         self._env = env
         self._adapter_override = adapter
+        self._sleep = sleep or asyncio.sleep
 
     async def run(
         self,
@@ -85,6 +89,8 @@ class RunEngine:
         out_dir: str | Path,
         manifest_path: str,
         run_id: str | None = None,
+        settings: ProviderSettings | None = None,
+        requests_per_second: float | None = None,
     ) -> RunResult:
         # Output dirs are created lazily by EventWriter / write_model_json (both mkdir
         # their parents), so there is no blocking filesystem call on the event loop here.
@@ -92,13 +98,16 @@ class RunEngine:
         run_id = run_id or make_run_id(manifest.name, model.ref, config.seed)
         tasks_to_run = list(tasks)[: config.limit] if config.limit else list(tasks)
 
-        adapter = self._adapter_override or create_adapter(model.provider, self._env)
+        adapter = self._adapter_override or create_adapter(
+            model.provider, self._env, settings=settings
+        )
+        limiter = RateLimiter(requests_per_second, self._sleep)
         try:
             semaphore = asyncio.Semaphore(config.concurrency)
 
             async def guarded(task: Task) -> list[Event]:
                 async with semaphore:
-                    return await self._run_task(run_id, task, model, config, adapter)
+                    return await self._run_task(run_id, task, model, config, adapter, limiter)
 
             per_task_events = await asyncio.gather(*(guarded(task) for task in tasks_to_run))
         finally:
@@ -124,11 +133,14 @@ class RunEngine:
         model: ModelSpec,
         config: RunConfig,
         adapter: ChatAdapter,
+        limiter: RateLimiter,
     ) -> list[Event]:
         driver = ConversationDriver(task, model, config)
         events: list[Event] = []
         while (step := driver.next_probe()) is not None:
-            response, error, attempts = await self._call_with_retries(adapter, step.request, config)
+            response, error, attempts, retry_wait_ms = await self._call_with_retries(
+                adapter, step.request, config, limiter, task.task_id, step.probe.probe_id
+            )
             if response is not None:
                 events.append(
                     model_call_event(
@@ -140,6 +152,7 @@ class RunEngine:
                         step.request.messages,
                         response,
                         attempts,
+                        retry_wait_ms=retry_wait_ms,
                     )
                 )
                 driver.record_response(response.companion_turn)
@@ -155,26 +168,43 @@ class RunEngine:
                         step.request.messages,
                         err,
                         attempts,
+                        retry_wait_ms=retry_wait_ms,
                     )
                 )
                 driver.record_response(None)
         return events
 
     async def _call_with_retries(
-        self, adapter: ChatAdapter, request: ChatRequest, config: RunConfig
-    ) -> tuple[ChatResponse | None, BaseException | None, int]:
+        self,
+        adapter: ChatAdapter,
+        request: ChatRequest,
+        config: RunConfig,
+        limiter: RateLimiter,
+        task_id: str,
+        probe_id: str,
+    ) -> tuple[ChatResponse | None, BaseException | None, int, float]:
         attempts = 0
+        total_wait = 0.0
+        start = self._clock.monotonic()
         while True:
             attempts += 1
+            await limiter.acquire()
             try:
-                return await adapter.generate(request), None, attempts
+                response = await adapter.generate(request)
+                return response, None, attempts, total_wait * 1000.0
             except AdapterError as exc:
-                if exc.retryable and attempts <= config.max_retries:
-                    await asyncio.sleep(0)
-                    continue
-                return None, exc, attempts
+                if not (exc.retryable and attempts <= config.max_retries):
+                    return None, exc, attempts, total_wait * 1000.0
+                delay = backoff_delay(
+                    config, attempts, exc.retry_after, task_id=task_id, probe_id=probe_id
+                )
+                elapsed = self._clock.monotonic() - start
+                if config.deadline_s is not None and elapsed + delay > config.deadline_s:
+                    return None, exc, attempts, total_wait * 1000.0
+                await self._sleep(delay)
+                total_wait += delay
             except Exception as exc:  # record any failure, never hide it
-                return None, exc, attempts
+                return None, exc, attempts, total_wait * 1000.0
 
     # -- artifact assembly --------------------------------------------------
     def _write_artifacts(

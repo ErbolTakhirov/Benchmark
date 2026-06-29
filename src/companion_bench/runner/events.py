@@ -50,6 +50,8 @@ def model_call_event(
     input_messages: Sequence[ChatMessage],
     response: ChatResponse,
     attempts: int,
+    *,
+    retry_wait_ms: float = 0.0,
 ) -> ModelCallEvent:
     return ModelCallEvent(
         event_id="",
@@ -67,6 +69,7 @@ def model_call_event(
         token_usage=response.token_usage,
         estimated_cost_usd=response.estimated_cost_usd,
         attempts=attempts,
+        retry_wait_ms=retry_wait_ms,
     )
 
 
@@ -79,6 +82,8 @@ def model_failure_event(
     input_messages: Sequence[ChatMessage],
     error: BaseException,
     attempts: int,
+    *,
+    retry_wait_ms: float = 0.0,
 ) -> ModelFailureEvent:
     retryable = error.retryable if isinstance(error, AdapterError) else False
     return ModelFailureEvent(
@@ -94,6 +99,7 @@ def model_failure_event(
         error_message=str(error),
         retryable=retryable,
         attempts=attempts,
+        retry_wait_ms=retry_wait_ms,
     )
 
 
