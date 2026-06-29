@@ -17,6 +17,8 @@ from rich.console import Console
 from rich.table import Table
 
 from companion_bench import __version__
+from companion_bench.config.model_sets import load_model_set, validate_model_set
+from companion_bench.config.pricing import default_pricing, load_pricing
 from companion_bench.evaluators.aggregate import render_summary, score_run
 from companion_bench.runner.engine import RunEngine
 from companion_bench.runner.manifest import load_manifest_and_tasks, validate_manifest
@@ -36,6 +38,11 @@ app = typer.Typer(
 )
 console = Console()
 err_console = Console(stderr=True)
+
+models_app = typer.Typer(
+    name="models", help="Inspect and validate model sets.", no_args_is_help=True
+)
+app.add_typer(models_app)
 
 _RUN_META_ADAPTER: TypeAdapter[RunMetadata] = TypeAdapter(RunMetadata)
 
@@ -185,6 +192,41 @@ def export(
     console.print(f"[green]✓[/] exported {len(written)} file(s):")
     for path in written:
         console.print(f"  {path}")
+
+
+@models_app.command("validate")
+def models_validate(
+    model_set: Path = typer.Option(..., "--model-set", help="Path to a model-set YAML."),
+    pricing: Path | None = typer.Option(None, "--pricing", help="Pricing YAML (bundled default)."),
+) -> None:
+    """Validate a model set: providers registered, slugs verified, prices known."""
+    try:
+        ms = load_model_set(model_set)
+        price_table = load_pricing(pricing) if pricing else default_pricing()
+    except CompanionBenchError as exc:
+        _fail(str(exc))
+
+    report = validate_model_set(ms, pricing=price_table)
+    table = Table(
+        title=f"Model set: {report.set_id}  ({report.n_enabled}/{report.n_models} enabled)"
+    )
+    table.add_column("id")
+    table.add_column("provider/model")
+    table.add_column("enabled", justify="center")
+    table.add_column("price?", justify="center")
+    table.add_column("needs_mapping", justify="center")
+    for m in ms.models:
+        priced = "yes" if price_table.rate(m.provider, m.model) else "no"
+        table.add_row(
+            m.id, m.ref, "yes" if m.enabled else "no", priced, "yes" if m.needs_mapping else "no"
+        )
+    console.print(table)
+    for issue in report.issues:
+        style = "red" if issue.level == "error" else "yellow"
+        console.print(f"  [{style}]{issue.level}[/] {issue.model_id or ''}: {issue.message}")
+    if not report.ok:
+        raise typer.Exit(code=1)
+    console.print(f"[green]✓[/] model set [bold]{report.set_id}[/] is valid")
 
 
 # --------------------------------------------------------------------------- helpers

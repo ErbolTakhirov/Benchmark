@@ -1,0 +1,29 @@
+# Example model set. A model set decouples *which models* from *which tasks* (the manifest).
+# Copy and adapt this; run `companion-bench models validate --model-set <path>` to check it.
+set_id: example
+description: >-
+  Example model set demonstrating the schema. The mock entry runs offline; the real entries
+  are disabled and require API keys + COMPANIONBENCH_LIVE=1 to run.
+models:
+  - id: mock-empathetic
+    provider: mock
+    model: empathetic-v1
+    enabled: true
+    source: built-in mock simulator
+    notes: deterministic; validates the pipeline, not model quality
+
+  - id: gpt-4o-mini
+    provider: openai
+    model: gpt-4o-mini
+    temperature: 0.0
+    max_completion_tokens: 512
+    enabled: false
+    source: example (priced in the bundled pricing.yaml)
+
+  - id: unverified-openrouter-model
+    provider: openrouter
+    model: some-vendor/some-model
+    enabled: false
+    needs_mapping: true
+    source: example placeholder — replace with a verified OpenRouter slug
+    notes: needs_mapping until confirmed with a live probe

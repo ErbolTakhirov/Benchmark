@@ -8,6 +8,13 @@ mis-pricing or mis-routing a run.
 
 from __future__ import annotations
 
+from companion_bench.config.model_sets import (
+    ModelEntry,
+    ModelSet,
+    ModelSetReport,
+    load_model_set,
+    validate_model_set,
+)
 from companion_bench.config.pricing import (
     PriceEntry,
     PricingTable,
@@ -22,12 +29,17 @@ from companion_bench.config.providers import (
 )
 
 __all__ = [
+    "ModelEntry",
+    "ModelSet",
+    "ModelSetReport",
     "PriceEntry",
     "PricingTable",
     "ProviderSettings",
     "ProvidersConfig",
     "default_pricing",
     "default_providers_config",
+    "load_model_set",
     "load_pricing",
     "load_providers_config",
+    "validate_model_set",
 ]
