@@ -21,7 +21,11 @@ from rich.table import Table
 
 from companion_bench import __version__
 from companion_bench.adapters import describe_providers, probe_models
-from companion_bench.config.model_sets import load_model_set, validate_model_set
+from companion_bench.config.model_sets import (
+    check_against_openrouter,
+    load_model_set,
+    validate_model_set,
+)
 from companion_bench.config.openrouter_pricing import (
     build_openrouter_pricing,
     fetch_openrouter_models,
@@ -499,8 +503,18 @@ def pricing_sync_openrouter(
 def models_validate(
     model_set: Path = typer.Option(..., "--model-set", help="Path to a model-set YAML."),
     pricing: Path | None = typer.Option(None, "--pricing", help="Pricing YAML (bundled default)."),
+    online: bool = typer.Option(
+        False,
+        "--online",
+        help=f"Also verify OpenRouter slugs against live metadata (needs {LIVE_ENV}=1).",
+    ),
 ) -> None:
-    """Validate a model set: providers registered, slugs verified, prices known."""
+    """Validate a model set: providers registered, slugs verified, prices known.
+
+    Offline by default. ``--online`` (with COMPANIONBENCH_LIVE=1) also checks each enabled
+    OpenRouter slug against live metadata (live_verified / unavailable / pricing_missing +
+    context/parameter warnings). Mappings are never auto-flipped.
+    """
     try:
         ms = load_model_set(model_set)
         price_table = load_pricing(pricing) if pricing else default_pricing()
@@ -508,6 +522,19 @@ def models_validate(
         _fail(str(exc))
 
     report = validate_model_set(ms, pricing=price_table)
+    issues = list(report.issues)
+    ok = report.ok
+    if online:
+        if not _live_enabled():
+            _fail(f"--online makes a network call; set {LIVE_ENV}=1 to allow it.")
+        try:
+            models = asyncio.run(fetch_openrouter_models())
+        except CompanionBenchError as exc:
+            _fail(str(exc))
+        online_issues = check_against_openrouter(ms, models)
+        issues += online_issues
+        ok = ok and not any(i.level == "error" for i in online_issues)
+
     table = Table(
         title=f"Model set: {report.set_id}  ({report.n_enabled}/{report.n_models} enabled)"
     )
@@ -522,10 +549,13 @@ def models_validate(
             m.id, m.ref, "yes" if m.enabled else "no", priced, "yes" if m.needs_mapping else "no"
         )
     console.print(table)
-    for issue in report.issues:
-        style = "red" if issue.level == "error" else "yellow"
-        console.print(f"  [{style}]{issue.level}[/] {issue.model_id or ''}: {issue.message}")
-    if not report.ok:
+    styles = {"error": "red", "warning": "yellow", "info": "cyan"}
+    for issue in issues:
+        console.print(
+            f"  [{styles.get(issue.level, 'yellow')}]{issue.level}[/] "
+            f"{issue.model_id or ''}: {issue.message}"
+        )
+    if not ok:
         raise typer.Exit(code=1)
     console.print(f"[green]✓[/] model set [bold]{report.set_id}[/] is valid")
 

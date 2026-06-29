@@ -23,6 +23,7 @@ __all__ = [
     "ModelSet",
     "ModelSetIssue",
     "ModelSetReport",
+    "check_against_openrouter",
     "load_model_set",
     "validate_model_set",
 ]
@@ -79,7 +80,7 @@ class ModelSet(BaseModel):
 class ModelSetIssue(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    level: Literal["error", "warning"]
+    level: Literal["error", "warning", "info"]
     model_id: str | None
     message: str
 
@@ -155,3 +156,86 @@ def validate_model_set(
         n_enabled=len(model_set.enabled_models()),
         issues=tuple(issues),
     )
+
+
+def check_against_openrouter(
+    model_set: ModelSet, openrouter_models: list[dict[str, Any]]
+) -> list[ModelSetIssue]:
+    """Check each enabled OpenRouter slug against fetched OpenRouter metadata.
+
+    Reports ``live_verified`` / ``unavailable`` / ``pricing_missing`` and context/parameter
+    warnings. Never mutates the set: a verified-but-``needs_mapping`` slug is *flagged*, not
+    auto-flipped.
+    """
+    by_slug: dict[str, dict[str, Any]] = {}
+    for model_meta in openrouter_models:
+        for key in (model_meta.get("id"), model_meta.get("canonical_slug")):
+            if isinstance(key, str):
+                by_slug[key] = model_meta
+
+    issues: list[ModelSetIssue] = []
+    for entry in model_set.enabled_models():
+        if entry.provider != "openrouter":
+            continue
+        meta = by_slug.get(entry.model)
+        if meta is None:
+            issues.append(
+                ModelSetIssue(
+                    level="error",
+                    model_id=entry.id,
+                    message=f"unavailable: {entry.model!r} is not in OpenRouter /models",
+                )
+            )
+            continue
+        issues.append(
+            ModelSetIssue(
+                level="info", model_id=entry.id, message="live_verified: slug exists on OpenRouter"
+            )
+        )
+        pricing = meta.get("pricing")
+        try:
+            float(pricing["prompt"])  # type: ignore[index]
+            float(pricing["completion"])  # type: ignore[index]
+        except (KeyError, TypeError, ValueError):
+            issues.append(
+                ModelSetIssue(
+                    level="warning",
+                    model_id=entry.id,
+                    message="pricing_missing: OpenRouter reports no usable price (cost will be null)",
+                )
+            )
+        ctx = meta.get("context_length")
+        if (
+            entry.max_completion_tokens
+            and isinstance(ctx, (int, float))
+            and entry.max_completion_tokens > ctx
+        ):
+            issues.append(
+                ModelSetIssue(
+                    level="warning",
+                    model_id=entry.id,
+                    message=f"max_completion_tokens {entry.max_completion_tokens} exceeds context_length {int(ctx)}",
+                )
+            )
+        supported = meta.get("supported_parameters")
+        if (
+            entry.temperature is not None
+            and isinstance(supported, list)
+            and "temperature" not in supported
+        ):
+            issues.append(
+                ModelSetIssue(
+                    level="warning",
+                    model_id=entry.id,
+                    message="temperature set but not in the model's supported_parameters",
+                )
+            )
+        if entry.needs_mapping:
+            issues.append(
+                ModelSetIssue(
+                    level="info",
+                    model_id=entry.id,
+                    message="needs_mapping is true but slug is live_verified — consider setting needs_mapping: false",
+                )
+            )
+    return issues
