@@ -30,6 +30,12 @@ class PriceEntry(BaseModel):
     output_usd_per_1m: float = Field(ge=0.0)
     source: str
     as_of: str  # ISO date, e.g. 2026-01-15
+    # Optional provenance / raw source fields (populated by `pricing sync-openrouter`).
+    currency: str = "USD"
+    units: str = "per_1m_tokens"
+    context_length: int | None = None
+    prompt_price_per_token: float | None = None
+    completion_price_per_token: float | None = None
 
 
 class PricingTable(BaseModel):

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, NoReturn, cast
 
 import typer
+import yaml
 from pydantic import TypeAdapter
 from rich.console import Console
 from rich.table import Table
@@ -21,6 +22,10 @@ from rich.table import Table
 from companion_bench import __version__
 from companion_bench.adapters import describe_providers, probe_models
 from companion_bench.config.model_sets import load_model_set, validate_model_set
+from companion_bench.config.openrouter_pricing import (
+    build_openrouter_pricing,
+    fetch_openrouter_models,
+)
 from companion_bench.config.pricing import PricingTable, default_pricing, load_pricing
 from companion_bench.config.providers import default_providers_config, load_providers_config
 from companion_bench.evaluators.aggregate import render_summary, score_run
@@ -62,6 +67,9 @@ models_app = typer.Typer(
     name="models", help="Inspect and validate model sets.", no_args_is_help=True
 )
 app.add_typer(models_app)
+
+pricing_app = typer.Typer(name="pricing", help="Pricing tables.", no_args_is_help=True)
+app.add_typer(pricing_app)
 
 _RUN_META_ADAPTER: TypeAdapter[RunMetadata] = TypeAdapter(RunMetadata)
 
@@ -458,6 +466,33 @@ def providers(
     console.print(ptable)
     if any(not r.ok for r in results):
         raise typer.Exit(code=1)
+
+
+@pricing_app.command("sync-openrouter")
+def pricing_sync_openrouter(
+    out: Path = typer.Option(..., "--out", help="Write the pricing YAML here."),
+    base_url: str | None = typer.Option(
+        None, "--base-url", help="Override the OpenRouter base URL."
+    ),
+) -> None:
+    """Fetch current OpenRouter model pricing and write a versioned pricing YAML."""
+    if not _live_enabled():
+        _fail(f"pricing sync-openrouter makes a network call; set {LIVE_ENV}=1 to allow it.")
+    as_of = RealClock().now_iso()
+    try:
+        models = asyncio.run(fetch_openrouter_models(base_url=base_url))
+    except CompanionBenchError as exc:
+        _fail(str(exc))
+    table, skipped = build_openrouter_pricing(models, as_of=as_of)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(
+        yaml.safe_dump(table.model_dump(mode="json"), sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+    console.print(
+        f"[green]✓[/] wrote {len(table.entries)} priced model(s) to {out} "
+        f"(skipped {len(skipped)} without a usable price)."
+    )
 
 
 @models_app.command("validate")
