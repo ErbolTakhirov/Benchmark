@@ -1,7 +1,10 @@
 # CompanionBench
 
-**The first clean, API-first, open-source benchmark for evaluating LLM companions and proactive
-assistants across realistic multi-turn conversations.**
+**An open-source benchmark for evaluating human-like companion communication in LLMs** — how well
+a model communicates like a high-quality human companion across realistic, multi-turn
+conversations: emotionally attuned, context-aware, appropriately proactive, non-intrusive,
+preference-adaptive, and safe. It measures **targeted behaviors under defined scenarios**, not a
+universal "intelligence" or "human-likeness" score.
 
 [![CI](https://github.com/companion-bench/companion-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/companion-bench/companion-bench/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
@@ -29,6 +32,16 @@ CompanionBench measures exactly these behaviors through **multi-turn, API-mediat
 jointly evaluates **initiative selection, intervention timing, emotional attunement, multi-turn
 preference adaptation, abstention, and safety boundaries** — not just whether a single reply *sounds*
 nice.
+
+### What "human-like companion communication" means here
+
+We use the phrase in a **deliberately narrow, behavioral** sense: communicating the way a thoughtful
+human companion would in a specific situation — reading the moment, choosing whether and when to
+speak, matching *this* person's preferred style, respecting stated boundaries, and abstaining when
+that is the right move. We do **not** claim a model is "human-like" in general, conscious, or
+emotionally genuine. CompanionBench scores observable communication choices on authored scenarios;
+the numbers describe behavior on those scenarios, nothing more. See
+[`docs/methodology.md`](docs/methodology.md) and the [public-claims policy](docs/public_claims.md).
 
 ## Research hypothesis
 
@@ -140,6 +153,26 @@ Models are addressed as `provider/model`, e.g. `openai/gpt-4o-mini`, `anthropic/
 `openrouter/meta-llama/llama-3.1-70b-instruct`, or `mock/empathetic-v1` for the offline mock.
 
 See [`docs/provider_adapters.md`](docs/provider_adapters.md).
+
+### Models, model sets, and providers
+
+CompanionBench keeps three things separate, on purpose:
+
+- **The benchmark** is the tasks, scoring, and methodology in this repository. That is
+  CompanionBench. It is model- and vendor-neutral.
+- **A model set** is just a named, versioned list of *which models to compare* (see
+  [`docs/model_sets.md`](docs/model_sets.md)). `configs/model_sets/emotomo-openrouter.yaml` is the
+  **EMOTomo model set** — the models the EMOTomo product currently uses — and it is here only as an
+  **example / first case study**. It is **not** the identity of the benchmark;
+  you can point CompanionBench at any model set (`openai.yaml`, `anthropic.yaml`, `local-vllm.yaml`, …).
+- **A provider** is just the API the calls go through. **OpenRouter is one provider adapter** among
+  several (OpenAI, Anthropic, HF Inference Providers, OpenAI-compatible, mock). "Run the EMOTomo
+  model set via OpenRouter" describes a *configuration*, never "the EMOTomo benchmark" or "the
+  OpenRouter benchmark" — there is no such thing here.
+
+So a sentence like *"CompanionBench evaluation using the EMOTomo model set via OpenRouter"* is
+precise; *"EMOTomo benchmark"* or *"OpenRouter benchmark"* is not. See the
+[public-claims policy](docs/public_claims.md) for the language we hold ourselves to.
 
 ## How scoring works
 

@@ -1,8 +1,9 @@
 name: emotomo_smoke
 version: 1.0.0
 description: >-
-  Tiny EMOTomo OpenRouter smoke: the family-balanced companion tasks (initiative, empathy,
-  timing, adaptation, plus a medical-abstention case) run against EMOTomo's OpenRouter models.
+  Tiny CompanionBench smoke using the EMOTomo model set via OpenRouter: the family-balanced
+  companion tasks (initiative, empathy, timing, adaptation, plus a medical-abstention case).
+  EMOTomo is one example model set and OpenRouter one provider adapter — not the benchmark itself.
   Pair with `--model-set configs/model_sets/emotomo-openrouter.yaml` and keep it tiny with
   `--limit-tasks`/`--limit-models`. Gentle concurrency + extra retries for live robustness.
 

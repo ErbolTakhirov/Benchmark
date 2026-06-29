@@ -6,8 +6,13 @@ read its numbers responsibly. Modeled on dataset/model cards.
 - **Name:** CompanionBench
 - **Version:** 0.1 (MVP scaffold)
 - **License:** Apache-2.0
-- **Scope:** Multi-turn evaluation of LLM companions / proactive assistants across initiative,
-  timing, emotional attunement, preference adaptation, abstention, and safety.
+- **Scope:** Multi-turn evaluation of **human-like companion communication** in LLMs / proactive
+  assistants across initiative, timing, emotional attunement, preference adaptation, abstention,
+  and safety. "Human-like" is meant behaviorally (the communication choices a thoughtful human
+  companion would make on a scenario), not as a claim about general intelligence or genuine emotion.
+- **Vendor/provider-neutral:** the benchmark is the tasks + scoring. *Which* models are compared is
+  a **model set**; the API used is a **provider**. See [`model_sets.md`](model_sets.md),
+  [`methodology.md`](methodology.md), and the [`public-claims policy`](public_claims.md).
 
 ## Intended use
 
@@ -25,6 +30,11 @@ read its numbers responsibly. Modeled on dataset/model cards.
   signal. A high score does not make a system safe for vulnerable users.
 - **Not** a single "companion IQ" ranking. The dimensions are partly independent by design;
   collapsing them hides the trade-offs that matter.
+- **Not** an "EMOTomo benchmark" or an "OpenRouter benchmark". EMOTomo is one example **model set**
+  and OpenRouter is one **provider adapter**; a result is "CompanionBench run with model set X via
+  provider Y", never the benchmark's identity. See the [public-claims policy](public_claims.md).
+- **Not** evidence that a model is "the most human-like" or "best companion" in general. Scores
+  describe targeted behaviors on authored scenarios, for the model set and settings actually run.
 - **Not** a benchmark of real models *in its MVP form*: the default model is a deterministic
   **mock simulator**, and mock scores validate the **pipeline**, not model quality.
 - **Not** a substitute for human judgment about emotionally loaded interactions.
@@ -42,11 +52,16 @@ read its numbers responsibly. Modeled on dataset/model cards.
 4. **Structured-envelope assumption.** The MVP asks models for a `CompanionTurn` JSON. A model
    that is excellent in free-form prose but poor at the envelope is under-credited until the
    free-text + judge path lands.
-5. **English / Western-default personas.** The current scenarios encode particular cultural
-   norms about initiative, directness, and boundaries.
+5. **English / Western-default personas.** The current scenarios are authored primarily in English
+   and encode particular cultural norms about initiative, directness, and boundaries. Broader
+   multilingual coverage (e.g. Russian, Kyrgyz) is a goal, not a present claim.
 6. **Synthetic personas.** "Preferred style" is authored, not elicited from real users.
-7. **No statistical treatment yet.** No confidence intervals, multiple-seed variance, or
-   inter-task correlation analysis are reported in the MVP.
+7. **Statistics are present but partial.** Repeated runs (`--repeats`) and bootstrap 95% CIs
+   (`score --bootstrap`) are supported and reported, but the resampling model (over `(task,
+   repeat)` units on a small suite) is a defensible approximation, not population-level inference;
+   inter-task correlation analysis is not yet reported.
+8. **Goodhart / overfitting risk.** Any fixed rubric can be gamed by surface matching; optimizing a
+   model *to* CompanionBench would erode its meaning.
 
 ## Risks of LLM-as-judge
 

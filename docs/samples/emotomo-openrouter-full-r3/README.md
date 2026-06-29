@@ -1,9 +1,12 @@
-# Sample: EMOTomo OpenRouter full run, 3 repeats (live — populate when run)
+# Sample: CompanionBench full run using the EMOTomo model set via OpenRouter, 3 repeats (live — populate when run)
 
-This directory is the home for the **real, full-family** EMOTomo OpenRouter evaluation with
-repeats, bootstrap CIs, and a cost-quality frontier. Producing it makes **live, paid API calls**,
-so it is gated behind a key + `COMPANIONBENCH_LIVE=1` and is **not run in CI**. Until someone
-runs it with a key, this README is the placeholder.
+This directory is the home for a **full-family** CompanionBench evaluation of the **EMOTomo model
+set** served via the **OpenRouter provider**, with repeats, bootstrap CIs, and a cost-quality
+frontier. It is a **sample run, not a final leaderboard**: EMOTomo is one example model set and
+OpenRouter is one provider adapter, not the benchmark itself (see
+[`../../model_sets.md`](../../model_sets.md)). Producing it makes **live, paid API calls**, so it is
+gated behind a key + `COMPANIONBENCH_LIVE=1` and is **not run in CI**. Until someone runs it with a
+key, this README is the placeholder.
 
 - For a **real (tiny)** first result, see [`../emotomo-openrouter-smoke/`](../emotomo-openrouter-smoke/)
   (deepseek-chat-v3-0324 + mistral-nemo, 2 adaptation tasks, live-verified, secret-scanned).

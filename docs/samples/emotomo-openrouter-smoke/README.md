@@ -1,8 +1,11 @@
-# Sample: EMOTomo OpenRouter smoke (first live run)
+# Sample: CompanionBench run using the EMOTomo model set via OpenRouter (tiny smoke)
 
-**This is a sanitized SAMPLE artifact**, kept for reference. It is the first real
-CompanionBench evaluation of two EMOTomo OpenRouter models. Raw `events.jsonl` (full
-transcripts) is intentionally **not** included; only the scored summaries are.
+**This is a sanitized SAMPLE artifact**, kept for reference — a **sample run, not a leaderboard**.
+It is a CompanionBench evaluation of two models from the **EMOTomo model set**, served via the
+**OpenRouter provider**. EMOTomo is one example model set and OpenRouter is one provider adapter;
+neither is the benchmark itself (see [`../../model_sets.md`](../../model_sets.md) and
+[`../../public_claims.md`](../../public_claims.md)). Raw `events.jsonl` (full transcripts) is
+intentionally **not** included; only the scored summaries are.
 
 - **Date:** 2026-06-29
 - **Manifest:** `manifests/emotomo_smoke.yaml`  ·  **Model set:** `configs/model_sets/emotomo-openrouter.yaml`
