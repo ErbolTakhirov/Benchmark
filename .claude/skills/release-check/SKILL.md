@@ -26,16 +26,20 @@ uv run pytest -q
 All four must be clean. (`ruff format --check` only checks — do not auto-format during the release
 check; if it fails, fix in a separate change and re-run.)
 
-## 3. Validate + smoke run/score
+## 3. Validate + smoke run/score + config checks + build
 
 ```bash
 uv run companion-bench validate manifests/smoke.yaml
+uv run companion-bench providers                              # offline; key presence only
+uv run companion-bench models validate --model-set configs/model_sets/example.yaml
 uv run companion-bench run --manifest manifests/smoke.yaml --model mock/empathetic-v1 --out runs/smoke
 uv run companion-bench score --run runs/smoke
+uv build                                                      # wheel + sdist build cleanly
 ```
 
 Confirm the run completes with no failures and `score` prints sane numbers (empathetic-v1 should
-score well — it validates the pipeline, not model quality).
+score well — it validates the pipeline, not model quality). `uv build` must succeed and include the
+bundled `config/data/pricing.yaml`.
 
 ## 4. Confirm NO secrets are committed
 
@@ -47,6 +51,14 @@ score well — it validates the pipeline, not model quality).
     --exclude-dir=.git --exclude-dir=.venv --exclude-dir=runs .
   ```
   Any hit that is a real key is a blocker. `.env.example` must contain only empty values.
+- The secret-leak test must pass (it runs a benchmark with a fake key set and scans every
+  artifact): `uv run pytest tests/test_secrets.py -q`.
+- If you produced any LIVE run artifacts, scan them before committing (and prefer NOT to commit
+  live artifacts at all — only sanitized samples):
+  ```bash
+  uv run python -c "import os,sys; from companion_bench.utils.secrets import collect_secret_values, scan_run_dir; \
+    leaks=scan_run_dir(sys.argv[1], collect_secret_values()); print('LEAKS:', leaks); sys.exit(1 if leaks else 0)" runs/<dir>
+  ```
 
 ## 5. Confirm the version is bumped (both files must match)
 
@@ -70,16 +82,21 @@ run artifacts are accurate. The CLI is the source of truth:
 uv run companion-bench --help
 ```
 
-Cross-check command names (`validate`, `run`, `score`, `export`, `list-tasks`, `version`), flags
-(`--manifest`, `--model`, `--out`, `--seed`, `--limit`, `--run-id`, `--concurrency`, `--run`,
-`--format`), and the documented artifacts (`events.jsonl`, `run.json`, `scores.json`, `summary.md`,
-`export/`).
+Cross-check command names (`validate`, `run`, `score`, `report`, `export`, `list-tasks`,
+`providers`, `models validate`, `version`), the run flags (`--manifest`, `--model`,
+`--model-set`, `--out`, `--live`, `--yes`, `--limit-tasks`, `--limit-models`, `--max-cost-usd`,
+`--pricing`, `--providers-config`, `--seed`, `--concurrency`, `--run-id`), and the documented
+artifacts (`events.jsonl`, `run.json`, `scores.json`, `summary.md`, `export/`, and
+`modelset.json` for model-set runs).
 
 ## Checklist
 
 - [ ] `uv sync --all-extras` clean.
-- [ ] ruff check, ruff format --check, mypy, pytest all green.
-- [ ] `validate` passes; smoke run + score complete with no failures.
-- [ ] No real secrets committed; `.env` gitignored; `.env.example` is blanks only.
+- [ ] ruff check, ruff format --check, mypy, pytest all green (default pytest is offline; live
+      tests are skipped without `COMPANIONBENCH_LIVE=1`).
+- [ ] `validate`, `providers`, `models validate` pass; smoke run + score complete with no
+      failures; `uv build` succeeds.
+- [ ] No real secrets committed; `.env` gitignored; `.env.example` is blanks only; the secret-leak
+      test passes and any live artifacts are scanned (or not committed).
 - [ ] Version bumped and identical in `pyproject.toml` and `src/companion_bench/__init__.py`.
 - [ ] README quickstart matches the actual CLI commands, flags, and artifacts.

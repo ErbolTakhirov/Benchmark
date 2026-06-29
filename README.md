@@ -102,6 +102,24 @@ This produces, under `runs/smoke/`:
 > If the `companion-bench` console script is unavailable, every command also works as
 > `uv run python -m companion_bench.cli <command> ...`.
 
+### Real providers, model sets, and cost (live, opt-in)
+
+```bash
+companion-bench providers                                   # key presence (never values) + base URLs
+companion-bench models validate --model-set configs/model_sets/example.yaml
+
+# A live run needs BOTH --live AND COMPANIONBENCH_LIVE=1 (+ a key, + --yes or a confirm):
+export OPENROUTER_API_KEY=...
+COMPANIONBENCH_LIVE=1 companion-bench run -m manifests/smoke.yaml \
+  --model-set configs/model_sets/your-set.yaml --out runs/live \
+  --live --yes --max-cost-usd 1 --limit-tasks 2 --limit-models 2
+companion-bench score  --run runs/live
+companion-bench report --run runs/live                      # model-comparison table
+```
+
+Cost tracking, the `--max-cost-usd` budget guard, retry/backoff, provider config, and secret
+handling are documented in [`docs/live_and_cost.md`](docs/live_and_cost.md).
+
 ## API-first design
 
 CompanionBench talks to models exclusively through a small async adapter contract, so any

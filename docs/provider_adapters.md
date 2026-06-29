@@ -3,6 +3,10 @@
 CompanionBench talks to every model through one async contract, so adding a provider never
 touches the runner or evaluators.
 
+> For running real providers (the `providers` command, model sets, live guardrails, cost,
+> retries, and secrets) see [`live_and_cost.md`](live_and_cost.md). This page is about the
+> adapter contract and adding a new provider.
+
 ```python
 class ChatAdapter(ABC):
     provider: ClassVar[str]

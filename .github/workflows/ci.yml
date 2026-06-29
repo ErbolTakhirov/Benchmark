@@ -45,6 +45,11 @@ jobs:
       - name: Validate smoke manifest
         run: uv run companion-bench validate manifests/smoke.yaml
 
+      - name: Providers + model-set validation (offline)
+        run: |
+          uv run companion-bench providers
+          uv run companion-bench models validate --model-set configs/model_sets/example.yaml
+
       - name: Run smoke benchmark (mock, offline)
         run: uv run companion-bench run --manifest manifests/smoke.yaml --model mock/empathetic-v1 --out runs/smoke
 

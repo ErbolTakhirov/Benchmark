@@ -1,0 +1,18 @@
+# Example providers.yaml — OPTIONAL per-provider overrides.
+# Built-in adapter defaults already cover every provider, so you only need this for custom
+# endpoints, attribution headers, default params, or a rate limit. Pass with
+# `--providers-config configs/providers.yaml`. Precedence: CLI > env > this file > defaults.
+# API KEYS ARE NEVER PUT HERE — keys come only from environment variables.
+version: "1"
+providers:
+  openai_compatible:
+    # Point the generic adapter at a self-hosted / aggregator endpoint:
+    base_url: http://localhost:8000/v1
+    requests_per_second: 2.0
+  openrouter:
+    default_headers:
+      X-Title: CompanionBench
+    requests_per_second: 1.0
+    default_params:
+      # Provider-specific defaults merged into each request (per-model params still win):
+      top_p: 1.0

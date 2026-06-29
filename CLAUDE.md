@@ -26,8 +26,17 @@ uv run pytest -q                            # tests (offline, no keys)
 uv run companion-bench validate manifests/smoke.yaml
 uv run companion-bench run --manifest manifests/smoke.yaml --model mock/empathetic-v1 --out runs/smoke
 uv run companion-bench score --run runs/smoke
+uv run companion-bench report --run runs/smoke              # show scores (single or model-set)
 uv run companion-bench export --run runs/smoke --format parquet
 uv run companion-bench list-tasks manifests/smoke.yaml
+
+# Providers + model sets (offline checks):
+uv run companion-bench providers                            # key presence (never values) + base URLs
+uv run companion-bench models validate --model-set configs/model_sets/example.yaml
+uv run companion-bench run -m manifests/smoke.yaml --model-set configs/model_sets/mock-profiles.yaml --out runs/multi
+
+# Real providers (LIVE, opt-in): needs --live AND COMPANIONBENCH_LIVE=1 (+ a key, + --yes/confirm)
+# COMPANIONBENCH_LIVE=1 companion-bench run -m manifests/smoke.yaml --model-set <set> --out runs/live --live --yes --max-cost-usd 1 --limit-tasks 2 --limit-models 2
 ```
 
 Both `companion-bench <cmd>` and `uv run python -m companion_bench.cli <cmd>` work.
@@ -42,16 +51,27 @@ Both `companion-bench <cmd>` and `uv run python -m companion_bench.cli <cmd>` wo
 - `evaluators/` — `rule_based` (6 dimension scorers), `aggregate` (rollups + summary), `rubric`
   (future LLM-judge interface, intentionally not implemented).
 - `storage/` — `jsonl` (append-only events + JSON helpers), `export` (optional Parquet).
-- `utils/` — `ids`, `timing` (Clock/FrozenClock), `errors`.
+- `config/` — versioned YAML config: `pricing` (cost table), `providers` (per-provider
+  overrides), `model_sets` (which models to run). Bundled defaults in `config/data/`.
+- `utils/` — `ids`, `timing` (Clock/FrozenClock), `errors`, `secrets` (redact/scan).
 
 Full notes: [`docs/architecture.md`](docs/architecture.md). Scoring: [`docs/scoring.md`](docs/scoring.md).
+Live runs / cost / retries / secrets: [`docs/live_and_cost.md`](docs/live_and_cost.md).
 
 ## Core rules (do not break)
 
 - **Python 3.12+**, **uv** for deps, **Typer** CLI, **Pydantic v2**, **HTTPX** async, **pytest**,
   **ruff**, **mypy**.
 - **No real API keys in tests.** All provider tests use `httpx.MockTransport` or the mock
-  adapter. **Never commit secrets;** `.env` is gitignored; keep `.env.example` keyless.
+  adapter. **Never commit secrets;** `.env` is gitignored; keep `.env.example` keyless. Keys are
+  resolved **only** from env vars and must never reach an artifact (a test proves this).
+- **Live calls are opt-in:** a real-provider run requires `--live` AND `COMPANIONBENCH_LIVE=1`
+  (+ confirmation unless `--yes`). Tests marked `@pytest.mark.live` are skipped unless
+  `COMPANIONBENCH_LIVE=1`; default `pytest -q` and CI stay offline + keyless.
+- **Cost is null when unknown** (no price entry or no usage) — never invented. `--max-cost-usd`
+  is a best-effort global budget; pair with `--limit-tasks`/`--limit-models` for hard caps.
+- **Retry backoff is deterministic** (jitter seeded per task/probe/attempt); inject the sleeper
+  in tests — never sleep for real in a test.
 - **JSONL is the canonical raw artifact** (`events.jsonl`, append-only). Parquet/DuckDB export
   is optional (the `export` extra) and must not be required by the core loop.
 - **Failed provider calls are logged as `model_failure` events, never silently hidden.**
