@@ -1,0 +1,116 @@
+"""Event constructors.
+
+Thin builders that stamp each event with the current clock time and leave ``event_id``
+blank — the engine assigns ids in a deterministic post-order after all tasks finish, so
+ids and ordering are reproducible regardless of concurrent scheduling.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Sequence
+
+from companion_bench.schemas.model import ChatMessage, ChatResponse, ModelSpec
+from companion_bench.schemas.run import (
+    ModelCallEvent,
+    ModelFailureEvent,
+    RunEndEvent,
+    RunStartEvent,
+)
+from companion_bench.utils.errors import AdapterError
+from companion_bench.utils.timing import Clock
+
+__all__ = [
+    "model_call_event",
+    "model_failure_event",
+    "run_end_event",
+    "run_start_event",
+]
+
+
+def run_start_event(
+    run_id: str, clock: Clock, model: ModelSpec, manifest_name: str, task_ids: Sequence[str]
+) -> RunStartEvent:
+    return RunStartEvent(
+        event_id="",
+        run_id=run_id,
+        timestamp=clock.now_iso(),
+        model_id=model.ref,
+        provider=model.provider,
+        manifest_name=manifest_name,
+        task_ids=tuple(task_ids),
+    )
+
+
+def model_call_event(
+    run_id: str,
+    clock: Clock,
+    task_id: str,
+    probe_id: str,
+    model: ModelSpec,
+    input_messages: Sequence[ChatMessage],
+    response: ChatResponse,
+    attempts: int,
+) -> ModelCallEvent:
+    return ModelCallEvent(
+        event_id="",
+        run_id=run_id,
+        timestamp=clock.now_iso(),
+        task_id=task_id,
+        probe_id=probe_id,
+        model_id=model.ref,
+        provider=model.provider,
+        input_messages=tuple(input_messages),
+        output_text=response.content,
+        output_message=response.companion_turn,
+        parsed=response.parsed,
+        latency_ms=response.latency_ms,
+        token_usage=response.token_usage,
+        estimated_cost_usd=response.estimated_cost_usd,
+        attempts=attempts,
+    )
+
+
+def model_failure_event(
+    run_id: str,
+    clock: Clock,
+    task_id: str,
+    probe_id: str,
+    model: ModelSpec,
+    input_messages: Sequence[ChatMessage],
+    error: BaseException,
+    attempts: int,
+) -> ModelFailureEvent:
+    retryable = error.retryable if isinstance(error, AdapterError) else False
+    return ModelFailureEvent(
+        event_id="",
+        run_id=run_id,
+        timestamp=clock.now_iso(),
+        task_id=task_id,
+        probe_id=probe_id,
+        model_id=model.ref,
+        provider=model.provider,
+        input_messages=tuple(input_messages),
+        error_type=type(error).__name__,
+        error_message=str(error),
+        retryable=retryable,
+        attempts=attempts,
+    )
+
+
+def run_end_event(
+    run_id: str,
+    clock: Clock,
+    n_tasks: int,
+    n_probes: int,
+    n_model_calls: int,
+    n_failures: int,
+) -> RunEndEvent:
+    return RunEndEvent(
+        event_id="",
+        run_id=run_id,
+        timestamp=clock.now_iso(),
+        n_tasks=n_tasks,
+        n_probes=n_probes,
+        n_model_calls=n_model_calls,
+        n_failures=n_failures,
+    )
