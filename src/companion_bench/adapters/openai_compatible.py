@@ -248,6 +248,10 @@ class OpenAICompatibleAdapter(ChatAdapter):
         if self._owns_client:
             await self._client.aclose()
 
+    def __repr__(self) -> str:
+        # Never include the API key in a repr / log line.
+        return f"{type(self).__name__}(provider={self.provider!r}, base_url={self._base_url!r})"
+
 
 def _elapsed_ms(response: httpx.Response) -> float | None:
     try:

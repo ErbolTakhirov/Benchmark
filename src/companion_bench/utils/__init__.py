@@ -15,9 +15,17 @@ from companion_bench.utils.errors import (
     TaskLoadError,
 )
 from companion_bench.utils.ids import IdFactory, make_run_id, short_hash, slugify
+from companion_bench.utils.secrets import (
+    SECRET_ENV_VARS,
+    collect_secret_values,
+    redact,
+    scan_run_dir,
+    scan_text_for_secrets,
+)
 from companion_bench.utils.timing import Clock, FrozenClock, RealClock, Stopwatch, iso
 
 __all__ = [
+    "SECRET_ENV_VARS",
     "AdapterError",
     "Clock",
     "CompanionBenchError",
@@ -33,8 +41,12 @@ __all__ = [
     "ResponseParseError",
     "Stopwatch",
     "TaskLoadError",
+    "collect_secret_values",
     "iso",
     "make_run_id",
+    "redact",
+    "scan_run_dir",
+    "scan_text_for_secrets",
     "short_hash",
     "slugify",
 ]
