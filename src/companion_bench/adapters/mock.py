@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from typing import ClassVar, cast
 
 from companion_bench.adapters.base import ChatAdapter, register_adapter
+from companion_bench.config.providers import ProviderSettings
 from companion_bench.schemas.model import (
     ChatRequest,
     ChatResponse,
@@ -187,7 +188,12 @@ class MockAdapter(ChatAdapter):
     }
 
     @classmethod
-    def from_env(cls, env: Mapping[str, str] | None = None) -> MockAdapter:
+    def from_env(
+        cls,
+        env: Mapping[str, str] | None = None,
+        *,
+        settings: ProviderSettings | None = None,
+    ) -> MockAdapter:
         return cls()
 
     async def generate(self, request: ChatRequest) -> ChatResponse:

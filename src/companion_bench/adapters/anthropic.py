@@ -21,6 +21,7 @@ import httpx
 from pydantic import ValidationError
 
 from companion_bench.adapters.base import ChatAdapter, register_adapter
+from companion_bench.config.providers import ProviderSettings
 from companion_bench.schemas.model import (
     ChatRequest,
     ChatResponse,
@@ -52,27 +53,35 @@ class AnthropicAdapter(ChatAdapter):
         api_key: str,
         base_url: str = DEFAULT_BASE_URL,
         client: httpx.AsyncClient | None = None,
+        default_params: Mapping[str, object] | None = None,
         pricing: tuple[float, float] | None = None,
     ) -> None:
         self._api_key = api_key
         self._base_url = base_url.rstrip("/")
         self._owns_client = client is None
         self._client = client or httpx.AsyncClient()
+        self._default_params = dict(default_params or {})
         self._pricing = pricing
 
     @classmethod
-    def from_env(cls, env: Mapping[str, str] | None = None) -> AnthropicAdapter:
+    def from_env(
+        cls,
+        env: Mapping[str, str] | None = None,
+        *,
+        settings: ProviderSettings | None = None,
+    ) -> AnthropicAdapter:
         env = env if env is not None else os.environ
+        settings = settings or ProviderSettings()
         api_key = env.get("ANTHROPIC_API_KEY", "")
         if not api_key:
             raise ProviderAuthError(
                 "AnthropicAdapter: missing API key; set ANTHROPIC_API_KEY.",
                 provider=cls.provider,
             )
-        base_url = env.get("ANTHROPIC_BASE_URL") or cls.DEFAULT_BASE_URL
+        base_url = env.get("ANTHROPIC_BASE_URL") or settings.base_url or cls.DEFAULT_BASE_URL
         if not base_url:  # pragma: no cover - defensive
             raise ConfigError("AnthropicAdapter: empty ANTHROPIC_BASE_URL.")
-        return cls(api_key=api_key, base_url=base_url)
+        return cls(api_key=api_key, base_url=base_url, default_params=settings.default_params)
 
     def _build_payload(self, request: ChatRequest) -> dict[str, Any]:
         system_parts = [m.content for m in request.messages if m.role is Role.SYSTEM]
@@ -89,7 +98,8 @@ class AnthropicAdapter(ChatAdapter):
         }
         if system_parts:
             payload["system"] = "\n\n".join(system_parts)
-        payload.update(request.model.params)
+        payload.update(self._default_params)  # providers.yaml defaults
+        payload.update(request.model.params)  # per-model params win
         return payload
 
     async def generate(self, request: ChatRequest) -> ChatResponse:

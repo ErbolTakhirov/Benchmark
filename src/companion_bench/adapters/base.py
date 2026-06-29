@@ -15,6 +15,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Mapping
 from typing import ClassVar
 
+from companion_bench.config.providers import ProviderSettings
 from companion_bench.schemas.model import ChatRequest, ChatResponse
 from companion_bench.utils.errors import ConfigError
 
@@ -47,8 +48,17 @@ class ChatAdapter(ABC):
         raise NotImplementedError
 
     @classmethod
-    def from_env(cls, env: Mapping[str, str] | None = None) -> ChatAdapter:
-        """Construct an adapter from environment variables (keys, base URLs, ...)."""
+    def from_env(
+        cls,
+        env: Mapping[str, str] | None = None,
+        *,
+        settings: ProviderSettings | None = None,
+    ) -> ChatAdapter:
+        """Construct an adapter from environment variables and optional provider settings.
+
+        Resolution precedence for base URL etc. is env > ``settings`` (providers.yaml) >
+        built-in defaults.
+        """
         raise NotImplementedError(f"{cls.__name__} does not implement from_env()")
 
     async def aclose(self) -> None:
@@ -85,6 +95,11 @@ def get_adapter_class(provider: str) -> type[ChatAdapter]:
         ) from exc
 
 
-def create_adapter(provider: str, env: Mapping[str, str] | None = None) -> ChatAdapter:
-    """Instantiate the adapter for ``provider`` from the environment."""
-    return get_adapter_class(provider).from_env(env)
+def create_adapter(
+    provider: str,
+    env: Mapping[str, str] | None = None,
+    *,
+    settings: ProviderSettings | None = None,
+) -> ChatAdapter:
+    """Instantiate the adapter for ``provider`` from the environment + provider settings."""
+    return get_adapter_class(provider).from_env(env, settings=settings)

@@ -1,0 +1,32 @@
+# Bundled default pricing table — ILLUSTRATIVE values for the cost-tracking mechanism.
+#
+# These are NOT authoritative. Prices change frequently and vary by provider/region.
+# Provide your own table (`--pricing path/to/pricing.yaml`) with current numbers for any
+# real cost reporting. Models absent here record `estimated_cost_usd: null` (never invented),
+# and the --max-cost-usd budget guard treats unknown-priced models as unpriced.
+version: "2026.01-illustrative"
+entries:
+  - provider: openai
+    model: gpt-4o-mini
+    input_usd_per_1m: 0.15
+    output_usd_per_1m: 0.60
+    source: "illustrative default — verify at https://openai.com/api/pricing"
+    as_of: "2026-01-01"
+  - provider: openai
+    model: gpt-4o
+    input_usd_per_1m: 2.50
+    output_usd_per_1m: 10.00
+    source: "illustrative default — verify at https://openai.com/api/pricing"
+    as_of: "2026-01-01"
+  - provider: anthropic
+    model: claude-sonnet-4-6
+    input_usd_per_1m: 3.00
+    output_usd_per_1m: 15.00
+    source: "illustrative default — verify at https://www.anthropic.com/pricing"
+    as_of: "2026-01-01"
+  - provider: anthropic
+    model: claude-haiku-4-5-20251001
+    input_usd_per_1m: 0.80
+    output_usd_per_1m: 4.00
+    source: "illustrative default — verify at https://www.anthropic.com/pricing"
+    as_of: "2026-01-01"
