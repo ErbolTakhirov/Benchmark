@@ -21,7 +21,7 @@ from rich.table import Table
 from companion_bench import __version__
 from companion_bench.adapters import describe_providers, probe_models
 from companion_bench.config.model_sets import load_model_set, validate_model_set
-from companion_bench.config.pricing import default_pricing, load_pricing
+from companion_bench.config.pricing import PricingTable, default_pricing, load_pricing
 from companion_bench.config.providers import default_providers_config, load_providers_config
 from companion_bench.evaluators.aggregate import render_summary, score_run
 from companion_bench.runner.engine import RunEngine, RunResult
@@ -33,6 +33,7 @@ from companion_bench.schemas.task import Dimension
 from companion_bench.storage.export import ExportFormat, export_run
 from companion_bench.storage.jsonl import read_events, read_model_json
 from companion_bench.utils.errors import CompanionBenchError
+from companion_bench.utils.ids import slugify
 from companion_bench.utils.timing import RealClock
 
 app = typer.Typer(
@@ -157,15 +158,19 @@ def run(
         _fail(str(exc))
 
     is_live = _check_live(targets, live)
+    task_limit = limit_tasks if limit_tasks is not None else limit
+    if is_live and max_cost_usd is not None:
+        _check_budget_enforceable(targets, pricing_table, max_cost_usd, task_limit, limit_models)
     if is_live and not yes:
+        real_count = sum(1 for t in targets if t.spec.provider != "mock")
         budget = f", budget ${max_cost_usd}" if max_cost_usd is not None else ""
         if not typer.confirm(
-            f"About to make LIVE API calls for {len(targets)} model(s){budget}. Continue?"
+            f"About to make LIVE API calls for {real_count} real model(s){budget}. Continue?"
         ):
             _fail("aborted by user (no --yes).")
 
     base_config = _merge_config(
-        manifest_obj.run, seed=seed, limit=limit_tasks or limit, concurrency=concurrency
+        manifest_obj.run, seed=seed, limit=task_limit, concurrency=concurrency
     )
     engine = RunEngine()
     manifest_abs = str(Path(manifest).resolve())
@@ -179,7 +184,9 @@ def run(
         config = base_config.model_copy(update=target.overrides)
         settings = providers_cfg.for_provider(target.spec.provider)
         remaining = (max_cost_usd - spent) if max_cost_usd is not None else None
-        out_sub = (out / target.spec.slug) if is_multi else out
+        # Sub-dir keyed on the unique (slugified) model id, NOT spec.slug: two entries can
+        # share a provider/model (e.g. different temperatures) and would otherwise collide.
+        out_sub = (out / slugify(target.id)) if is_multi else out
         try:
             result = asyncio.run(
                 engine.run(
@@ -204,7 +211,7 @@ def run(
             ModelRunRef(
                 id=target.id,
                 ref=target.spec.ref,
-                slug=target.spec.slug,
+                slug=slugify(target.id),
                 run_id=result.run_id,
                 budget_exceeded=result.budget_exceeded,
             )
@@ -427,7 +434,12 @@ def _merge_config(
         updates["limit"] = limit
     if concurrency is not None:
         updates["concurrency"] = concurrency
-    return base.model_copy(update=updates)
+    # Re-validate: model_copy skips validation, so bad CLI inputs (e.g. --concurrency 0,
+    # which would deadlock the semaphore) must be caught here.
+    try:
+        return RunConfig.model_validate({**base.model_dump(), **updates})
+    except Exception as exc:
+        _fail(f"invalid run config override: {exc}")
 
 
 def _print_scores(scores: RunScores) -> None:
@@ -491,6 +503,30 @@ def _check_live(targets: list[_Target], live: bool) -> bool:
     if not _live_enabled():
         _fail(f"--live requires {LIVE_ENV}=1 (live network calls are opt-in).")
     return True
+
+
+def _check_budget_enforceable(
+    targets: list[_Target],
+    pricing_table: PricingTable,
+    max_cost_usd: float,
+    task_limit: int | None,
+    limit_models: int | None,
+) -> None:
+    """A budget can only bound spend for priced models. Refuse an unbounded paid run."""
+    unpriced = sorted(
+        {t.spec.ref for t in targets if pricing_table.rate(t.spec.provider, t.spec.model) is None}
+    )
+    if not unpriced:
+        return
+    msg = (
+        f"--max-cost-usd ${max_cost_usd} cannot bound spend for unpriced model(s): {unpriced}. "
+        "Add prices with --pricing <file>."
+    )
+    if task_limit is None and limit_models is None:
+        _fail(f"{msg} Refusing an unbounded paid run — also set --limit-tasks/--limit-models.")
+    err_console.print(
+        f"[yellow]⚠ {msg} Relying on --limit-tasks/--limit-models as the hard cap.[/]"
+    )
 
 
 def _print_run_result(label: str, result: RunResult, is_multi: bool) -> None:

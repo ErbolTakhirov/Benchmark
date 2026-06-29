@@ -23,12 +23,13 @@ def test_modelset_run_score_report(tmp_path: Path) -> None:
     )
     assert run_res.exit_code == 0, run_res.stdout
     assert (out / "modelset.json").is_file()
-    assert (out / "mock-empathetic-v1" / "run.json").is_file()
-    assert (out / "mock-intrusive-v1" / "run.json").is_file()
+    # Sub-dirs are keyed on the unique model id, not provider/model slug.
+    assert (out / "empathetic" / "run.json").is_file()
+    assert (out / "intrusive" / "run.json").is_file()
 
     score_res = runner.invoke(app, ["score", "--run", str(out)])
     assert score_res.exit_code == 0, score_res.stdout
-    assert (out / "mock-empathetic-v1" / "scores.json").is_file()
+    assert (out / "empathetic" / "scores.json").is_file()
 
     report_res = runner.invoke(app, ["report", "--run", str(out)])
     assert report_res.exit_code == 0, report_res.stdout
@@ -127,6 +128,48 @@ def test_live_flag_requires_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     )
     assert res.exit_code == 1  # --live needs COMPANIONBENCH_LIVE=1
     assert not (tmp_path / "x").exists()  # nothing ran
+
+
+def test_same_model_different_ids_do_not_collide(tmp_path: Path) -> None:
+    # Two entries share a provider/model (different temperature) but have distinct ids;
+    # they must land in separate sub-dirs (regression: used to collide on spec.slug).
+    mset = tmp_path / "dup.yaml"
+    mset.write_text(
+        "set_id: dup\nmodels:\n"
+        "  - {id: warm, provider: mock, model: empathetic-v1, temperature: 0.7}\n"
+        "  - {id: cold, provider: mock, model: empathetic-v1, temperature: 0.0}\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "o"
+    res = runner.invoke(app, ["run", "-m", str(SMOKE), "--model-set", str(mset), "--out", str(out)])
+    assert res.exit_code == 0, res.stdout
+    assert (out / "warm" / "run.json").is_file()
+    assert (out / "cold" / "run.json").is_file()
+    index = json.loads((out / "modelset.json").read_text())
+    assert {m["slug"] for m in index["models"]} == {"warm", "cold"}
+
+
+def test_unbounded_paid_run_is_refused(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Live + a budget + an UNPRICED model + no --limit-* => refuse before any network call.
+    monkeypatch.setenv("COMPANIONBENCH_LIVE", "1")
+    res = runner.invoke(
+        app,
+        [
+            "run",
+            "-m",
+            str(SMOKE),
+            "--model",
+            "openrouter/some-vendor/unpriced-model",
+            "--out",
+            str(tmp_path / "x"),
+            "--live",
+            "--yes",
+            "--max-cost-usd",
+            "1",
+        ],
+    )
+    assert res.exit_code == 1
+    assert not (tmp_path / "x").exists()  # nothing ran (refused at the guard)
 
 
 def test_report_unscored_run_fails(tmp_path: Path) -> None:

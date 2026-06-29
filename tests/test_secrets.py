@@ -36,8 +36,8 @@ def test_redact_and_scan() -> None:
     text = f"Authorization: Bearer {FAKE_KEY} trailing"
     assert FAKE_KEY not in redact(text, {FAKE_KEY})
     assert "***REDACTED***" in redact(text, {FAKE_KEY})
-    assert scan_text_for_secrets(text, {FAKE_KEY}) == [FAKE_KEY]
-    assert scan_text_for_secrets("clean", {FAKE_KEY}) == []
+    assert scan_text_for_secrets(text, {FAKE_KEY}) == 1  # count, not the value
+    assert scan_text_for_secrets("clean", {FAKE_KEY}) == 0
 
 
 def test_adapter_repr_never_contains_key() -> None:

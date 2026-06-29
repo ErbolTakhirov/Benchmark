@@ -52,6 +52,8 @@ def load_providers_config(path: str | Path | None = None) -> ProvidersConfig:
         return ProvidersConfig()
     try:
         data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+        if data is None:  # empty file == no overrides
+            return ProvidersConfig()
         return ProvidersConfig.model_validate(data)
     except Exception as exc:
         raise ConfigError(f"invalid providers config ({path}): {exc}") from exc

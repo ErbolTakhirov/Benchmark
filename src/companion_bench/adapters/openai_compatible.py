@@ -267,10 +267,14 @@ def _elapsed_ms(response: httpx.Response) -> float | None:
 
 
 def _parse_retry_after(value: str | None) -> float | None:
-    """Parse a numeric Retry-After (seconds). HTTP-date form is unsupported (returns None)."""
+    """Parse a numeric Retry-After (seconds), bounded to a sane ceiling.
+
+    HTTP-date form is unsupported (returns None). A garbage/huge value is clamped to 300s so
+    a single malformed header can't stall a probe indefinitely.
+    """
     if not value:
         return None
     try:
-        return max(0.0, float(value))
+        return min(max(0.0, float(value)), 300.0)
     except ValueError:
         return None

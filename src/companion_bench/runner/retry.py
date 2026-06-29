@@ -31,7 +31,9 @@ def backoff_delay(
 
     ``attempts`` is the number of attempts made so far (1 after the first failure).
     """
-    capped = min(config.max_delay_s, config.base_delay_s * (2.0 ** (attempts - 1)))
+    # Cap the exponent so a very large max_retries can't overflow the float power.
+    exponent = min(max(attempts - 1, 0), 30)
+    capped = min(config.max_delay_s, config.base_delay_s * (2.0**exponent))
     rng = random.Random(f"{config.seed}:{task_id}:{probe_id}:{attempts}")
     delay = rng.random() * capped  # full jitter in [0, capped)
     if retry_after is not None:

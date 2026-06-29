@@ -13,8 +13,14 @@ from dataclasses import dataclass
 
 from companion_bench.adapters.base import create_adapter
 from companion_bench.schemas.model import ChatMessage, ChatRequest, ModelSpec, Role
+from companion_bench.utils.secrets import collect_secret_values, redact
 
 __all__ = ["ProbeResult", "probe_model", "probe_models"]
+
+
+def _err(exc: Exception) -> str:
+    # Redact any env secret that might appear in a provider's error body.
+    return redact(f"{type(exc).__name__}: {exc}", collect_secret_values())
 
 
 @dataclass(frozen=True)
@@ -35,7 +41,7 @@ async def probe_model(
         spec = ModelSpec.parse(ref)
         adapter = create_adapter(spec.provider, env)
     except Exception as exc:
-        return ProbeResult(ref=ref, ok=False, error=f"{type(exc).__name__}: {exc}")
+        return ProbeResult(ref=ref, ok=False, error=_err(exc))
 
     request = ChatRequest(
         model=spec,
@@ -56,7 +62,7 @@ async def probe_model(
             parsed=response.parsed,
         )
     except Exception as exc:
-        return ProbeResult(ref=ref, ok=False, error=f"{type(exc).__name__}: {exc}")
+        return ProbeResult(ref=ref, ok=False, error=_err(exc))
     finally:
         await adapter.aclose()
 

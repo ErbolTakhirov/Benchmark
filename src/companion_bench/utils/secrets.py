@@ -54,17 +54,21 @@ def redact(text: str, secret_values: Iterable[str], placeholder: str = _PLACEHOL
     return text
 
 
-def scan_text_for_secrets(text: str, secret_values: Iterable[str]) -> list[str]:
-    """Return the secret values that appear in ``text`` (empty if none)."""
-    return sorted({s for s in secret_values if s and s in text})
+def scan_text_for_secrets(text: str, secret_values: Iterable[str]) -> int:
+    """Count how many distinct secret values appear in ``text``.
+
+    Returns a count (never the values themselves) so callers that log results — CI, the
+    release check, test assertions — cannot re-emit the secret they just detected.
+    """
+    return sum(1 for s in secret_values if s and s in text)
 
 
 def scan_paths_for_secrets(
     paths: Iterable[str | Path], secret_values: Iterable[str]
-) -> dict[str, list[str]]:
-    """Scan files for secret values; returns ``{path: [leaked values]}`` for any hits."""
+) -> dict[str, int]:
+    """Scan files for secret values; returns ``{path: n_distinct_secrets}`` for any hits."""
     values = list(secret_values)
-    hits: dict[str, list[str]] = {}
+    hits: dict[str, int] = {}
     for path in paths:
         p = Path(path)
         if not p.is_file():
@@ -75,8 +79,8 @@ def scan_paths_for_secrets(
     return hits
 
 
-def scan_run_dir(run_dir: str | Path, secret_values: Iterable[str]) -> dict[str, list[str]]:
-    """Scan every file under a run directory for leaked secret values."""
+def scan_run_dir(run_dir: str | Path, secret_values: Iterable[str]) -> dict[str, int]:
+    """Scan every file under a run directory; returns ``{path: n_distinct_secrets}``."""
     root = Path(run_dir)
     files = (p for p in root.rglob("*") if p.is_file())
     return scan_paths_for_secrets(files, secret_values)

@@ -17,6 +17,7 @@ from companion_bench.schemas.run import (
     RunStartEvent,
 )
 from companion_bench.utils.errors import AdapterError
+from companion_bench.utils.secrets import collect_secret_values, redact
 from companion_bench.utils.timing import Clock
 
 __all__ = [
@@ -89,6 +90,9 @@ def model_failure_event(
     retry_wait_ms: float = 0.0,
 ) -> ModelFailureEvent:
     retryable = error.retryable if isinstance(error, AdapterError) else False
+    # Defense-in-depth: a hostile/misconfigured endpoint could echo an auth header into its
+    # error body, which an adapter embeds via response.text[:300]. Redact before persisting.
+    error_message = redact(str(error), collect_secret_values())
     return ModelFailureEvent(
         event_id="",
         run_id=run_id,
@@ -99,7 +103,7 @@ def model_failure_event(
         provider=model.provider,
         input_messages=tuple(input_messages),
         error_type=type(error).__name__,
-        error_message=str(error),
+        error_message=error_message,
         retryable=retryable,
         attempts=attempts,
         retry_wait_ms=retry_wait_ms,

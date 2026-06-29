@@ -16,6 +16,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import ClassVar
+from urllib.parse import urlsplit, urlunsplit
 
 from companion_bench.config.providers import ProviderSettings
 from companion_bench.schemas.model import ChatRequest, ChatResponse
@@ -120,6 +121,17 @@ class ProviderInfo:
     key_present: bool
 
 
+def _strip_userinfo(url: str | None) -> str | None:
+    """Remove any ``user:pass@`` credentials from a URL before displaying it."""
+    if not url:
+        return url
+    parts = urlsplit(url)
+    if "@" in parts.netloc:
+        host = parts.netloc.rsplit("@", 1)[1]
+        return urlunsplit(parts._replace(netloc=host))
+    return url
+
+
 def describe_providers(env: Mapping[str, str] | None = None) -> list[ProviderInfo]:
     """Report each registered provider's config status — **never the key value itself**."""
     source = env if env is not None else os.environ
@@ -130,6 +142,7 @@ def describe_providers(env: Mapping[str, str] | None = None) -> list[ProviderInf
         base_url = getattr(cls, "DEFAULT_BASE_URL", None)
         if base_env and source.get(base_env):
             base_url = source[base_env]
+        base_url = _strip_userinfo(base_url)
         infos.append(
             ProviderInfo(
                 provider=name,
