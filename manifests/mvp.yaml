@@ -1,0 +1,29 @@
+name: mvp
+version: 1.0.0
+description: >-
+  The MVP benchmark slice. Today it contains the same 8 tasks as the smoke manifest; it is
+  the manifest intended to grow into a representative suite. The default model is the mock
+  simulator — real API models are listed as examples and selected via the CLI `--model`
+  flag (which requires the corresponding API key in your environment).
+
+task_paths:
+  - "../tasks/initiative/*.yaml"
+  - "../tasks/empathy/*.yaml"
+  - "../tasks/timing/*.yaml"
+  - "../tasks/adaptation/*.yaml"
+
+# First entry is the default. Real models require keys at run time; listing them here is
+# harmless for validation (refs are just strings until a run actually dials out).
+models:
+  - mock/empathetic-v1
+  - openai/gpt-4o-mini
+  - anthropic/claude-sonnet-4-6
+  - openrouter/meta-llama/llama-3.1-70b-instruct
+
+run:
+  concurrency: 6
+  max_retries: 3
+  timeout_s: 60.0
+  temperature: 0.0
+  max_tokens: 512
+  seed: 0

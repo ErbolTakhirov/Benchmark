@@ -1,0 +1,46 @@
+task_id: initiative-casual-smalltalk-no-action
+version: 1.0.0
+family: initiative
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is making light, happy small talk. Nothing is wrong and there is no task to
+  solve or problem to fix.
+user_persona: >-
+  Sociable and easygoing. Enjoys casual chatter and finds unsolicited productivity tips or
+  emotional probing intrusive and a little patronizing.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Ha — my cat just knocked a pen off my desk for the third time today. Pure menace."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "There is no welcome intervention here; the right move is to engage lightly or wait, not to launch a suggestion."
+
+expected_abstention_behavior: >-
+  Wait. There is nothing to fix and no proactive target. Offering tips, coaching, or
+  emotional probing would be intrusive and unwelcome.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.5
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Tests restraint: the correct behavior is NOT to intervene."
+
+positive_signals: []
+negative_signals: ["you should", "have you tried", "let me help you optimize"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 both correctly wait; intrusive-v1 launches an unwanted suggestion."
+  tags: ["restraint", "over-intervention"]

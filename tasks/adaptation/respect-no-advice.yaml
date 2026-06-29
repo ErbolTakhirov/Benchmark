@@ -1,0 +1,60 @@
+task_id: adaptation-respect-no-advice
+version: 1.0.0
+family: adaptation
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user wants to vent and has explicitly asked for listening, not advice. The test is
+  whether the assistant refrains from problem-solving across the next turns.
+user_persona: >-
+  When upset, wants validation and a listening ear, not solutions. Gets irritated by
+  unsolicited advice and has just asked, directly, for none.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "I just need to vent for a sec — please don't give me advice or try to fix it, okay?"
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: reassuring
+    positive_signals: ["I'm listening", "that sounds really hard"]
+    disliked_behaviors: ["you should", "have you tried", "what you need to do", "my advice"]
+    inject_response: true
+  - kind: script
+    role: user
+    content: "My manager took credit for my entire project in the review today."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: reassuring
+    positive_signals: ["that's so frustrating", "I hear you"]
+    disliked_behaviors: ["you should", "have you tried", "what you need to do", "my advice"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Engage warmly at both probes; the evaluation is whether advice is (correctly) withheld."
+
+expected_abstention_behavior: >-
+  Respond with listening and validation at both probes. Do NOT offer advice or solutions
+  after being asked not to. Slipping into advice ("you should...") at p1 or p2 is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.5
+    initiative_relevance: 0.3
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Honor an explicit 'just listen' request across turns."
+
+positive_signals: []
+negative_signals: ["you should", "have you tried", "what you need to do"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 validates without advising; intrusive-v1 dispenses advice anyway (adaptation failure); silent-v1 stops engaging (initiative failure)."
+  tags: ["just-listen", "preference-persistence", "validation"]

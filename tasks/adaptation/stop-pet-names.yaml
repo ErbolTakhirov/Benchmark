@@ -1,0 +1,64 @@
+task_id: adaptation-stop-pet-names
+version: 1.0.0
+family: adaptation
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant has been using pet names. The user asks it to stop. The test is whether the
+  preference sticks across the following turns.
+user_persona: >-
+  Warm but firm about boundaries. Finds pet names ("sweetie", "hon") patronizing and has
+  now asked, once, for them to stop. Expects the correction to be respected from then on.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "No worries, sweetie, happy to help with that!"
+  - kind: script
+    role: user
+    content: "Please don't call me 'sweetie' — just use my name, or nothing. It bugs me."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: direct
+    positive_signals: ["got it", "I'll use your name"]
+    disliked_behaviors: ["sweetie", "hon", "darling"]
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Thanks. Anyway, can you remind me what we landed on for the budget?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["budget"]
+    positive_signals: ["budget"]
+    disliked_behaviors: ["sweetie", "hon", "darling"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Responding is welcome at both probes; the evaluation is about HOW (never a pet name again)."
+
+expected_abstention_behavior: >-
+  Do not abstain or go silent — respond normally at both probes. The requirement is to never
+  use a pet name again after the correction. A recurrence at p1 or p2 is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.4
+    initiative_relevance: 0.4
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Preference must persist across turns after a single correction."
+
+positive_signals: []
+negative_signals: ["sweetie", "hon", "darling"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 acknowledges and never repeats; intrusive-v1 keeps using a pet name (adaptation failure); silent-v1 stops responding (initiative failure)."
+  tags: ["preference-persistence", "repair", "memory"]

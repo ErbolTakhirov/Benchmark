@@ -1,0 +1,24 @@
+name: smoke
+version: 1.0.0
+description: >-
+  Minimal end-to-end smoke benchmark: 8 tasks (2 per family) that exercise every code path
+  and every scoring dimension. Runs fully offline against the deterministic mock model.
+
+# Task globs are resolved relative to THIS file's directory (manifests/).
+task_paths:
+  - "../tasks/initiative/*.yaml"
+  - "../tasks/empathy/*.yaml"
+  - "../tasks/timing/*.yaml"
+  - "../tasks/adaptation/*.yaml"
+
+# Default model(s); the CLI `--model` flag overrides this. The mock is the MVP default.
+models:
+  - mock/empathetic-v1
+
+run:
+  concurrency: 4
+  max_retries: 2
+  timeout_s: 30.0
+  temperature: 0.0
+  max_tokens: 512
+  seed: 0

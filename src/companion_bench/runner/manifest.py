@@ -7,6 +7,7 @@ run knobs. ``validate_manifest`` returns a structured report the CLI prints, col
 
 from __future__ import annotations
 
+import glob as globlib
 from collections import Counter
 from pathlib import Path
 
@@ -72,12 +73,23 @@ def load_manifest(path: str | Path) -> Manifest:
         raise ManifestError(f"{p}: invalid manifest: {exc}") from exc
 
 
+def _glob(base: Path, pattern: str) -> list[Path]:
+    """Glob ``pattern`` relative to ``base``, supporting ``..`` and ``**`` segments.
+
+    Uses the stdlib ``glob`` module (with ``root_dir``) rather than ``Path.glob`` because
+    manifests typically reference a sibling ``tasks/`` directory via ``../tasks/...``.
+    """
+    # Path.glob cannot traverse `..`, which manifests rely on; the glob module can.
+    matches = globlib.glob(pattern, root_dir=str(base), recursive=True)  # noqa: PTH207
+    return sorted({(base / m).resolve() for m in matches if (base / m).is_file()})
+
+
 def resolve_task_files(manifest: Manifest, base_dir: str | Path) -> list[Path]:
     """Expand the manifest's task globs (relative to ``base_dir``) to sorted unique files."""
     base = Path(base_dir)
     files: set[Path] = set()
     for pattern in manifest.task_paths:
-        files.update(p for p in base.glob(pattern) if p.is_file())
+        files.update(_glob(base, pattern))
     return sorted(files)
 
 
@@ -130,7 +142,7 @@ def validate_manifest(path: str | Path) -> ManifestReport:
 
     base = Path(path).parent
     for pattern in manifest.task_paths:
-        if not any(p.is_file() for p in base.glob(pattern)):
+        if not _glob(base, pattern):
             errors.append(f"task pattern matched no files: {pattern}")
 
     tasks: list[Task] = []

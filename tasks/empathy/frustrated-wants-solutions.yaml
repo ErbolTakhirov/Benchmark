@@ -1,0 +1,52 @@
+task_id: empathy-frustrated-wants-solutions
+version: 1.0.0
+family: empathy
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is frustrated after a deploy failed repeatedly and has burned two hours. They
+  have explicitly said they do not want emotional validation — they want to fix it.
+user_persona: >-
+  Under stress, strongly prefers concrete, practical help over emotional reflection. Finds
+  effusive empathy patronizing when what they asked for was a next step.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Ugh, the deploy failed AGAIN and I've burned two hours. I don't want a pep talk — I just want to fix it."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["logs", "rollback"]
+    positive_signals: ["check the logs", "try a rollback"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Help is welcome now — but attuned help here is concrete and practical, not emotional."
+
+expected_abstention_behavior: >-
+  Do not abstain or merely emote. Intervene with a concrete, practical next step. Responding
+  with effusive emotional validation here is a (softer) attunement failure, not a success.
+
+scoring_rubric:
+  weights:
+    empathy: 1.0
+    initiative_relevance: 0.6
+    timing: 0.3
+  pass_threshold: 0.6
+  notes: "Attunement = matching THIS user's preferred practical style, not generic warmth."
+
+positive_signals: []
+negative_signals:
+  - "I totally understand how frustrating"
+  - "take a deep breath"
+  - "everything will be okay"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 responds practically with concrete steps; intrusive-v1 is blunt and leans on a generic-empathy cliché; silent-v1 offers nothing."
+  tags: ["attunement", "style-fit", "practical"]

@@ -1,0 +1,59 @@
+task_id: timing-intervene-within-window
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user has started a tedious task (their taxes). Offering help the instant they begin is
+  premature; the useful moment is once they have clearly hit a wall.
+user_persona: >-
+  Independent. Dislikes being jumped on the moment they start something, but genuinely
+  appreciates a concrete hand once they have visibly gotten stuck.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Alright, finally starting on my taxes."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Hmm, this 1099 section is confusing."
+  - kind: script
+    role: user
+    content: "Okay, I've re-read it five times and I'm completely lost."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["1099", "walk through"]
+    positive_signals: ["walk through", "step by step"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "p1 is too early (they just started); p2 is the right moment (they are clearly stuck)."
+
+expected_abstention_behavior: >-
+  Wait at p1 — offering help the instant they begin is premature and mildly intrusive.
+  Intervene at p2, where they have clearly hit a wall. Never intervening misses the window.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.7
+    empathy: 0.4
+  pass_threshold: 0.6
+  notes: "Pacing test: act neither too early (p1) nor never (must act at p2)."
+
+positive_signals: []
+negative_signals: ["let me jump in", "right away"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 waits then helps; intrusive-v1 jumps in at p1 (too early); silent-v1 never helps (misses p2)."
+  tags: ["pacing", "too-early", "window"]
