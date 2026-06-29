@@ -54,8 +54,8 @@ def model_call_event(
     retry_wait_ms: float = 0.0,
     cost_usd: float | None = None,
 ) -> ModelCallEvent:
-    # The engine resolves cost from the pricing table; fall back to the adapter's own value.
-    estimated_cost = cost_usd if cost_usd is not None else response.estimated_cost_usd
+    # The engine is authoritative on cost (pricing table, or the adapter value when no table);
+    # ``cost_usd`` already reflects that decision, so do not second-guess it here.
     return ModelCallEvent(
         event_id="",
         run_id=run_id,
@@ -70,7 +70,7 @@ def model_call_event(
         parsed=response.parsed,
         latency_ms=response.latency_ms,
         token_usage=response.token_usage,
-        estimated_cost_usd=estimated_cost,
+        estimated_cost_usd=cost_usd,
         attempts=attempts,
         retry_wait_ms=retry_wait_ms,
     )

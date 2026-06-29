@@ -1,0 +1,20 @@
+# The three mock profiles, for an offline multi-model demo of run/score/report.
+# Mock scores validate the PIPELINE, not model quality — the mock is a deterministic simulator.
+set_id: mock-profiles
+description: empathetic-v1 / intrusive-v1 / silent-v1 — offline comparison of the run pipeline.
+models:
+  - id: empathetic
+    provider: mock
+    model: empathetic-v1
+    enabled: true
+    source: built-in mock simulator
+  - id: intrusive
+    provider: mock
+    model: intrusive-v1
+    enabled: true
+    source: built-in mock simulator
+  - id: silent
+    provider: mock
+    model: silent-v1
+    enabled: true
+    source: built-in mock simulator

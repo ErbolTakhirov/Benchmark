@@ -144,3 +144,26 @@ class RunMetadata(BaseModel):
     provider: str
     config: RunConfig
     task_ids: tuple[str, ...]
+
+
+class ModelRunRef(BaseModel):
+    """A pointer to one model's sub-run within a model-set run."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    id: str
+    ref: str
+    slug: str
+    run_id: str
+    budget_exceeded: bool = False
+
+
+class ModelSetRunIndex(BaseModel):
+    """``modelset.json`` — the index of a model-set run's per-model sub-runs."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    set_id: str | None
+    manifest_name: str
+    created_at: str
+    models: tuple[ModelRunRef, ...]

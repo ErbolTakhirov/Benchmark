@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import asyncio
 import os
+from dataclasses import dataclass
 from pathlib import Path
-from typing import NoReturn, cast
+from typing import Any, NoReturn, cast
 
 import typer
 from pydantic import TypeAdapter
@@ -21,12 +22,14 @@ from companion_bench import __version__
 from companion_bench.adapters import describe_providers, probe_models
 from companion_bench.config.model_sets import load_model_set, validate_model_set
 from companion_bench.config.pricing import default_pricing, load_pricing
+from companion_bench.config.providers import default_providers_config, load_providers_config
 from companion_bench.evaluators.aggregate import render_summary, score_run
-from companion_bench.runner.engine import RunEngine
+from companion_bench.runner.engine import RunEngine, RunResult
 from companion_bench.runner.manifest import load_manifest_and_tasks, validate_manifest
 from companion_bench.schemas.model import ModelSpec
-from companion_bench.schemas.run import RunConfig, RunMetadata
+from companion_bench.schemas.run import ModelRunRef, ModelSetRunIndex, RunConfig, RunMetadata
 from companion_bench.schemas.score import RunScores
+from companion_bench.schemas.task import Dimension
 from companion_bench.storage.export import ExportFormat, export_run
 from companion_bench.storage.jsonl import read_events, read_model_json
 from companion_bench.utils.errors import CompanionBenchError
@@ -109,83 +112,191 @@ def list_tasks(
 @app.command()
 def run(
     manifest: Path = typer.Option(..., "--manifest", "-m", help="Manifest YAML to run."),
-    model: str = typer.Option(..., "--model", help="Model ref, e.g. mock/empathetic-v1."),
     out: Path = typer.Option(..., "--out", "-o", help="Output run directory."),
+    model: str | None = typer.Option(
+        None, "--model", help="Single model ref, e.g. mock/empathetic-v1."
+    ),
+    model_set: Path | None = typer.Option(
+        None, "--model-set", help="Model-set YAML (runs each enabled model)."
+    ),
+    live: bool = typer.Option(
+        False, "--live", help=f"Allow real-provider calls (needs {LIVE_ENV}=1)."
+    ),
+    yes: bool = typer.Option(False, "--yes", help="Skip the live-run confirmation prompt."),
     seed: int | None = typer.Option(None, "--seed", help="Override the run seed."),
-    limit: int | None = typer.Option(None, "--limit", help="Only run the first N tasks."),
+    limit: int | None = typer.Option(None, "--limit", help="Alias of --limit-tasks."),
+    limit_tasks: int | None = typer.Option(
+        None, "--limit-tasks", help="Only run the first N tasks."
+    ),
+    limit_models: int | None = typer.Option(
+        None, "--limit-models", help="Only run the first N models."
+    ),
     concurrency: int | None = typer.Option(None, "--concurrency", help="Override concurrency."),
-    run_id: str | None = typer.Option(None, "--run-id", help="Override the derived run id."),
+    max_cost_usd: float | None = typer.Option(
+        None, "--max-cost-usd", help="Global cost budget (USD)."
+    ),
+    pricing: Path | None = typer.Option(None, "--pricing", help="Pricing YAML (bundled default)."),
+    providers_config: Path | None = typer.Option(
+        None, "--providers-config", help="providers.yaml."
+    ),
+    run_id: str | None = typer.Option(
+        None, "--run-id", help="Override the run id (single model only)."
+    ),
 ) -> None:
-    """Run a benchmark and write events.jsonl + run.json."""
+    """Run a benchmark against one model (--model) or a model set (--model-set)."""
     try:
         manifest_obj, tasks = load_manifest_and_tasks(manifest)
-        spec = ModelSpec.parse(model)
-        config = _merge_config(manifest_obj.run, seed=seed, limit=limit, concurrency=concurrency)
-        engine = RunEngine()
-        result = asyncio.run(
-            engine.run(
-                manifest=manifest_obj,
-                tasks=tasks,
-                model=spec,
-                config=config,
-                out_dir=out,
-                manifest_path=str(Path(manifest).resolve()),
-                run_id=run_id,
-            )
+        targets, set_id, is_multi = _run_targets(model, model_set, limit_models)
+        pricing_table = load_pricing(pricing) if pricing else default_pricing()
+        providers_cfg = (
+            load_providers_config(providers_config)
+            if providers_config
+            else default_providers_config()
         )
     except CompanionBenchError as exc:
         _fail(str(exc))
 
-    console.print(
-        f"[green]✓[/] run [bold]{result.run_id}[/] complete — "
-        f"{result.n_model_calls} calls across {result.n_tasks} tasks, "
-        f"{result.n_failures} failure(s)."
+    is_live = _check_live(targets, live)
+    if is_live and not yes:
+        budget = f", budget ${max_cost_usd}" if max_cost_usd is not None else ""
+        if not typer.confirm(
+            f"About to make LIVE API calls for {len(targets)} model(s){budget}. Continue?"
+        ):
+            _fail("aborted by user (no --yes).")
+
+    base_config = _merge_config(
+        manifest_obj.run, seed=seed, limit=limit_tasks or limit, concurrency=concurrency
     )
-    console.print(f"  events: {result.events_path}")
-    console.print(f"  run.json: {result.metadata_path}")
-    if result.n_failures:
-        err_console.print(f"[yellow]⚠[/] {result.n_failures} probe(s) failed; see events.jsonl.")
+    engine = RunEngine()
+    manifest_abs = str(Path(manifest).resolve())
+    spent = 0.0
+    index_models: list[ModelRunRef] = []
+
+    for target in targets:
+        if max_cost_usd is not None and spent >= max_cost_usd:
+            console.print("[yellow]⚠ budget reached; skipping remaining models[/]")
+            break
+        config = base_config.model_copy(update=target.overrides)
+        settings = providers_cfg.for_provider(target.spec.provider)
+        remaining = (max_cost_usd - spent) if max_cost_usd is not None else None
+        out_sub = (out / target.spec.slug) if is_multi else out
+        try:
+            result = asyncio.run(
+                engine.run(
+                    manifest=manifest_obj,
+                    tasks=tasks,
+                    model=target.spec,
+                    config=config,
+                    out_dir=out_sub,
+                    manifest_path=manifest_abs,
+                    run_id=(None if is_multi else run_id),
+                    settings=settings,
+                    requests_per_second=settings.requests_per_second,
+                    pricing=pricing_table,
+                    max_cost_usd=remaining,
+                )
+            )
+        except CompanionBenchError as exc:
+            _fail(str(exc))
+
+        spent += result.total_estimated_cost_usd or 0.0
+        index_models.append(
+            ModelRunRef(
+                id=target.id,
+                ref=target.spec.ref,
+                slug=target.spec.slug,
+                run_id=result.run_id,
+                budget_exceeded=result.budget_exceeded,
+            )
+        )
+        _print_run_result(target.id, result, is_multi)
+
+    if is_multi:
+        index = ModelSetRunIndex(
+            set_id=set_id,
+            manifest_name=manifest_obj.name,
+            created_at=RealClock().now_iso(),
+            models=tuple(index_models),
+        )
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "modelset.json").write_text(index.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    if max_cost_usd is not None:
+        console.print(f"Total estimated cost: [bold]${spent:.6f}[/] (budget ${max_cost_usd}).")
     console.print(f"Next: [bold]companion-bench score --run {out}[/]")
 
 
 @app.command()
 def score(
-    run: Path = typer.Option(..., "--run", help="A run directory produced by `run`."),
+    run: Path = typer.Option(..., "--run", help="A run (or model-set run) directory."),
 ) -> None:
-    """Score a run and write scores.json + summary.md."""
+    """Score a run (or every sub-run of a model-set run) -> scores.json + summary.md."""
     run_dir = run
-    meta_path = run_dir / "run.json"
-    events_path = run_dir / "events.jsonl"
-    if not meta_path.is_file() or not events_path.is_file():
-        _fail(f"{run_dir} is not a run directory (need run.json and events.jsonl).")
-
-    try:
-        meta = read_model_json(meta_path, _RUN_META_ADAPTER)
-        events = read_events(events_path)
-        _, all_tasks = load_manifest_and_tasks(meta.manifest_path)
-    except CompanionBenchError as exc:
-        _fail(str(exc))
-
-    by_id = {t.task_id: t for t in all_tasks}
-    missing = [tid for tid in meta.task_ids if tid not in by_id]
-    if missing:
-        _fail(f"tasks referenced by the run are no longer in the manifest: {missing}")
-    tasks = [by_id[tid] for tid in meta.task_ids]
-
-    scores = score_run(
-        tasks,
-        events,
-        run_id=meta.run_id,
-        model_id=meta.model_id,
-        provider=meta.provider,
-        generated_at=RealClock().now_iso(),
+    if (run_dir / "run.json").is_file():
+        scores = _score_one(run_dir)
+        _print_scores(scores)
+        console.print(f"  scores: {run_dir / 'scores.json'}  ·  summary: {run_dir / 'summary.md'}")
+        return
+    index = _load_modelset_index(run_dir)  # _fails if neither layout is present
+    scored = 0
+    for entry in index.models:
+        sub = run_dir / entry.slug
+        if (sub / "run.json").is_file():
+            _score_one(sub)
+            scored += 1
+    console.print(
+        f"[green]✓[/] scored {scored}/{len(index.models)} model sub-run(s). "
+        f"Compare with: [bold]companion-bench report --run {run_dir}[/]"
     )
-    (run_dir / "scores.json").write_text(scores.model_dump_json(indent=2) + "\n", encoding="utf-8")
-    (run_dir / "summary.md").write_text(render_summary(meta, scores), encoding="utf-8")
 
-    _print_scores(scores)
-    console.print(f"  scores: {run_dir / 'scores.json'}")
-    console.print(f"  summary: {run_dir / 'summary.md'}")
+
+@app.command()
+def report(
+    run: Path = typer.Option(..., "--run", help="A scored run (or model-set run) directory."),
+) -> None:
+    """Show a scored run, or compare every model in a scored model-set run."""
+    run_dir = run
+    if (run_dir / "run.json").is_file():
+        scores_path = run_dir / "scores.json"
+        if not scores_path.is_file():
+            _fail(
+                f"{run_dir} is not scored yet; run `companion-bench score --run {run_dir}` first."
+            )
+        scores = RunScores.model_validate_json(scores_path.read_text(encoding="utf-8"))
+        _print_scores(scores)
+        return
+
+    index = _load_modelset_index(run_dir)
+    rows: list[RunScores] = []
+    for entry in index.models:
+        sp = run_dir / entry.slug / "scores.json"
+        if sp.is_file():
+            rows.append(RunScores.model_validate_json(sp.read_text(encoding="utf-8")))
+    if not rows:
+        _fail(
+            f"no scored sub-runs in {run_dir}; run `companion-bench score --run {run_dir}` first."
+        )
+
+    table = Table(title=f"Model comparison — {index.set_id or run_dir.name}")
+    table.add_column("model")
+    table.add_column("overall", justify="right")
+    table.add_column("passed", justify="right")
+    table.add_column("cost USD", justify="right")
+    for dim in Dimension:
+        table.add_column(dim.value[:4], justify="right")
+    for scores in sorted(rows, key=lambda s: s.overall, reverse=True):
+        cost = "n/a" if scores.total_cost_usd is None else f"{scores.total_cost_usd:.6f}"
+        cells = [
+            scores.model_id,
+            f"{scores.overall:.3f}",
+            f"{scores.n_passed}/{scores.n_tasks}",
+            cost,
+        ]
+        cells += [
+            ("n/a" if scores.by_dimension.get(dim) is None else f"{scores.by_dimension[dim]:.2f}")
+            for dim in Dimension
+        ]
+        table.add_row(*cells)
+    console.print(table)
 
 
 @app.command()
@@ -332,6 +443,104 @@ def _print_scores(scores: RunScores) -> None:
         f"[bold]{scores.n_passed}/{scores.n_tasks}[/] tasks passed · overall "
         f"[bold]{scores.overall:.3f}[/]"
     )
+    if scores.total_cost_usd is not None:
+        console.print(
+            f"Estimated cost: [bold]${scores.total_cost_usd:.6f}[/] "
+            f"({scores.total_tokens or 0} tokens)"
+        )
+
+
+@dataclass(frozen=True)
+class _Target:
+    id: str
+    spec: ModelSpec
+    overrides: dict[str, Any]
+
+
+def _run_targets(
+    model: str | None, model_set: Path | None, limit_models: int | None
+) -> tuple[list[_Target], str | None, bool]:
+    """Resolve the run into (targets, set_id, is_multi). Single model -> non-multi layout."""
+    if model and model_set:
+        _fail("pass either --model or --model-set, not both.")
+    if not model and not model_set:
+        _fail("pass --model <ref> or --model-set <path>.")
+    if model:
+        try:
+            spec = ModelSpec.parse(model)
+        except ValueError as exc:
+            _fail(str(exc))
+        return [_Target(spec.slug, spec, {})], None, False
+    assert model_set is not None
+    ms = load_model_set(model_set)
+    enabled = ms.enabled_models()
+    if limit_models is not None:
+        enabled = enabled[:limit_models]
+    if not enabled:
+        _fail("model set has no enabled models.")
+    targets = [_Target(e.id, e.spec(), e.config_overrides()) for e in enabled]
+    return targets, ms.set_id, True
+
+
+def _check_live(targets: list[_Target], live: bool) -> bool:
+    """Enforce the live-call guardrails; return True for a real (live) run."""
+    if not any(t.spec.provider != "mock" for t in targets):
+        return False  # mock-only: offline, no confirmation needed
+    if not live:
+        _fail("real-provider runs require --live (and COMPANIONBENCH_LIVE=1).")
+    if not _live_enabled():
+        _fail(f"--live requires {LIVE_ENV}=1 (live network calls are opt-in).")
+    return True
+
+
+def _print_run_result(label: str, result: RunResult, is_multi: bool) -> None:
+    cost = (
+        ""
+        if result.total_estimated_cost_usd is None
+        else f", ${result.total_estimated_cost_usd:.6f}"
+    )
+    flag = " [yellow](budget hit)[/]" if result.budget_exceeded else ""
+    console.print(
+        f"[green]✓[/] [bold]{label}[/]: {result.n_model_calls} calls, "
+        f"{result.n_failures} failure(s){cost}{flag} → {result.out_dir}"
+    )
+
+
+def _score_one(run_dir: Path) -> RunScores:
+    """Score a single run directory and write its scores.json + summary.md."""
+    meta_path = run_dir / "run.json"
+    events_path = run_dir / "events.jsonl"
+    if not meta_path.is_file() or not events_path.is_file():
+        _fail(f"{run_dir} is not a run directory (need run.json and events.jsonl).")
+    try:
+        meta = read_model_json(meta_path, _RUN_META_ADAPTER)
+        events = read_events(events_path)
+        _, all_tasks = load_manifest_and_tasks(meta.manifest_path)
+    except CompanionBenchError as exc:
+        _fail(str(exc))
+    by_id = {t.task_id: t for t in all_tasks}
+    missing = [tid for tid in meta.task_ids if tid not in by_id]
+    if missing:
+        _fail(f"tasks referenced by the run are no longer in the manifest: {missing}")
+    tasks = [by_id[tid] for tid in meta.task_ids]
+    scores = score_run(
+        tasks,
+        events,
+        run_id=meta.run_id,
+        model_id=meta.model_id,
+        provider=meta.provider,
+        generated_at=RealClock().now_iso(),
+    )
+    (run_dir / "scores.json").write_text(scores.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    (run_dir / "summary.md").write_text(render_summary(meta, scores), encoding="utf-8")
+    return scores
+
+
+def _load_modelset_index(run_dir: Path) -> ModelSetRunIndex:
+    index_path = run_dir / "modelset.json"
+    if not index_path.is_file():
+        _fail(f"{run_dir} is not a run directory (need run.json or modelset.json).")
+    return ModelSetRunIndex.model_validate_json(index_path.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":  # pragma: no cover
