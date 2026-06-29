@@ -24,11 +24,23 @@ from companion_bench.config.model_sets import load_model_set, validate_model_set
 from companion_bench.config.pricing import PricingTable, default_pricing, load_pricing
 from companion_bench.config.providers import default_providers_config, load_providers_config
 from companion_bench.evaluators.aggregate import render_summary, score_run
+from companion_bench.evaluators.frontier import (
+    FrontierRow,
+    mark_pareto,
+    render_csv,
+    render_markdown,
+)
 from companion_bench.runner.engine import RunEngine, RunResult
 from companion_bench.runner.manifest import load_manifest_and_tasks, validate_manifest
 from companion_bench.runner.selection import select_tasks
 from companion_bench.schemas.model import ModelSpec
-from companion_bench.schemas.run import ModelRunRef, ModelSetRunIndex, RunConfig, RunMetadata
+from companion_bench.schemas.run import (
+    ModelCallEvent,
+    ModelRunRef,
+    ModelSetRunIndex,
+    RunConfig,
+    RunMetadata,
+)
 from companion_bench.schemas.score import RunScores
 from companion_bench.schemas.task import Dimension
 from companion_bench.storage.export import ExportFormat, export_run
@@ -356,6 +368,34 @@ def export(
 
 
 @app.command()
+def frontier(
+    run: Path = typer.Option(..., "--run", help="A scored run (or model-set run) directory."),
+) -> None:
+    """Cost-quality frontier across the scored models in a run (writes frontier.md + .csv)."""
+    rows = _gather_frontier_rows(run)
+    mark_pareto(rows)
+    table = Table(title=f"Cost-quality frontier — {run.name}")
+    table.add_column("model")
+    table.add_column("overall", justify="right")
+    table.add_column("95% CI", justify="center")
+    table.add_column("cost USD", justify="right")
+    table.add_column("cost/probe", justify="right")
+    table.add_column("latency ms", justify="right")
+    table.add_column("Pareto", justify="center")
+    for r in sorted(rows, key=lambda x: x.overall, reverse=True):
+        ci = "—" if r.overall_ci is None else f"[{r.overall_ci[0]:.2f}, {r.overall_ci[1]:.2f}]"
+        cost = "n/a" if r.total_cost_usd is None else f"{r.total_cost_usd:.6f}"
+        cps = "n/a" if r.cost_per_successful_probe is None else f"{r.cost_per_successful_probe:.6f}"
+        lat = "—" if r.latency_ms_avg is None else f"{r.latency_ms_avg:.0f}"
+        pareto = "n/a" if r.pareto_optimal is None else ("✅" if r.pareto_optimal else "—")
+        table.add_row(r.model_id, f"{r.overall:.3f}", ci, cost, cps, lat, pareto)
+    console.print(table)
+    (run / "frontier.md").write_text(render_markdown(rows), encoding="utf-8")
+    (run / "frontier.csv").write_text(render_csv(rows), encoding="utf-8")
+    console.print(f"  wrote {run / 'frontier.md'} and {run / 'frontier.csv'}")
+
+
+@app.command()
 def providers(
     probe: bool = typer.Option(
         False, "--probe", help=f"Send one tiny LIVE request per target (requires {LIVE_ENV}=1)."
@@ -621,6 +661,43 @@ def _load_modelset_index(run_dir: Path) -> ModelSetRunIndex:
     if not index_path.is_file():
         _fail(f"{run_dir} is not a run directory (need run.json or modelset.json).")
     return ModelSetRunIndex.model_validate_json(index_path.read_text(encoding="utf-8"))
+
+
+def _gather_frontier_rows(run_dir: Path) -> list[FrontierRow]:
+    """Collect a frontier row per scored model (single run or every model-set sub-run)."""
+    if (run_dir / "scores.json").is_file():
+        dirs = [run_dir]
+    elif (run_dir / "modelset.json").is_file():
+        index = _load_modelset_index(run_dir)
+        dirs = [
+            run_dir / m.slug for m in index.models if (run_dir / m.slug / "scores.json").is_file()
+        ]
+    else:
+        _fail(f"{run_dir} is not a run directory (need scores.json or modelset.json).")
+    if not dirs:
+        _fail(f"no scored runs in {run_dir}; run `companion-bench score --run {run_dir}` first.")
+    return [_frontier_row(d) for d in dirs]
+
+
+def _frontier_row(run_dir: Path) -> FrontierRow:
+    scores = RunScores.model_validate_json((run_dir / "scores.json").read_text(encoding="utf-8"))
+    calls = [e for e in read_events(run_dir / "events.jsonl") if isinstance(e, ModelCallEvent)]
+    n_successful = sum(1 for c in calls if c.parsed)
+    latencies = [c.latency_ms for c in calls if c.latency_ms is not None]
+    avg_latency = sum(latencies) / len(latencies) if latencies else None
+    cost = scores.total_cost_usd
+    cost_per_probe = (cost / n_successful) if (cost is not None and n_successful) else None
+    return FrontierRow(
+        model_id=scores.model_id,
+        overall=scores.overall,
+        overall_ci=scores.overall_ci,
+        total_cost_usd=cost,
+        cost_per_successful_probe=cost_per_probe,
+        total_tokens=scores.total_tokens,
+        latency_ms_avg=avg_latency,
+        n_successful_probes=n_successful,
+        notes="" if cost is not None else "cost unknown (unpriced)",
+    )
 
 
 if __name__ == "__main__":  # pragma: no cover
