@@ -85,3 +85,11 @@ class RunScores(BaseModel):
     n_passed: int
     total_cost_usd: float | None = None
     total_tokens: int | None = None
+    # Repeats + bootstrap 95% confidence intervals (None unless --bootstrap was used).
+    n_repeats: int = 1
+    overall_ci: tuple[float, float] | None = None
+    dimension_ci: dict[Dimension, tuple[float, float] | None] = Field(default_factory=dict)
+    bootstrap_resamples: int | None = None
+    bootstrap_seed: int | None = None
+    # Aggregated named behavior flags (flag -> occurrences across all probes/repeats).
+    behavior_flags: dict[str, int] = Field(default_factory=dict)

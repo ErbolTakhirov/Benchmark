@@ -249,11 +249,17 @@ def run(
 @app.command()
 def score(
     run: Path = typer.Option(..., "--run", help="A run (or model-set run) directory."),
+    bootstrap: bool = typer.Option(False, "--bootstrap", help="Compute bootstrap 95% CIs."),
+    bootstrap_resamples: int = typer.Option(
+        2000, "--bootstrap-resamples", min=100, help="Bootstrap resamples."
+    ),
+    bootstrap_seed: int = typer.Option(42, "--bootstrap-seed", help="Bootstrap RNG seed."),
 ) -> None:
     """Score a run (or every sub-run of a model-set run) -> scores.json + summary.md."""
     run_dir = run
+    boot = (bootstrap, bootstrap_resamples, bootstrap_seed)
     if (run_dir / "run.json").is_file():
-        scores = _score_one(run_dir)
+        scores = _score_one(run_dir, boot)
         _print_scores(scores)
         console.print(f"  scores: {run_dir / 'scores.json'}  ·  summary: {run_dir / 'summary.md'}")
         return
@@ -262,7 +268,7 @@ def score(
     for entry in index.models:
         sub = run_dir / entry.slug
         if (sub / "run.json").is_file():
-            _score_one(sub)
+            _score_one(sub, boot)
             scored += 1
     console.print(
         f"[green]✓[/] scored {scored}/{len(index.models)} model sub-run(s). "
@@ -300,15 +306,23 @@ def report(
     table = Table(title=f"Model comparison — {index.set_id or run_dir.name}")
     table.add_column("model")
     table.add_column("overall", justify="right")
+    table.add_column("95% CI", justify="center")
     table.add_column("passed", justify="right")
     table.add_column("cost USD", justify="right")
     for dim in Dimension:
         table.add_column(dim.value[:4], justify="right")
-    for scores in sorted(rows, key=lambda s: s.overall, reverse=True):
+    ranked = sorted(rows, key=lambda s: s.overall, reverse=True)
+    for scores in ranked:
         cost = "n/a" if scores.total_cost_usd is None else f"{scores.total_cost_usd:.6f}"
+        ci = (
+            "—"
+            if scores.overall_ci is None
+            else f"[{scores.overall_ci[0]:.2f}, {scores.overall_ci[1]:.2f}]"
+        )
         cells = [
             scores.model_id,
             f"{scores.overall:.3f}",
+            ci,
             f"{scores.n_passed}/{scores.n_tasks}",
             cost,
         ]
@@ -318,6 +332,10 @@ def report(
         ]
         table.add_row(*cells)
     console.print(table)
+    for scores in ranked:
+        if scores.behavior_flags:
+            top = ", ".join(f"{k} ({v})" for k, v in list(scores.behavior_flags.items())[:3])
+            console.print(f"  [bold]{scores.model_id}[/] top flags: {top}")
 
 
 @app.command()
@@ -465,15 +483,23 @@ def _print_scores(scores: RunScores) -> None:
     for ts in scores.task_scores:
         table.add_row(ts.task_id, ts.family.value, f"{ts.total:.3f}", "✅" if ts.passed else "❌")
     console.print(table)
+    ci = (
+        ""
+        if scores.overall_ci is None
+        else f" (95% CI [{scores.overall_ci[0]:.3f}, {scores.overall_ci[1]:.3f}])"
+    )
     console.print(
         f"[bold]{scores.n_passed}/{scores.n_tasks}[/] tasks passed · overall "
-        f"[bold]{scores.overall:.3f}[/]"
+        f"[bold]{scores.overall:.3f}[/]{ci}"
     )
     if scores.total_cost_usd is not None:
         console.print(
             f"Estimated cost: [bold]${scores.total_cost_usd:.6f}[/] "
             f"({scores.total_tokens or 0} tokens)"
         )
+    if scores.behavior_flags:
+        top = ", ".join(f"{k} ({v})" for k, v in list(scores.behavior_flags.items())[:5])
+        console.print(f"Top behavior flags: {top}")
 
 
 @dataclass(frozen=True)
@@ -556,7 +582,7 @@ def _print_run_result(label: str, result: RunResult, is_multi: bool) -> None:
     )
 
 
-def _score_one(run_dir: Path) -> RunScores:
+def _score_one(run_dir: Path, boot: tuple[bool, int, int] = (False, 2000, 42)) -> RunScores:
     """Score a single run directory and write its scores.json + summary.md."""
     meta_path = run_dir / "run.json"
     events_path = run_dir / "events.jsonl"
@@ -573,6 +599,7 @@ def _score_one(run_dir: Path) -> RunScores:
     if missing:
         _fail(f"tasks referenced by the run are no longer in the manifest: {missing}")
     tasks = [by_id[tid] for tid in meta.task_ids]
+    bootstrap, resamples, seed = boot
     scores = score_run(
         tasks,
         events,
@@ -580,6 +607,9 @@ def _score_one(run_dir: Path) -> RunScores:
         model_id=meta.model_id,
         provider=meta.provider,
         generated_at=RealClock().now_iso(),
+        bootstrap=bootstrap,
+        bootstrap_resamples=resamples,
+        bootstrap_seed=seed,
     )
     (run_dir / "scores.json").write_text(scores.model_dump_json(indent=2) + "\n", encoding="utf-8")
     (run_dir / "summary.md").write_text(render_summary(meta, scores), encoding="utf-8")
