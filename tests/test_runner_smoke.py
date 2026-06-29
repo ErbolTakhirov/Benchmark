@@ -88,6 +88,25 @@ async def test_profiles_are_ordered_empathetic_best(tmp_path: Path) -> None:
     assert intrusive.by_dimension[Dimension.ADAPTATION] == 0.0
 
 
+async def test_repeats_tag_events_and_metadata(tmp_path: Path) -> None:
+    manifest, tasks = load_manifest_and_tasks(SMOKE)
+    one_probe = next(t for t in tasks if len(t.probes) == 1)
+    engine = RunEngine(clock=FrozenClock())
+    result = await engine.run(
+        manifest=manifest,
+        tasks=[one_probe],
+        model=ModelSpec.parse("mock/empathetic-v1"),
+        config=manifest.run,
+        out_dir=tmp_path / "r",
+        manifest_path=str(SMOKE),
+        repeats=3,
+    )
+    assert result.metadata.n_repeats == 3
+    assert result.n_model_calls == 3  # 1 probe x 3 repeats
+    calls = [e for e in read_events(result.events_path) if e.event_type.value == "model_call"]
+    assert sorted({e.repeat_index for e in calls}) == [0, 1, 2]  # type: ignore[union-attr]
+
+
 class _FailingAdapter(ChatAdapter):
     provider = "mock"
 

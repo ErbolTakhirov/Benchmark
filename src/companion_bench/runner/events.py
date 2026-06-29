@@ -54,6 +54,7 @@ def model_call_event(
     *,
     retry_wait_ms: float = 0.0,
     cost_usd: float | None = None,
+    repeat_index: int = 0,
 ) -> ModelCallEvent:
     # The engine is authoritative on cost (pricing table, or the adapter value when no table);
     # ``cost_usd`` already reflects that decision, so do not second-guess it here.
@@ -74,6 +75,7 @@ def model_call_event(
         estimated_cost_usd=cost_usd,
         attempts=attempts,
         retry_wait_ms=retry_wait_ms,
+        repeat_index=repeat_index,
     )
 
 
@@ -88,6 +90,7 @@ def model_failure_event(
     attempts: int,
     *,
     retry_wait_ms: float = 0.0,
+    repeat_index: int = 0,
 ) -> ModelFailureEvent:
     retryable = error.retryable if isinstance(error, AdapterError) else False
     # Defense-in-depth: a hostile/misconfigured endpoint could echo an auth header into its
@@ -107,6 +110,7 @@ def model_failure_event(
         retryable=retryable,
         attempts=attempts,
         retry_wait_ms=retry_wait_ms,
+        repeat_index=repeat_index,
     )
 
 

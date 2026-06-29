@@ -73,6 +73,7 @@ class ModelCallEvent(BaseEvent):
     estimated_cost_usd: float | None = None
     attempts: int = 1
     retry_wait_ms: float = 0.0
+    repeat_index: int = 0
 
 
 class ModelFailureEvent(BaseEvent):
@@ -89,6 +90,7 @@ class ModelFailureEvent(BaseEvent):
     retryable: bool
     attempts: int
     retry_wait_ms: float = 0.0
+    repeat_index: int = 0
 
 
 class RunEndEvent(BaseEvent):
@@ -144,6 +146,7 @@ class RunMetadata(BaseModel):
     provider: str
     config: RunConfig
     task_ids: tuple[str, ...]
+    n_repeats: int = 1
 
 
 class ModelRunRef(BaseModel):

@@ -114,6 +114,7 @@ class RunEngine:
         requests_per_second: float | None = None,
         pricing: PricingTable | None = None,
         max_cost_usd: float | None = None,
+        repeats: int = 1,
     ) -> RunResult:
         # Output dirs are created lazily by EventWriter / write_model_json (both mkdir
         # their parents), so there is no blocking filesystem call on the event loop here.
@@ -133,14 +134,19 @@ class RunEngine:
             pricing=pricing,
             max_cost_usd=max_cost_usd,
         )
+        # Repeat-major, then task, then probe — a deterministic order for id assignment.
+        ordered_events: list[Event] = []
         try:
             semaphore = asyncio.Semaphore(config.concurrency)
 
-            async def guarded(task: Task) -> list[Event]:
+            async def guarded(task: Task, rep: int) -> list[Event]:
                 async with semaphore:
-                    return await self._run_task(ctx, task)
+                    return await self._run_task(ctx, task, rep)
 
-            per_task_events = await asyncio.gather(*(guarded(task) for task in tasks_to_run))
+            for rep in range(repeats):
+                per_task = await asyncio.gather(*(guarded(task, rep) for task in tasks_to_run))
+                for task_events in per_task:
+                    ordered_events.extend(task_events)
         finally:
             if self._adapter_override is None:
                 await adapter.aclose()
@@ -151,11 +157,12 @@ class RunEngine:
             manifest=manifest,
             manifest_path=manifest_path,
             tasks_to_run=tasks_to_run,
-            per_task_events=per_task_events,
+            ordered_events=ordered_events,
+            n_repeats=repeats,
         )
 
     # -- per-task / per-probe execution ------------------------------------
-    async def _run_task(self, ctx: _RunContext, task: Task) -> list[Event]:
+    async def _run_task(self, ctx: _RunContext, task: Task, repeat_index: int = 0) -> list[Event]:
         driver = ConversationDriver(task, ctx.model, ctx.config)
         events: list[Event] = []
         while (step := driver.next_probe()) is not None:
@@ -172,6 +179,7 @@ class RunEngine:
                 ctx.limiter,
                 task.task_id,
                 step.probe.probe_id,
+                repeat_index,
             )
             if response is not None:
                 cost = self._record_cost(ctx, response)
@@ -187,6 +195,7 @@ class RunEngine:
                         attempts,
                         retry_wait_ms=retry_wait_ms,
                         cost_usd=cost,
+                        repeat_index=repeat_index,
                     )
                 )
                 driver.record_response(response.companion_turn)
@@ -203,6 +212,7 @@ class RunEngine:
                         err,
                         attempts,
                         retry_wait_ms=retry_wait_ms,
+                        repeat_index=repeat_index,
                     )
                 )
                 driver.record_response(None)
@@ -231,6 +241,7 @@ class RunEngine:
         limiter: RateLimiter,
         task_id: str,
         probe_id: str,
+        repeat_index: int = 0,
     ) -> tuple[ChatResponse | None, BaseException | None, int, float]:
         attempts = 0
         total_wait = 0.0
@@ -245,7 +256,12 @@ class RunEngine:
                 if not (exc.retryable and attempts <= config.max_retries):
                     return None, exc, attempts, total_wait * 1000.0
                 delay = backoff_delay(
-                    config, attempts, exc.retry_after, task_id=task_id, probe_id=probe_id
+                    config,
+                    attempts,
+                    exc.retry_after,
+                    task_id=task_id,
+                    probe_id=probe_id,
+                    repeat_index=repeat_index,
                 )
                 elapsed = self._clock.monotonic() - start
                 if config.deadline_s is not None and elapsed + delay > config.deadline_s:
@@ -264,7 +280,8 @@ class RunEngine:
         manifest: Manifest,
         manifest_path: str,
         tasks_to_run: list[Task],
-        per_task_events: list[list[Event]],
+        ordered_events: list[Event],
+        n_repeats: int = 1,
     ) -> RunResult:
         run_id, model, config = ctx.run_id, ctx.model, ctx.config
         ids = IdFactory(run_id)
@@ -281,16 +298,15 @@ class RunEngine:
         with EventWriter(events_path) as writer:
             start.event_id = ids.next_event_id()
             writer.write(start)
-            for task_events in per_task_events:
-                for event in task_events:
-                    event.event_id = ids.next_event_id()
-                    if isinstance(event, ModelCallEvent):
-                        n_calls += 1
-                        n_probes += 1
-                    elif isinstance(event, ModelFailureEvent):
-                        n_failures += 1
-                        n_probes += 1
-                    writer.write(event)
+            for event in ordered_events:
+                event.event_id = ids.next_event_id()
+                if isinstance(event, ModelCallEvent):
+                    n_calls += 1
+                    n_probes += 1
+                elif isinstance(event, ModelFailureEvent):
+                    n_failures += 1
+                    n_probes += 1
+                writer.write(event)
             end = run_end_event(
                 run_id,
                 self._clock,
@@ -315,6 +331,7 @@ class RunEngine:
             provider=model.provider,
             config=config,
             task_ids=tuple(t.task_id for t in tasks_to_run),
+            n_repeats=n_repeats,
         )
         metadata_path = out / "run.json"
         write_model_json(metadata_path, metadata)

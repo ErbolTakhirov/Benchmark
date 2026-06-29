@@ -26,15 +26,17 @@ def backoff_delay(
     *,
     task_id: str,
     probe_id: str,
+    repeat_index: int = 0,
 ) -> float:
     """Exponential backoff with full jitter, raised to ``retry_after`` when the server set it.
 
-    ``attempts`` is the number of attempts made so far (1 after the first failure).
+    ``attempts`` is the number of attempts made so far (1 after the first failure). The jitter
+    is seeded per (seed, task, probe, repeat, attempt) so it is reproducible per repeat.
     """
     # Cap the exponent so a very large max_retries can't overflow the float power.
     exponent = min(max(attempts - 1, 0), 30)
     capped = min(config.max_delay_s, config.base_delay_s * (2.0**exponent))
-    rng = random.Random(f"{config.seed}:{task_id}:{probe_id}:{attempts}")
+    rng = random.Random(f"{config.seed}:{task_id}:{probe_id}:{repeat_index}:{attempts}")
     delay = rng.random() * capped  # full jitter in [0, capped)
     if retry_after is not None:
         delay = max(delay, retry_after)

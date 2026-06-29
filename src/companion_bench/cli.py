@@ -26,6 +26,7 @@ from companion_bench.config.providers import default_providers_config, load_prov
 from companion_bench.evaluators.aggregate import render_summary, score_run
 from companion_bench.runner.engine import RunEngine, RunResult
 from companion_bench.runner.manifest import load_manifest_and_tasks, validate_manifest
+from companion_bench.runner.selection import select_tasks
 from companion_bench.schemas.model import ModelSpec
 from companion_bench.schemas.run import ModelRunRef, ModelSetRunIndex, RunConfig, RunMetadata
 from companion_bench.schemas.score import RunScores
@@ -132,6 +133,16 @@ def run(
     limit_models: int | None = typer.Option(
         None, "--limit-models", help="Only run the first N models."
     ),
+    stratified: bool = typer.Option(
+        False,
+        "--stratified/--no-stratified",
+        "--family-balanced/--no-family-balanced",
+        help="With --limit-tasks, pick a family-balanced subset (round-robin) not the first N.",
+    ),
+    shuffle_seed: int | None = typer.Option(
+        None, "--shuffle-seed", help="Deterministically shuffle tasks before selecting."
+    ),
+    repeats: int = typer.Option(1, "--repeats", min=1, help="Run each model this many times."),
     concurrency: int | None = typer.Option(None, "--concurrency", help="Override concurrency."),
     max_cost_usd: float | None = typer.Option(
         None, "--max-cost-usd", help="Global cost budget (USD)."
@@ -159,6 +170,9 @@ def run(
 
     is_live = _check_live(targets, live)
     task_limit = limit_tasks if limit_tasks is not None else limit
+    tasks = select_tasks(
+        tasks, limit=task_limit, family_balanced=stratified, shuffle_seed=shuffle_seed
+    )
     if is_live and max_cost_usd is not None:
         _check_budget_enforceable(targets, pricing_table, max_cost_usd, task_limit, limit_models)
     if is_live and not yes:
@@ -169,9 +183,8 @@ def run(
         ):
             _fail("aborted by user (no --yes).")
 
-    base_config = _merge_config(
-        manifest_obj.run, seed=seed, limit=task_limit, concurrency=concurrency
-    )
+    # Tasks are already selected above; don't let the engine re-slice by limit.
+    base_config = _merge_config(manifest_obj.run, seed=seed, limit=None, concurrency=concurrency)
     engine = RunEngine()
     manifest_abs = str(Path(manifest).resolve())
     spent = 0.0
@@ -201,6 +214,7 @@ def run(
                     requests_per_second=settings.requests_per_second,
                     pricing=pricing_table,
                     max_cost_usd=remaining,
+                    repeats=repeats,
                 )
             )
         except CompanionBenchError as exc:
