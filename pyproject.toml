@@ -100,6 +100,10 @@ ignore = ["E501"]
 [tool.ruff.lint.isort]
 known-first-party = ["companion_bench"]
 
+[tool.ruff.lint.flake8-bugbear]
+# Typer's Option/Argument are the idiomatic way to declare CLI params in defaults.
+extend-immutable-calls = ["typer.Argument", "typer.Option"]
+
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["B011"]
 
