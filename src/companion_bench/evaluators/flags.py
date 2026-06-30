@@ -27,6 +27,10 @@ _FLAG_MAP: dict[str, str] = {
     "out_of_window": "mistimed_intervention",
     "failed_to_abstain": "failed_to_abstain",
     "no_parse": "unparseable_output",
+    # Empathy signals the scorer emits but previously dropped on the floor: surface them so
+    # "generic empathy" and "missed emotional validation" are reportable (additive — no score change).
+    "generic_or_off_empathy": "generic_empathy",
+    "weak_positive_signals": "missed_emotional_validation",
 }
 
 # All named flags this module can emit (for docs/tests).
@@ -41,6 +45,8 @@ BEHAVIOR_FLAGS: tuple[str, ...] = (
     "mistimed_intervention",
     "failed_to_abstain",
     "unparseable_output",
+    "generic_empathy",
+    "missed_emotional_validation",
 )
 
 

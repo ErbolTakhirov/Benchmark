@@ -57,9 +57,10 @@ models:
     model: z-ai/glm-4.5-air
     temperature: 0.7
     max_completion_tokens: 500
-    enabled: false
-    needs_mapping: true
+    enabled: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo playful/free default)"
+    notes: "live_verified 2026-06-30 (slug present in OpenRouter /models pricing sync); enabled for the capped 4-model audit comparison."
   - id: deepseek-v3-2
     provider: openrouter
     model: deepseek/deepseek-v3.2
@@ -81,9 +82,10 @@ models:
     model: google/gemini-2.5-flash-lite
     temperature: 0.7
     max_completion_tokens: 500
-    enabled: false
-    needs_mapping: true
+    enabled: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo casual/premium)"
+    notes: "live_verified 2026-06-30 (slug present in OpenRouter /models pricing sync); enabled for the capped 4-model audit comparison."
   - id: cydonia-24b
     provider: openrouter
     model: thedrummer/cydonia-24b-v4.1

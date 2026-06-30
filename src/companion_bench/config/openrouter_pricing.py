@@ -83,6 +83,12 @@ def build_openrouter_pricing(
         except (KeyError, TypeError, ValueError):
             skipped.append(str(slug))
             continue
+        # OpenRouter uses negative sentinels (e.g. "-1") for models without a fixed per-token
+        # price (variable / auto-routed). Treat those as unpriceable and skip them so cost stays
+        # null, rather than recording a negative price (which PriceEntry forbids, ge=0).
+        if prompt < 0 or completion < 0:
+            skipped.append(str(slug))
+            continue
         ctx = model.get("context_length")
         entries.append(
             PriceEntry(

@@ -15,6 +15,7 @@ from typing import Any, NoReturn, cast
 
 import typer
 import yaml
+from dotenv import find_dotenv, load_dotenv
 from pydantic import TypeAdapter
 from rich.console import Console
 from rich.table import Table
@@ -74,6 +75,27 @@ app.add_typer(models_app)
 
 pricing_app = typer.Typer(name="pricing", help="Pricing tables.", no_args_is_help=True)
 app.add_typer(pricing_app)
+
+
+def _load_local_dotenv() -> None:
+    """Load a project-local ``.env`` into the environment.
+
+    Keys and live-run config (``OPENROUTER_API_KEY``, ``COMPANIONBENCH_LIVE``, ...) may live in a
+    gitignored ``.env`` at or above the working directory. ``override=False`` means a real shell
+    environment always wins over the file, so an explicit ``export`` still takes precedence; a
+    missing ``.env`` is a silent no-op.
+    """
+    load_dotenv(find_dotenv(usecwd=True), override=False)
+
+
+@app.callback()
+def _main() -> None:
+    """CompanionBench CLI — loads a local .env (if present) before running any command."""
+    # Skip under pytest so the default suite stays offline + keyless even with a populated .env.
+    if os.environ.get("PYTEST_CURRENT_TEST"):
+        return
+    _load_local_dotenv()
+
 
 _RUN_META_ADAPTER: TypeAdapter[RunMetadata] = TypeAdapter(RunMetadata)
 

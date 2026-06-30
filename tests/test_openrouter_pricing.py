@@ -29,6 +29,10 @@ _MODELS = [
         "id": "x/bad-number",
         "pricing": {"prompt": "abc", "completion": "0.1"},
     },  # non-numeric -> skipped
+    {
+        "id": "auto/variable-price",
+        "pricing": {"prompt": "-1", "completion": "-1"},
+    },  # negative sentinel (OpenRouter variable/auto pricing) -> skipped, cost stays null
 ]
 
 
@@ -42,7 +46,7 @@ def test_build_converts_per_token_to_per_1m_and_skips_bad() -> None:
     assert entry.source == "openrouter_api"
     assert entry.context_length == 64000
     assert entry.prompt_price_per_token == 0.0000003
-    assert sorted(skipped) == ["broken/no-pricing", "x/bad-number"]
+    assert sorted(skipped) == ["auto/variable-price", "broken/no-pricing", "x/bad-number"]
 
 
 def test_built_table_prices_the_emotomo_slug() -> None:

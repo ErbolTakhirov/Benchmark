@@ -57,6 +57,10 @@ even if an author forgets to list them.
 **Run rollup** — `by_dimension` (mean of task dimension-means, ignoring `None`), `by_family`
 (mean of task totals per family), `overall` (mean of task totals), and `n_passed / n_tasks`.
 
+`overall` is the **companion-communication composite** for this suite and these settings — a
+weighted roll-up of the targeted behaviors above. It is **not** a universal "humanity" or
+human-likeness score; read it alongside the per-dimension profile, never as a single verdict.
+
 ## Worked illustration (mock profiles)
 
 Running the smoke manifest against the three mock profiles yields a clear, defensible ordering:

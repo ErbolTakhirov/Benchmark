@@ -80,6 +80,8 @@ class RunScores(BaseModel):
     task_scores: tuple[TaskScore, ...]
     by_family: dict[Family, float]
     by_dimension: dict[Dimension, float | None]
+    # Weighted companion-communication composite over the applicable dimensions — NOT a universal
+    # "humanity" / human-likeness score (see docs/methodology.md, docs/public_claims.md).
     overall: float = Field(ge=0.0, le=1.0)
     n_tasks: int
     n_passed: int

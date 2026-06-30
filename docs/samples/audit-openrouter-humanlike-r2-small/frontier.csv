@@ -1,0 +1,5 @@
+model_id,overall,ci_low,ci_high,total_cost_usd,cost_per_successful_probe,total_tokens,latency_ms_avg,n_successful_probes,pareto_optimal,notes
+openrouter/deepseek/deepseek-chat-v3-0324,0.734904,0.642085,0.817965,0.003851,0.000138,13532,4943.798,28,yes,
+openrouter/mistralai/mistral-nemo,0.688034,0.581288,0.787710,0.000273,0.000012,12779,2936.876,22,yes,
+openrouter/z-ai/glm-4.5-air,0.669907,0.567256,0.774298,0.008778,0.000382,19834,7588.935,23,no,
+openrouter/google/gemini-2.5-flash-lite,0.621836,0.535692,0.710057,0.001824,0.000122,12750,1016.904,15,no,
