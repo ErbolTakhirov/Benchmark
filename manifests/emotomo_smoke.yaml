@@ -7,11 +7,16 @@ description: >-
   Pair with `--model-set configs/model_sets/emotomo-openrouter.yaml` and keep it tiny with
   `--limit-tasks`/`--limit-models`. Gentle concurrency + extra retries for live robustness.
 
+# The fixed original 8 (explicit) keep this a tiny live smoke; the full suite is manifests/full.yaml.
 task_paths:
-  - "../tasks/initiative/*.yaml"
-  - "../tasks/empathy/*.yaml"
-  - "../tasks/timing/*.yaml"
-  - "../tasks/adaptation/*.yaml"
+  - "../tasks/initiative/casual-smalltalk-no-action.yaml"
+  - "../tasks/initiative/late-night-overwork.yaml"
+  - "../tasks/empathy/frustrated-wants-solutions.yaml"
+  - "../tasks/empathy/grief-support-gentle.yaml"
+  - "../tasks/timing/dont-interrupt-flow.yaml"
+  - "../tasks/timing/intervene-within-window.yaml"
+  - "../tasks/adaptation/respect-no-advice.yaml"
+  - "../tasks/adaptation/stop-pet-names.yaml"
 
 models:
   - mock/empathetic-v1   # default for offline validation; real models come from --model-set

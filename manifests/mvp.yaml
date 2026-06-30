@@ -6,11 +6,16 @@ description: >-
   simulator — real API models are listed as examples and selected via the CLI `--model`
   flag (which requires the corresponding API key in your environment).
 
+# The fixed original 8 (explicit). The representative, expanding suite is manifests/full.yaml.
 task_paths:
-  - "../tasks/initiative/*.yaml"
-  - "../tasks/empathy/*.yaml"
-  - "../tasks/timing/*.yaml"
-  - "../tasks/adaptation/*.yaml"
+  - "../tasks/initiative/casual-smalltalk-no-action.yaml"
+  - "../tasks/initiative/late-night-overwork.yaml"
+  - "../tasks/empathy/frustrated-wants-solutions.yaml"
+  - "../tasks/empathy/grief-support-gentle.yaml"
+  - "../tasks/timing/dont-interrupt-flow.yaml"
+  - "../tasks/timing/intervene-within-window.yaml"
+  - "../tasks/adaptation/respect-no-advice.yaml"
+  - "../tasks/adaptation/stop-pet-names.yaml"
 
 # First entry is the default. Real models require keys at run time; listing them here is
 # harmless for validation (refs are just strings until a run actually dials out).

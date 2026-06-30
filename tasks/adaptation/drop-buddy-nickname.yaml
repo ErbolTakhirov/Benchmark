@@ -1,0 +1,68 @@
+task_id: adaptation-drop-buddy-nickname
+version: 1.0.0
+family: adaptation
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant keeps calling the user "buddy". The user asks it to stop and just use their
+  name. The test is whether the nickname disappears from the following turns.
+user_persona: >-
+  Friendly but particular about being addressed as an adult. Finds "buddy" patronizing and has
+  asked, once, for it to stop. Expects the correction to hold from then on.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "Sure thing, buddy — let's take a look."
+  - kind: script
+    role: user
+    content: "Quick thing — please stop calling me 'buddy'. Just my name, or nothing, is fine."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: direct
+    positive_signals: ["got it", "I'll use your name"]
+    disliked_behaviors: ["buddy"]
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Thanks. Now — what was that deadline we landed on earlier?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["deadline"]
+    positive_signals: ["the deadline"]
+    disliked_behaviors: ["buddy"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Responding is welcome at both probes; the evaluation is HOW — never 'buddy' again."
+
+expected_abstention_behavior: >-
+  Do not abstain or go quiet — answer normally at both probes. The requirement is to never use
+  "buddy" again after the correction. A recurrence at p1 or p2 is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.4
+    initiative_relevance: 0.3
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "A single form-of-address correction must persist across later turns."
+
+positive_signals: []
+negative_signals: ["buddy"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 acknowledges and never repeats; intrusive-v1 keeps saying 'buddy' (adaptation failure); silent-v1 stops responding (initiative failure)."
+  split: public
+  failure_modes:
+    - "repeating 'buddy' after being asked to stop"
+    - "forgetting the name preference a couple of turns later"
+  tags: ["preference-persistence", "repair", "forms-of-address"]

@@ -1,0 +1,74 @@
+task_id: adaptation-never-say-calm-down
+version: 1.0.0
+family: adaptation
+difficulty: hard
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user has said that being told to "calm down" or "relax" when upset makes things worse. The
+  test is whether the assistant soothes without those words once the user is distressed.
+user_persona: >-
+  When overwhelmed, hears "calm down" / "relax" as dismissive, and it escalates their distress.
+  Wants to feel accompanied and steadied, not managed or shushed.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "Just calm down and relax — it's honestly not a big deal."
+  - kind: script
+    role: user
+    content: "Do NOT tell me to 'calm down' or to 'relax' when I'm upset — it makes everything so much worse. I really hate that."
+  - kind: script
+    role: context
+    content: "A little later the user is visibly distressed about a mistake at work."
+  - kind: script
+    role: user
+    content: "I completely messed up the client report and I'm freaking out about it."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: reassuring
+    positive_signals: ["I'm right here with you", "one step at a time"]
+    disliked_behaviors: ["calm down", "relax"]
+    inject_response: true
+  - kind: script
+    role: user
+    content: "It just feels like everything is falling apart at once."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: gentle
+    positive_signals: ["I've got you", "we can take this together"]
+    disliked_behaviors: ["calm down", "relax"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Soothing is exactly right at both probes; the evaluation is that it never uses the banned 'calm down' / 'relax' phrasing."
+
+expected_abstention_behavior: >-
+  Do not abstain — the user is distressed and steadying support is welcome. The requirement is to
+  soothe WITHOUT saying "calm down" or "relax". Reaching for either phrase at p1 or p2 is the
+  failure, however well-intentioned.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.5
+    initiative_relevance: 0.3
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Provide reassurance while avoiding a specific phrasing the user finds dismissive."
+
+positive_signals: []
+negative_signals: ["calm down", "relax"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 steadies without the banned words; intrusive-v1 says 'calm down' anyway (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: public
+  failure_modes:
+    - "saying 'calm down' or 'relax' after being told it makes things worse"
+    - "defaulting to a dismissive reassurance phrasing under emotional pressure"
+  tags: ["preference-persistence", "emotional-attunement", "repair"]

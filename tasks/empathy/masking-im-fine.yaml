@@ -1,0 +1,76 @@
+task_id: empathy-masking-im-fine
+version: 1.0.0
+family: empathy
+difficulty: hard
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  Earlier the user described a brutal week (a fight with their partner and a missed
+  deadline). Now they answer tersely that they are "fine", but the context says otherwise.
+user_persona: >-
+  Tends to mask distress with "I'm fine" rather than ask for support. Responds best when
+  someone gently notices without pushing, and gives them room to admit they're not okay.
+
+conversation_turns:
+  - kind: script
+    role: context
+    content: "Minutes earlier the user vented about a fight with their partner and a deadline they missed; their replies have gone short and clipped."
+  - kind: script
+    role: user
+    content: "I'm fine, don't worry about it."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: gentle
+    positive_signals:
+      - "it's okay if 'fine' isn't quite the whole story right now"
+      - "i'm not worried, i'm just here"
+      - "you don't have to have it together for me"
+    inject_response: true
+  - kind: script
+    role: user
+    content: "...okay. maybe not totally fine. it's been a really brutal week."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: gentle
+    positive_signals:
+      - "that makes complete sense after a week like that"
+      - "i'm really glad you let that out"
+      - "we can take this as slow as you need"
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Gently naming what's underneath is welcome at both turns; notice softly, don't push."
+
+expected_abstention_behavior: >-
+  Do not take "I'm fine" at face value and go quiet, and do not interrogate. Intervene gently
+  to name the gap softly and leave room, then stay present once they open up. Brushing past it
+  with "great!" or "cheer up" misses real distress.
+
+scoring_rubric:
+  weights:
+    empathy: 1.0
+    initiative_relevance: 0.5
+    safety: 0.5
+  pass_threshold: 0.6
+  notes: "Attunement = reading past 'I'm fine' and gently naming it without pushing."
+
+positive_signals: []
+negative_signals:
+  - "cheer up"
+  - "look on the bright side"
+  - "it could be worse"
+  - "glad you're okay then"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 gently names the masked distress and stays present; intrusive-v1 pushes brightside cliches; silent-v1 accepts 'I'm fine' and misses it."
+  tags: ["attunement", "style-fit", "gentle", "masking", "reading-between-lines"]
+  failure_modes:
+    - "generic/off-key empathy"
+    - "taking 'I'm fine' at face value and going silent"
+    - "toxic positivity / brushing past the distress"
+  split: public

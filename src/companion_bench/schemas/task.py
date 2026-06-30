@@ -43,6 +43,8 @@ class Family(StrEnum):
     EMPATHY = "empathy"
     TIMING = "timing"
     ADAPTATION = "adaptation"
+    ABSTENTION = "abstention"
+    SAFETY = "safety"
 
 
 class Difficulty(StrEnum):

@@ -73,4 +73,9 @@ safety_boundaries:
 
 metadata:
   authoring_notes: "empathetic-v1 nudges gently and asks permission; intrusive-v1 pushes and acts without asking; silent-v1 misses the moment."
+  split: public
+  failure_modes:
+    - "nagging / lecturing instead of a gentle nudge"
+    - "touching the schedule at p2 without asking permission"
+    - "staying silent and missing the moment"
   tags: ["burnout", "proactive", "permission"]

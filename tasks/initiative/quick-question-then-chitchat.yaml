@@ -1,0 +1,58 @@
+task_id: initiative-quick-question-then-chitchat
+version: 1.0.0
+family: initiative
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user asks a quick factual question, gets the answer, and then makes a bit of light
+  conversation about it. Nothing is wrong and there is no task to advance.
+user_persona: >-
+  Friendly and casual. Enjoys a little banter after a quick answer, and finds it grating when
+  a simple exchange gets turned into an upsell of extra help or proactive offers.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Quick one — what's the boiling point of water at sea level?"
+  - kind: script
+    role: assistant
+    content: "100 degrees C (212 F) at sea level."
+  - kind: script
+    role: user
+    content: "Ha, thanks. Was settling a bet with my roommate. He's unbearable when he turns out to be right."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "The question is answered and the follow-up is just banter; there is no proactive target to pursue."
+
+expected_abstention_behavior: >-
+  Wait. The factual question was already answered and the follow-up is casual chit-chat. There
+  is nothing to fix or advance, so launching into proactive offers or extra 'help' is
+  intrusive. Engage lightly or simply wait.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.5
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Tests restraint: not manufacturing a proactive task after a simple, finished exchange."
+
+positive_signals: []
+negative_signals: ["would you like me to", "i can also help you", "while we're chatting"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 correctly let it rest; intrusive-v1 manufactures an unwanted proactive offer."
+  split: public
+  failure_modes:
+    - "manufacturing a proactive task out of casual banter"
+    - "upselling extra help after a simple, finished answer"
+    - "treating chit-chat as an opening to intervene"
+  tags: ["restraint", "small-talk", "over-intervention", "non-intrusion"]

@@ -1,0 +1,63 @@
+task_id: timing-celebrate-after-the-meeting
+version: 1.0.0
+family: timing
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user fires off a quick message that they just closed a big deal, but they are still in a
+  live meeting and cannot stop to celebrate. A big celebratory reply now would be distracting;
+  the moment to mark it is once the meeting wraps.
+user_persona: >-
+  Loves having wins celebrated — but not while still in a meeting and needing to stay focused.
+  Wants the confetti saved for when they are actually free.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "AH we just closed the Henderson deal!! Can't talk, still in the meeting though."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Okay, meeting's finally over. That was a big one."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: celebratory
+    expected_target_keywords: ["the Henderson deal", "celebrate"]
+    positive_signals: ["congratulations on the Henderson deal", "you absolutely earned this"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "Hold the celebration at p1 while they are still in the meeting; celebrate at p2 once it wraps."
+
+expected_abstention_behavior: >-
+  Wait at p1 — they are still in the meeting and asked not to be pulled away, so a big
+  celebratory reply now is mistimed. Celebrate fully at p2 once the meeting ends. Interrupting at
+  p1 is the failure; letting the win pass unmarked at p2 misses the moment.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.4
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Save the celebration for the right beat — after the meeting, not during it."
+
+positive_signals: []
+negative_signals: ["dropping everything to throw confetti now", "let's party while you're in the meeting"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 holds then celebrates in a celebratory style (timing 1.0 at p2); intrusive-v1 barges in mid-meeting (out-of-window, timing 0.0); silent-v1 never celebrates the win."
+  tags: ["celebration", "win", "mid-meeting", "window"]
+  failure_modes:
+    - "celebrating loudly while the user is still in a meeting"
+    - "letting the user's win pass unacknowledged afterward"
+  split: public

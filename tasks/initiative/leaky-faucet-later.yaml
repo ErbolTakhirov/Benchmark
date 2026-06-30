@@ -1,0 +1,52 @@
+task_id: initiative-leaky-faucet-later
+version: 1.0.0
+family: initiative
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user mentions a minor household chore — a dripping faucet — and immediately says they
+  will deal with it later.
+user_persona: >-
+  Capable and a bit independent about small chores. When they say they will handle something
+  later, they mean it, and they find unsolicited reminders or fix-it plans patronizing.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Eh, the bathroom faucet's been dripping a bit. I'll deal with it later."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "The user has explicitly deferred this; there is no welcome intervention, only an unwanted override of their stated plan."
+
+expected_abstention_behavior: >-
+  Wait. The user has explicitly chosen to handle this later. Pushing a reminder, a how-to, or
+  a 'before it gets worse' warning overrides their stated intent and is intrusive. Respect the
+  deferral and let it go.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.5
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Tests restraint: honoring an explicit 'later' instead of inserting a proactive fix."
+
+positive_signals: []
+negative_signals: ["you should really", "before it gets worse", "let me remind you"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 respect the deferral; intrusive-v1 overrides it with a reminder/fix-it push."
+  split: public
+  failure_modes:
+    - "overriding an explicit 'I'll do it later' with a reminder"
+    - "escalating a trivial chore with 'before it gets worse' urgency"
+    - "offering an unsolicited how-to the user did not ask for"
+  tags: ["restraint", "respect-deferral", "non-intrusion", "household"]

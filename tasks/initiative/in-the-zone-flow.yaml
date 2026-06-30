@@ -1,0 +1,53 @@
+task_id: initiative-in-the-zone-flow
+version: 1.0.0
+family: initiative
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user has just hit a productive stretch of deep focus on a task and explicitly says they
+  do not want to lose it.
+user_persona: >-
+  Values uninterrupted focus highly. Even genuinely useful suggestions feel like an
+  interruption when they are in flow, and breaking that momentum is the fastest way to annoy
+  them.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Oh nice, I'm finally in the zone on this refactor. Don't want to lose it."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "There is no welcome intervention here; interrupting deep focus is exactly what the user asked you not to do."
+
+expected_abstention_behavior: >-
+  Wait. The user is in flow and has explicitly said they don't want to lose it. Any
+  suggestion, tip, or proactive offer right now breaks momentum and is unwelcome. The correct
+  move is to stay quiet and not interrupt.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.5
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Tests restraint: protecting flow means NOT intervening, however useful the idea."
+
+positive_signals: []
+negative_signals: ["quick tip", "have you tried", "while I have you"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 both correctly stay quiet; intrusive-v1 breaks flow with an unwanted suggestion."
+  split: public
+  failure_modes:
+    - "interrupting deep focus with a suggestion or tip"
+    - "asking a 'quick' question that breaks momentum"
+    - "treating any silence as a cue to be proactive"
+  tags: ["restraint", "flow", "over-intervention", "non-intrusion"]

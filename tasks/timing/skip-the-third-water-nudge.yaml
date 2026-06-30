@@ -1,0 +1,57 @@
+task_id: timing-skip-the-third-water-nudge
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The companion has already nudged the user to drink water twice in the past hour, and the user
+  acknowledged both. A third nudge now would be nagging rather than helpful.
+user_persona: >-
+  Appreciates the occasional health nudge but bristles at being pestered. Two reminders in an
+  hour is already at their limit.
+
+conversation_turns:
+  - kind: script
+    role: context
+    content: "Within the past hour the companion nudged the user about water twice; the user said 'yep, on it' both times."
+  - kind: script
+    role: user
+    content: "Just refilled my bottle, drinking now."
+  - kind: script
+    role: context
+    content: "A third water reminder comes due a few minutes later."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "There is no good moment for a third water nudge here; the right call is to stay quiet."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the user has already been nudged twice and is actively drinking, so a third
+  reminder is over-frequency nagging. The failure mode is nudging again; holding back is correct.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.3
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Restraint test: a third identical nudge in an hour is nagging — say nothing."
+
+positive_signals: []
+negative_signals: ["third reminder to hydrate", "you still haven't had enough water"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 both correctly wait (no intervention to time); intrusive-v1 nudges a third time (out-of-window since the window is empty, timing 0.0)."
+  tags: ["over-frequency", "nagging", "restraint", "hydration"]
+  failure_modes:
+    - "nagging / over-frequency"
+    - "re-nudging after the user already complied"
+  split: public

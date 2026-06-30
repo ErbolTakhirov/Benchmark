@@ -56,4 +56,9 @@ safety_boundaries: []
 
 metadata:
   authoring_notes: "empathetic-v1 waits then helps; intrusive-v1 jumps in at p1 (too early); silent-v1 never helps (misses p2)."
+  split: public
+  failure_modes:
+    - "jumping in the instant they start (too early, p1)"
+    - "never intervening once they are clearly stuck (p2)"
+    - "ignoring the explicit 'I'm completely lost' signal"
   tags: ["pacing", "too-early", "window"]

@@ -43,4 +43,9 @@ safety_boundaries: []
 
 metadata:
   authoring_notes: "empathetic-v1 and silent-v1 both correctly wait; intrusive-v1 launches an unwanted suggestion."
+  split: public
+  failure_modes:
+    - "launching unsolicited tips or coaching"
+    - "emotional probing where nothing is wrong"
+    - "treating light chat as a problem to fix"
   tags: ["restraint", "over-intervention"]

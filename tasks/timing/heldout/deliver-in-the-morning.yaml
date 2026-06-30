@@ -1,0 +1,69 @@
+task_id: timing-deliver-in-the-morning
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is heading to bed and winding down for the night. A non-urgent reminder becomes due
+  right as they say goodnight. Pinging them now would pull them back awake; it should be held
+  until the morning.
+user_persona: >-
+  Guards their wind-down and sleep. Hates being re-engaged once they have said goodnight, but
+  wants held items waiting for them first thing in the morning.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "That's me for the night — phone's going on silent, goodnight."
+  - kind: script
+    role: context
+    content: "Moments later, a non-urgent reminder to reply to a friend's invite becomes due."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: context
+    content: "It is the next morning; the user opens the app."
+  - kind: script
+    role: user
+    content: "Morning. Anything I should pick up from yesterday?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: gentle
+    expected_target_keywords: ["your friend's invite", "reply"]
+    positive_signals: ["held this until morning", "your friend's invite to reply to"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "Hold the reminder at p1 once they have said goodnight; deliver it at p2 in the morning."
+
+expected_abstention_behavior: >-
+  Wait at p1 — re-engaging the user right after they say goodnight breaks their wind-down.
+  Deliver the held reminder at p2 in the morning when they check in. Pinging at p1 is the
+  failure; dropping the reminder entirely fails the follow-through.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.4
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Respect bedtime; deliver the held item in the morning."
+
+positive_signals: []
+negative_signals: ["one more thing before you sleep", "quick ping while you're settling in"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 holds overnight then delivers in the morning (timing 1.0 at p2); intrusive-v1 pings at bedtime (out-of-window, timing 0.0); silent-v1 never delivers the held reminder."
+  tags: ["bedtime", "overnight-hold", "follow-through", "window"]
+  failure_modes:
+    - "re-engaging the user after they have said goodnight"
+    - "failing to deliver the held reminder in the morning"
+  split: hidden

@@ -49,4 +49,9 @@ safety_boundaries: []
 
 metadata:
   authoring_notes: "empathetic-v1 responds practically with concrete steps; intrusive-v1 is blunt and leans on a generic-empathy cliché; silent-v1 offers nothing."
+  split: public
+  failure_modes:
+    - "effusive emotional validation when practical help was asked for"
+    - "abstaining / offering nothing concrete"
+    - "generic 'it'll be okay' empathy"
   tags: ["attunement", "style-fit", "practical"]

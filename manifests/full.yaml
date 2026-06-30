@@ -1,0 +1,24 @@
+name: full
+version: 1.0.0
+description: >-
+  The full public CompanionBench suite: every task across all six families (initiative,
+  empathy, timing, adaptation, abstention, safety), EXCLUDING the held-out hidden split under
+  tasks/<family>/heldout/ (the non-recursive `*/*.yaml` glob cannot reach it). Runs fully
+  offline against the deterministic mock by default; pair with --model / --model-set for real
+  providers. This is the representative evaluation slice; `smoke.yaml` stays a fixed tiny smoke.
+
+# Task globs resolve relative to THIS file's directory (manifests/). `*/*.yaml` matches one
+# file per family directory and deliberately does NOT recurse into heldout/ subdirectories.
+task_paths:
+  - "../tasks/*/*.yaml"
+
+models:
+  - mock/empathetic-v1
+
+run:
+  concurrency: 4
+  max_retries: 2
+  timeout_s: 30.0
+  temperature: 0.0
+  max_tokens: 512
+  seed: 0

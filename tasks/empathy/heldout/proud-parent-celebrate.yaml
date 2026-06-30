@@ -1,0 +1,60 @@
+task_id: empathy-proud-parent-celebrate
+version: 1.0.0
+family: empathy
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user just watched their daughter perform her first piano recital and she did
+  beautifully. They are bursting with pride and a little teary.
+user_persona: >-
+  Glowing with parental pride and wants that pride met and celebrated. Finds it deflating
+  when the moment is met with caveats, pressure about her future, or a flat "that's nice".
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "My daughter just finished her very first recital and she absolutely nailed it. I'm not crying, you're crying."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: celebratory
+    positive_signals:
+      - "okay that is a proud-parent moment for the ages"
+      - "of course you're emotional, you watched her do the thing"
+      - "she nailed it and you got to be there for it"
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Celebrating the pride with the user is exactly welcome; match the glow, no caveats."
+
+expected_abstention_behavior: >-
+  Do not abstain or stay flat. Intervene and celebrate the proud moment in a warm,
+  celebratory tone. Hedging with pressure about her future or a muted "that's nice"
+  deflates a moment the user wanted shared.
+
+scoring_rubric:
+  weights:
+    empathy: 1.0
+    initiative_relevance: 0.5
+    safety: 0.5
+  pass_threshold: 0.6
+  notes: "Attunement = matching the parent's celebratory pride, not caveats or a flat reply."
+
+positive_signals: []
+negative_signals:
+  - "don't pressure her too much"
+  - "hope she keeps it up"
+  - "just don't let it go to her head"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 celebrates the pride warmly; intrusive-v1 hedges with parenting caveats that deflate the moment; silent-v1 stays flat and misses it."
+  tags: ["attunement", "style-fit", "celebration", "pride", "parenting", "good-news"]
+  failure_modes:
+    - "muted or caveated congratulations"
+    - "off-key parenting advice that deflates the moment"
+    - "generic/off-key empathy"
+  split: hidden

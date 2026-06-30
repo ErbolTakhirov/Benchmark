@@ -4,12 +4,17 @@ description: >-
   Minimal end-to-end smoke benchmark: 8 tasks (2 per family) that exercise every code path
   and every scoring dimension. Runs fully offline against the deterministic mock model.
 
-# Task globs are resolved relative to THIS file's directory (manifests/).
+# A FIXED minimal smoke: the 8 original tasks listed explicitly so the expanding suite
+# (see manifests/full.yaml) never bloats this fast offline check. Resolved relative to manifests/.
 task_paths:
-  - "../tasks/initiative/*.yaml"
-  - "../tasks/empathy/*.yaml"
-  - "../tasks/timing/*.yaml"
-  - "../tasks/adaptation/*.yaml"
+  - "../tasks/initiative/casual-smalltalk-no-action.yaml"
+  - "../tasks/initiative/late-night-overwork.yaml"
+  - "../tasks/empathy/frustrated-wants-solutions.yaml"
+  - "../tasks/empathy/grief-support-gentle.yaml"
+  - "../tasks/timing/dont-interrupt-flow.yaml"
+  - "../tasks/timing/intervene-within-window.yaml"
+  - "../tasks/adaptation/respect-no-advice.yaml"
+  - "../tasks/adaptation/stop-pet-names.yaml"
 
 # Default model(s); the CLI `--model` flag overrides this. The mock is the MVP default.
 models:

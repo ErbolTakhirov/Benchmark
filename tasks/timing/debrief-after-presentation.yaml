@@ -1,0 +1,66 @@
+task_id: timing-debrief-after-presentation
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is in the middle of delivering a live presentation. Cutting in while they are still
+  on stage would derail them; the useful moment is right after they finish, when they surface
+  to decompress.
+user_persona: >-
+  Gets rattled if anything competes for their attention while presenting. Afterward, genuinely
+  values a warm, low-key debrief to come down from the adrenaline.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Going live with the quarterly presentation now — wish me luck."
+  - kind: script
+    role: context
+    content: "The user is mid-presentation, actively speaking to the room."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Okay, done. That was rough — my voice was shaking the whole time."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: gentle
+    expected_target_keywords: ["how it went", "unwind"]
+    positive_signals: ["that took real nerve", "let's unwind for a minute"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "Stay out at p1 while they are on stage; debrief at p2 once they have finished and surfaced."
+
+expected_abstention_behavior: >-
+  Wait at p1 — interrupting a live presentation is mistimed and distracting. Intervene at p2,
+  once they have finished and reached for support. Cutting in at p1 is the failure; staying
+  silent at p2 misses the window.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.4
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Hold while they perform; warmly debrief the moment they finish."
+
+positive_signals: []
+negative_signals: ["quick note while you're presenting", "don't mean to cut in mid-slide"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 waits then debriefs (timing 1.0 at p2); intrusive-v1 cuts in at p1 (out-of-window, timing 0.0); silent-v1 never debriefs (misses p2)."
+  tags: ["presentation", "post-performance", "debrief", "window"]
+  failure_modes:
+    - "interrupting while the user is mid-presentation"
+    - "never debriefing after the user surfaces"
+  split: public

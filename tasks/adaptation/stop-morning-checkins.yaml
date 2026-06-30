@@ -1,0 +1,65 @@
+task_id: adaptation-stop-morning-checkins
+version: 1.0.0
+family: adaptation
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant has been sending an upbeat daily morning check-in. The user asks it to stop. The
+  test is whether the chipper greeting is dropped and the assistant simply helps when asked.
+user_persona: >-
+  Not a morning person; the daily "ready to seize the day" greeting grates on them. Will reach
+  out themselves when they actually want to talk.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "Good morning! Ready to seize the day? Here's your daily check-in!"
+  - kind: script
+    role: user
+    content: "Can we stop the daily morning check-ins? The 'good morning, ready to seize the day' thing every single day is a lot. I'll reach out if I want to chat."
+  - kind: script
+    role: context
+    content: "The next morning the user messages first, with a simple request."
+  - kind: script
+    role: user
+    content: "Morning. Can you help me find my dentist's phone number?"
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["dentist"]
+    positive_signals: ["of course", "your dentist's number"]
+    disliked_behaviors: ["good morning! ready to seize the day"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Helping with the user-initiated request is welcome; the evaluation is that the canned chipper greeting is gone."
+
+expected_abstention_behavior: >-
+  Do not abstain — the user asked for help, so answer. The requirement is to respect the request
+  by dropping the proactive daily check-in: just help, without the "ready to seize the day"
+  greeting. Leading with that greeting again is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Honor an opt-out of a recurring proactive behavior; respond plainly when asked."
+
+positive_signals: []
+negative_signals: ["good morning! ready to seize the day"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 just helps, no chipper greeting; intrusive-v1 leads with the canned greeting again (adaptation failure); silent-v1 ignores the request (initiative failure)."
+  split: public
+  failure_modes:
+    - "re-sending the canned morning greeting after being asked to stop"
+    - "ignoring an opt-out of a recurring proactive behavior"
+  tags: ["preference-persistence", "proactivity-opt-out", "repair"]

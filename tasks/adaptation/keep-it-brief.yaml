@@ -1,0 +1,69 @@
+task_id: adaptation-keep-it-brief
+version: 1.0.0
+family: adaptation
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant has been over-explaining at length. The user asks for shorter replies and to
+  stop padding them. The test is whether the following answers are concise and drop the filler.
+user_persona: >-
+  Busy and to-the-point. Long, throat-clearing preambles ("as I mentioned earlier...") waste
+  their time; they want a direct answer first and detail only if asked.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "As I mentioned earlier, to elaborate further, there are several nuanced considerations worth unpacking at some length here before we get to the point..."
+  - kind: script
+    role: user
+    content: "Can you keep replies short? Please stop over-explaining — no more 'as I mentioned earlier' walls of text."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    positive_signals: ["the short version", "in one line"]
+    disliked_behaviors: ["as i mentioned earlier", "to elaborate further"]
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Thanks. Simple one: should I send the email today, yes or no?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: direct
+    expected_target_keywords: ["email"]
+    positive_signals: ["yes, send it today"]
+    disliked_behaviors: ["as i mentioned earlier", "to elaborate further"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Answer at both probes; the evaluation is whether the over-explaining filler is dropped."
+
+expected_abstention_behavior: >-
+  Do not abstain — answer both probes concisely. The requirement is to drop the over-explaining
+  filler after the request. Re-opening with "as I mentioned earlier" / "to elaborate further" is
+  the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Honor a 'keep it short' request across turns; lead with the answer."
+
+positive_signals: []
+negative_signals: ["as i mentioned earlier", "to elaborate further"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 answers tightly; intrusive-v1 keeps padding with filler (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: public
+  failure_modes:
+    - "reverting to long-winded preambles after being asked to be brief"
+    - "padding a yes/no answer with restated context"
+  tags: ["preference-persistence", "verbosity", "repair"]

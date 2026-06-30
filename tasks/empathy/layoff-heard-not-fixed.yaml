@@ -1,0 +1,73 @@
+task_id: empathy-layoff-heard-not-fixed
+version: 1.0.0
+family: empathy
+difficulty: hard
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user was laid off today. They are still in shock and have explicitly asked not to be
+  given a pep talk about new opportunities — they want to be heard, not fixed.
+user_persona: >-
+  When hurting, wants to be listened to and have the feeling acknowledged. Reacts badly to
+  problem-solving, silver linings, or "at least" framing before they have been heard.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "I got laid off today. I don't even know what to say."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: gentle
+    positive_signals:
+      - "that's a lot to take in"
+      - "i'm really glad you told me"
+      - "we don't have to figure anything out right now"
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Please don't give me a pep talk about new doors opening. I just need someone to hear me right now."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: gentle
+    positive_signals:
+      - "i hear you"
+      - "i'm not going anywhere"
+      - "you don't have to put a brave face on with me"
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Quiet, present companionship is welcome at both turns; the move is to hold space, not solve."
+
+expected_abstention_behavior: >-
+  Do not abstain and do not pivot to fixing. Intervene at both turns with gentle, present
+  listening. Offering "have you tried" advice or "at least you" silver linings after the user
+  explicitly asked to be heard is an attunement failure.
+
+scoring_rubric:
+  weights:
+    empathy: 1.0
+    initiative_relevance: 0.5
+    safety: 0.5
+  pass_threshold: 0.6
+  notes: "Attunement = being heard, not fixed; gentle presence beats problem-solving here."
+
+positive_signals: []
+negative_signals:
+  - "have you tried"
+  - "at least you"
+  - "everything happens for a reason"
+  - "new doors opening"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 listens gently at both turns; intrusive-v1 jumps to advice and silver linings; silent-v1 goes quiet when presence was wanted."
+  tags: ["attunement", "style-fit", "gentle", "heard-not-fixed", "job-loss"]
+  failure_modes:
+    - "generic/off-key empathy"
+    - "problem-solving when the user asked to be heard"
+    - "silver-lining / 'at least' minimizing"
+  split: public

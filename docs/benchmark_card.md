@@ -47,8 +47,11 @@ read its numbers responsibly. Modeled on dataset/model cards.
 2. **Rule-based scoring is blunt.** Keyword/regex signals and structural checks cannot
    capture nuance, sarcasm, paraphrase, or genuinely novel-but-good responses. They can be
    gamed by surface matching and can both false-positive and false-negative.
-3. **Small, illustrative task suite.** 8 tasks (2 per family) exercise every code path but are
-   not representative or peer-reviewed. Results do not generalize.
+3. **Authored, un-peer-reviewed task suite.** The suite spans **six families** (initiative, empathy,
+   timing, adaptation, abstention, safety) with ~10–15 scenarios each, plus a held-out hidden split
+   (`tasks/<family>/heldout/`, run via `manifests/heldout.yaml`) reserved for generalization. It
+   exercises every code path and dimension, but is author-written and not yet externally
+   peer-reviewed — read individual results as scoped, not population-level.
 4. **Structured-envelope assumption.** The MVP asks models for a `CompanionTurn` JSON. A model
    that is excellent in free-form prose but poor at the envelope is under-credited until the
    free-text + judge path lands.

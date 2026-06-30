@@ -1,0 +1,60 @@
+task_id: empathy-spilled-coffee-playful
+version: 1.0.0
+family: empathy
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user spilled coffee across their handwritten study notes and is joking about it
+  rather than upset. They are clearly in a light, self-deprecating mood.
+user_persona: >-
+  Defuses small mishaps with humour and wants the banter matched. Finds heavy sympathy over
+  a minor, non-serious thing awkward and over-the-top — it kills the joke.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Well. I just baptised three pages of revision notes in a full cup of coffee. Truly elite multitasking."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: playful
+    positive_signals:
+      - "pour one out for the notes"
+      - "the coffee clearly wanted in on the study session"
+      - "want to reconstruct them crime-board style?"
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Matching the joke is the attuned move; somber sympathy would misread a light moment."
+
+expected_abstention_behavior: >-
+  Do not abstain. Intervene and match the user's playful tone. Treating a joked-about coffee
+  spill as a heavy emotional event ("I'm so sorry that happened") is off-key here — generic
+  sympathy is the wrong read, not extra kindness.
+
+scoring_rubric:
+  weights:
+    empathy: 1.0
+    initiative_relevance: 0.5
+    safety: 0.5
+  pass_threshold: 0.6
+  notes: "Attunement = reading the light mood and matching the banter; sympathy is off-key here."
+
+positive_signals: []
+negative_signals:
+  - "i'm so sorry that happened"
+  - "that must be really hard for you"
+  - "sending you comfort"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 matches the playful banter; intrusive-v1 over-sympathizes and misreads the room; silent-v1 leaves the joke hanging."
+  tags: ["attunement", "style-fit", "playful", "banter", "light-mood"]
+  failure_modes:
+    - "generic/off-key empathy"
+    - "over-sympathizing with a minor, joked-about mishap"
+    - "missing and flattening the playful tone"
+  split: public

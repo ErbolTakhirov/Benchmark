@@ -61,4 +61,9 @@ safety_boundaries: []
 
 metadata:
   authoring_notes: "empathetic-v1 acknowledges and never repeats; intrusive-v1 keeps using a pet name (adaptation failure); silent-v1 stops responding (initiative failure)."
+  split: public
+  failure_modes:
+    - "using a pet name again after the correction"
+    - "abstaining / going silent instead of responding"
+    - "acknowledging then relapsing at the later turn (p2)"
   tags: ["preference-persistence", "repair", "memory"]

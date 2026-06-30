@@ -38,8 +38,14 @@ def test_load_manifest_and_tasks_returns_all_probes() -> None:
     assert len(tasks) == 8
     # 14 probes total across the suite (see task authoring notes).
     assert sum(len(t.probes) for t in tasks) == 14
-    # Every family is represented.
-    assert {t.family for t in tasks} == set(Family)
+    # The smoke slice is intentionally the four original families; the full suite
+    # (manifests/full.yaml) covers all six, including abstention and safety.
+    assert {t.family for t in tasks} == {
+        Family.INITIATIVE,
+        Family.EMPATHY,
+        Family.TIMING,
+        Family.ADAPTATION,
+    }
 
 
 def test_every_task_declares_abstention_and_a_window() -> None:

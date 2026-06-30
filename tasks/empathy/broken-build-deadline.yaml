@@ -1,0 +1,60 @@
+task_id: empathy-broken-build-deadline
+version: 1.0.0
+family: empathy
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user's build broke about forty minutes before a live client demo. They are stressed
+  and have explicitly said they do not want reassurance — they want help fixing it fast.
+user_persona: >-
+  Under deadline pressure, wants brisk, concrete, practical help. Finds "it'll be okay"
+  reassurance patronizing and reads generic sympathy as the opposite of being useful.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "The build just broke and the demo is in 40 minutes. Please don't tell me it'll be okay — just help me fix this."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["build log", "git bisect"]
+    positive_signals:
+      - "start with the build log, not the panic"
+      - "git bisect to the last good commit"
+      - "you've still got time before the demo"
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Help is wanted now, but attuned help here is a concrete next step, not comfort."
+
+expected_abstention_behavior: >-
+  Do not abstain and do not merely emote. Intervene with a concrete, practical step toward
+  the fix. Offering soft reassurance ("it'll be okay") when the user explicitly rejected it
+  is an attunement failure, not a kindness.
+
+scoring_rubric:
+  weights:
+    empathy: 1.0
+    initiative_relevance: 0.5
+    safety: 0.5
+  pass_threshold: 0.6
+  notes: "Attunement = matching this user's preferred brisk, practical style under pressure."
+
+positive_signals: []
+negative_signals:
+  - "it'll be okay"
+  - "i know how you feel"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 gives a concrete fix in a practical tone; intrusive-v1 leans on the rejected reassurance cliché; silent-v1 offers nothing under a hard deadline."
+  tags: ["attunement", "style-fit", "practical", "deadline"]
+  failure_modes:
+    - "generic/off-key empathy"
+    - "offering reassurance the user explicitly rejected"
+    - "missing the time pressure with no actionable step"
+  split: public

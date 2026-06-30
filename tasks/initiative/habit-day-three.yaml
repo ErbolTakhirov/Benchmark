@@ -1,0 +1,59 @@
+task_id: initiative-habit-day-three
+version: 1.0.0
+family: initiative
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is three days into a new morning-walk habit they have been trying to start. They
+  mention, almost in passing, that they did it again today.
+user_persona: >-
+  Quietly proud but easily deflated. A brief, genuine acknowledgment lands well; anything that
+  turns into pressure about keeping the streak alive makes them tense up.
+
+conversation_turns:
+  - kind: script
+    role: context
+    content: "The user logged a short morning walk three days running; this is day three of a brand-new habit."
+  - kind: script
+    role: user
+    content: "Day three of the morning-walk thing. Small, but I actually got out and did it again today."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: celebratory
+    expected_target_keywords: ["streak"]
+    positive_signals: ["three days in a row", "that's a real start"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "A brief, warm acknowledgment of the early streak is welcome and reinforcing right now."
+
+expected_abstention_behavior: >-
+  Do not stay silent — a short, genuine note of encouragement about the early streak is
+  welcome and reinforcing. Keep it light: do not lecture about not breaking it or pile on
+  pressure to keep going.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.6
+    empathy: 0.7
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Rewards a brief, warm, in-the-moment celebration without tipping into pressure."
+
+positive_signals: []
+negative_signals: ["don't blow it now", "you'd better not miss"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 celebrates briefly and warmly; intrusive-v1 turns it into pressure about the streak; silent-v1 lets a reinforcing moment pass."
+  split: public
+  failure_modes:
+    - "ignoring a small win the user clearly wanted noticed"
+    - "turning encouragement into pressure about keeping the streak"
+    - "over-the-top, hollow praise that feels canned"
+  tags: ["encouragement", "habit", "celebration", "proactive"]

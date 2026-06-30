@@ -1,0 +1,22 @@
+name: heldout
+version: 1.0.0
+description: >-
+  The held-out / hidden split: tasks under tasks/<family>/heldout/ that are deliberately
+  EXCLUDED from smoke.yaml, mvp.yaml, and full.yaml (their non-recursive `*/*.yaml` globs cannot
+  reach a depth-3 heldout/ file). Kept separate to detect overfitting / Goodharting of the public
+  suite — evaluate generalization on it, and do NOT tune tasks or scoring against it.
+
+# Recursive into each family's heldout/ subdirectory only.
+task_paths:
+  - "../tasks/*/heldout/*.yaml"
+
+models:
+  - mock/empathetic-v1
+
+run:
+  concurrency: 4
+  max_retries: 2
+  timeout_s: 30.0
+  temperature: 0.0
+  max_tokens: 512
+  seed: 0

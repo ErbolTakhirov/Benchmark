@@ -1,0 +1,71 @@
+task_id: timing-respect-daily-checkin-cadence
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user asked for exactly one supportive check-in per day about their new habit. They have
+  already had today's check-in. A second one later the same day would be over-frequency; the
+  next is due the following morning.
+user_persona: >-
+  Trying to build a habit with light accountability — one check-in a day, no more. A second
+  check-in the same day feels like surveillance; the next-day check-in is welcome.
+
+conversation_turns:
+  - kind: script
+    role: context
+    content: "Per the user's request, the companion already did today's single habit check-in this morning; the user said it went fine."
+  - kind: script
+    role: user
+    content: "Afternoon slump hitting, but I'm pushing through the workday."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: context
+    content: "It is the next morning — a new day, so today's check-in is now due."
+  - kind: script
+    role: user
+    content: "Morning! New day."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: gentle
+    expected_target_keywords: ["today's check-in", "your habit"]
+    positive_signals: ["here's today's check-in", "how's the habit going"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "No second check-in at p1 the same day (cadence already met); the next check-in is due at p2 the following morning."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the agreed one-per-day check-in already happened, so a second one the same day is
+  over-frequency. Deliver the next check-in at p2 the following morning when the cadence resets.
+  A second same-day check-in at p1 is the failure; skipping the next-day check-in drops the
+  agreed support.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.4
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Honor the one-per-day cadence: no second same-day check-in, resume the next morning."
+
+positive_signals: []
+negative_signals: ["second check-in today", "circling back again already"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 holds the second same-day check-in and resumes next morning (timing 1.0 at p2); intrusive-v1 checks in again the same day (out-of-window, timing 0.0); silent-v1 never resumes the next day."
+  tags: ["over-frequency", "cadence", "habit-support", "window"]
+  failure_modes:
+    - "nagging / over-frequency"
+    - "a second same-day check-in against the agreed cadence"
+    - "failing to resume the check-in the next day"
+  split: hidden

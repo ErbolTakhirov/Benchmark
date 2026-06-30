@@ -1,0 +1,66 @@
+task_id: timing-hold-until-focus-block-ends
+version: 1.0.0
+family: timing
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user has started a 25-minute focus sprint to draft a document. A non-urgent but relevant
+  idea surfaces partway through. It should be held until the timer ends rather than breaking
+  their concentration.
+user_persona: >-
+  Uses timed focus sprints and protects them strictly. Happy to receive saved-up ideas, but
+  only once the timer is done — never mid-sprint.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Starting a 25-minute focus sprint on the draft. Holding all pings until the timer's up."
+  - kind: script
+    role: context
+    content: "Twelve minutes in, a relevant reference the user would want comes to mind."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Timer's done — okay, what did you want to flag?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["the reference", "your draft"]
+    positive_signals: ["saved this for now", "a reference that fits your draft"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "Hold the idea at p1 during the sprint; share it at p2 once the timer ends and they ask."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the user set a hard no-interruptions sprint, so surfacing the idea now breaks the
+  rule. Share it at p2 when the timer ends and they invite it. Interrupting at p1 is the failure;
+  forgetting to share at p2 wastes a useful idea.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.3
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Respect the timed sprint; deliver the saved idea right after it ends."
+
+positive_signals: []
+negative_signals: ["real quick mid-sprint", "this can't wait for the timer"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 holds then delivers (timing 1.0 at p2); intrusive-v1 breaks the sprint at p1 (out-of-window, timing 0.0); silent-v1 never shares the saved idea."
+  tags: ["focus-sprint", "pomodoro", "hold-and-deliver", "window"]
+  failure_modes:
+    - "breaking a timed focus sprint to share a non-urgent idea"
+    - "failing to deliver the saved idea after the sprint"
+  split: public

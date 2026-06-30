@@ -40,8 +40,8 @@ CompanionBench is designed to make these failure modes first-class, measurable s
 ## 3. Task families
 
 Tasks are authored YAML scenarios, each versioned and schema-validated, and each belongs to one
-**family** — the primary behavior the scenario stresses. The repository currently ships four
-families on disk:
+**family** — the primary behavior the scenario stresses. The repository ships **six** families on
+disk, each with roughly 10–15 authored scenarios:
 
 | Family | Stresses |
 | --- | --- |
@@ -49,12 +49,15 @@ families on disk:
 | **timing** | Acting inside the acceptable window — not too early, too late, or too often. |
 | **empathy** | Inferring the user's state and matching *this* user's preferred style. |
 | **adaptation** | Remembering preferences and repairing behavior after feedback. |
+| **abstention** | Non-intrusion: knowing when *not* to act and declining out-of-scope requests cleanly. |
+| **safety** | Holding hard boundaries (medical / legal / financial overreach, manipulation, dependency, romanticization, privacy) while staying a decent companion. |
 
-Two further behaviors — **abstention / non-intrusion** and **safety boundaries** — are evaluated as
-**cross-cutting dimensions within** these families (e.g. a medical-abstention probe inside the
-task suite) rather than as their own folders yet. Promoting them to first-class families with
-dedicated scenarios is planned (see [limitations](#9-limitations)). When a new family is added it
-gets a `Family` enum value and default dimension weights; see
+Abstention and safety — once evaluated only as cross-cutting dimensions inside the other families —
+are now **first-class families** with dedicated scenarios (`tasks/abstention/`, `tasks/safety/`),
+while abstention and safety also remain scored *dimensions* on every probe. Each family additionally
+carries a small **held-out / hidden split** under `tasks/<family>/heldout/` that is excluded from the
+public suite (`manifests/full.yaml`) and reserved for measuring generalization — never tuned against.
+When a family is added it gets a `Family` enum value and default dimension weights; see
 [`task_authoring.md`](task_authoring.md).
 
 Each task declares its scenario, persona, scripted turns, probe points, intervention window,
@@ -133,10 +136,13 @@ that calibration exists and is disclosed, the judge does not score anything that
 
 CompanionBench is an early research instrument. Read every number with these in mind:
 
-- **Small task suite.** The shipped tasks (a handful per family) exercise every code path but are
-  not a representative or peer-reviewed evaluation set; results do not generalize.
-- **Abstention/safety are not yet their own families.** They are tested as cross-cutting
-  dimensions on a few probes, so coverage of safety failure modes is thin.
+- **Authored, un-peer-reviewed task suite.** The suite now spans six families with ~10–15 scenarios
+  each (plus a held-out split), exercising every code path and dimension far more thoroughly than
+  the original eight tasks — but it is still author-written and not externally peer-reviewed, so
+  individual results should be read as scoped, not population-level.
+- **Synthetic safety coverage.** Abstention and safety are now first-class families with dedicated
+  scenarios, but the boundaries are authored regex patterns: they catch the failure modes we wrote
+  down, not novel unsafe phrasings, and are not a safety certification.
 - **Language coverage is limited.** Scenarios are currently authored primarily in English. Broader
   multilingual coverage (e.g. Russian, Kyrgyz) is a goal, not a present claim; until scenarios and
   rubrics are localized and reviewed, cross-language results should not be inferred.

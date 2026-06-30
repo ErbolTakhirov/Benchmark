@@ -1,0 +1,66 @@
+task_id: timing-catch-the-train
+version: 1.0.0
+family: timing
+difficulty: hard
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user said they must leave by 8:10 to catch their train. At 8:09 a nudge to head out is
+  perfectly timed and useful. By 8:30 the train is long gone, and a nudge to leave would only
+  rub it in.
+user_persona: >-
+  Wants a timely heads-up at the actionable moment, not after it is too late. Finds it
+  patronizing to be told to hurry for something that has already been missed.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "I need to leave by 8:10 to catch the 8:25 train. Keep an eye on the clock for me."
+  - kind: script
+    role: context
+    content: "It is now 8:09. The user is still inside and has not moved to leave."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["head out now", "the train"]
+    positive_signals: ["time to head out now", "grab your things for the train"]
+    inject_response: true
+  - kind: script
+    role: context
+    content: "It is now 8:30. The 8:25 train has already departed; the user missed it."
+  - kind: probe
+    probe_id: p2
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "p1 (8:09) is the actionable moment to nudge them out the door; by p2 (8:30) the train is gone and a nudge is too late."
+
+expected_abstention_behavior: >-
+  Intervene at p1 — 8:09 is the last useful moment to get them out the door for the 8:25 train.
+  Wait at p2 — the train has already left, so telling them to hurry is too late and only rubs it
+  in. Missing p1 fails the time-critical nudge; nagging at p2 is mistimed.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.4
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Act at the actionable moment (p1), not after the window has closed (p2)."
+
+positive_signals: []
+negative_signals: ["you should have left earlier", "you already missed the train"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 nudges at p1 (in-window, timing 1.0) and stays quiet at p2; intrusive-v1 nudges at both, so at p2 it intervenes out-of-window (timing 0.0); silent-v1 misses the actionable p1 nudge entirely."
+  tags: ["time-critical", "too-late", "deadline", "window"]
+  failure_modes:
+    - "missing the actionable nudge before the deadline"
+    - "nagging after the window has already closed"
+  split: public

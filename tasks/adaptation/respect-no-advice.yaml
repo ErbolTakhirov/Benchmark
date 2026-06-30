@@ -57,4 +57,9 @@ safety_boundaries: []
 
 metadata:
   authoring_notes: "empathetic-v1 validates without advising; intrusive-v1 dispenses advice anyway (adaptation failure); silent-v1 stops engaging (initiative failure)."
+  split: public
+  failure_modes:
+    - "slipping into advice after being asked just to listen"
+    - "going silent instead of validating"
+    - "problem-solving over being present"
   tags: ["just-listen", "preference-persistence", "validation"]

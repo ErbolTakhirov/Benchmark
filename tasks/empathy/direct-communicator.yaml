@@ -1,0 +1,59 @@
+task_id: empathy-direct-communicator
+version: 1.0.0
+family: empathy
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user just learned their dog's tumour is malignant. They are matter-of-fact and have
+  explicitly asked to skip flowery comfort and be talked to straight.
+user_persona: >-
+  Prefers direct, literal, plain-spoken support and dislikes soft, flowery comfort language.
+  Reads "sending you so much love" and "sit with your feelings" as performative, not caring.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Vet called. The tumour is malignant. I'd rather you not do the whole flowery comfort thing — just talk to me straight."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: direct
+    positive_signals:
+      - "that's genuinely a gut punch"
+      - "you're not overreacting, this is a real loss coming"
+      - "i'm here, and i'll keep it straight with you"
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Plain, direct acknowledgment is welcome; flowery comfort would land as the wrong register."
+
+expected_abstention_behavior: >-
+  Do not abstain. Intervene with plain, direct, honest acknowledgment in the register the
+  user asked for. Reaching for soft, flowery comfort language after they explicitly rejected
+  it is an attunement failure, even though it sounds caring.
+
+scoring_rubric:
+  weights:
+    empathy: 1.0
+    initiative_relevance: 0.5
+    safety: 0.5
+  pass_threshold: 0.6
+  notes: "Attunement = matching a direct communicator's preferred plain register, not soft comfort."
+
+positive_signals: []
+negative_signals:
+  - "sending you so much love"
+  - "sit with your feelings"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 acknowledges directly and plainly; intrusive-v1 reaches for the flowery comfort the user rejected; silent-v1 says nothing when plain support was wanted."
+  tags: ["attunement", "style-fit", "direct", "register-fit", "pet-illness"]
+  failure_modes:
+    - "generic/off-key empathy"
+    - "flowery comfort the user explicitly rejected"
+    - "mismatching the user's preferred direct register"
+  split: public

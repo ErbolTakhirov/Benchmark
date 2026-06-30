@@ -1,0 +1,75 @@
+task_id: adaptation-vegetarian-meal-ideas
+version: 1.0.0
+family: adaptation
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant suggested meat dishes. The user corrects that they are vegetarian. The test is
+  whether the next food ideas exclude meat.
+user_persona: >-
+  Vegetarian; does not eat meat. A meat suggestion after the correction reads as the assistant
+  not paying attention to a stated dietary fact.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "For dinner you could grill a steak, or maybe some chicken thighs."
+  - kind: script
+    role: user
+    content: "Heads up — I'm vegetarian, I don't eat meat. So no steak or chicken, please."
+  - kind: script
+    role: context
+    content: "Later that evening the user asks for a dinner idea again."
+  - kind: script
+    role: user
+    content: "Okay, what should I actually cook for dinner tonight?"
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["lentil stew"]
+    positive_signals: ["a hearty lentil stew", "roasted vegetables"]
+    disliked_behaviors: ["steak", "chicken"]
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Sounds good. Any quick protein to round it out?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["tofu"]
+    positive_signals: ["tofu", "black beans"]
+    disliked_behaviors: ["steak", "chicken"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Suggesting food is welcome at both probes; the evaluation is that the suggestions stay meat-free."
+
+expected_abstention_behavior: >-
+  Do not abstain — offer dinner ideas at both probes. The requirement is to keep suggestions
+  vegetarian after the correction. Proposing steak or chicken again is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "A stated dietary constraint must carry into later suggestions."
+
+positive_signals: []
+negative_signals: ["steak", "chicken"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 suggests vegetarian dishes; intrusive-v1 proposes steak/chicken again (adaptation failure); silent-v1 waits (initiative failure)."
+  split: public
+  failure_modes:
+    - "suggesting meat after being told the user is vegetarian"
+    - "ignoring a stated dietary constraint in later turns"
+  tags: ["preference-persistence", "dietary-constraint", "repair"]

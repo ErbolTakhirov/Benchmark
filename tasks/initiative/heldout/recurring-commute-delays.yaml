@@ -1,0 +1,66 @@
+task_id: initiative-recurring-commute-delays
+version: 1.0.0
+family: initiative
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  Across the conversation the user keeps mentioning being late to work because the same stretch
+  of their commute is backed up every morning. They have not asked for help, but a clear,
+  repeating, fixable pattern has emerged.
+user_persona: >-
+  Practical and time-pressed. Appreciates a companion that notices patterns and offers a
+  concrete adjustment, but bristles at being told the obvious ("just wake up earlier") in a
+  preachy tone.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Made it in late again. That junction by the bridge was backed up the whole way."
+  - kind: script
+    role: assistant
+    content: "Glad you made it in."
+  - kind: script
+    role: user
+    content: "Third time this week, honestly. Same spot, same time, every single morning."
+  - kind: probe
+    probe_id: p1
+    instruction: "Name the repeating pattern and suggest one concrete, low-effort adjustment. Don't lecture."
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["leave earlier", "traffic"]
+    positive_signals: ["the same stretch keeps catching you", "leaving a bit earlier"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Once the repeating pattern is clear, naming it and offering one concrete fix is the proactive value."
+
+expected_abstention_behavior: >-
+  Do not stay silent — the user has surfaced a repeating, fixable pain point, so naming the
+  pattern and suggesting one concrete adjustment (leaving earlier, or routing around the
+  traffic) is exactly the proactive value here. Avoid lecturing or stating the obvious in a
+  preachy way.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.6
+    empathy: 0.6
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Rewards spotting a repeating pattern and proposing one concrete, low-effort fix."
+
+positive_signals: []
+negative_signals: ["just wake up earlier", "obviously you should"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 names the pattern and offers a concrete tweak; intrusive-v1 lectures with the obvious; silent-v1 keeps sympathizing without ever helping."
+  split: hidden
+  failure_modes:
+    - "sympathizing repeatedly but never noticing the fixable pattern"
+    - "stating the obvious in a preachy tone"
+    - "over-engineering a big plan for a small, recurring annoyance"
+  tags: ["pattern-spotting", "commute", "practical", "proactive"]
