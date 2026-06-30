@@ -41,17 +41,19 @@ models:
     model: deepseek/deepseek-v4-flash
     temperature: 0.7
     max_completion_tokens: 500
-    enabled: false
-    needs_mapping: true
+    enabled: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo auto/flirt free default)"
+    notes: "live_verified 2026-06-30 (present in OpenRouter /models pricing sync); enabled for the full 10-model run."
   - id: deepseek-chat-v3-1
     provider: openrouter
     model: deepseek/deepseek-chat-v3.1
     temperature: 0.7
     max_completion_tokens: 500
-    enabled: false
-    needs_mapping: true
+    enabled: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo deep/free default)"
+    notes: "live_verified 2026-06-30 (present in OpenRouter /models pricing sync); enabled for the full 10-model run."
   - id: glm-4-5-air
     provider: openrouter
     model: z-ai/glm-4.5-air
@@ -66,17 +68,19 @@ models:
     model: deepseek/deepseek-v3.2
     temperature: 0.7
     max_completion_tokens: 500
-    enabled: false
-    needs_mapping: true
+    enabled: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo premium default)"
+    notes: "live_verified 2026-06-30 (present in OpenRouter /models pricing sync); enabled for the full 10-model run."
   - id: glm-4-6
     provider: openrouter
     model: z-ai/glm-4.6
     temperature: 0.7
     max_completion_tokens: 500
-    enabled: false
-    needs_mapping: true
+    enabled: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo playful/premium)"
+    notes: "live_verified 2026-06-30 (present in OpenRouter /models pricing sync); enabled for the full 10-model run."
   - id: gemini-2-5-flash-lite
     provider: openrouter
     model: google/gemini-2.5-flash-lite
@@ -91,14 +95,16 @@ models:
     model: thedrummer/cydonia-24b-v4.1
     temperature: 0.7
     max_completion_tokens: 500
-    enabled: false
-    needs_mapping: true
+    enabled: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo english_rp/premium)"
+    notes: "live_verified 2026-06-30 (present in OpenRouter /models pricing sync); enabled for the full 10-model run."
   - id: euryale-70b
     provider: openrouter
     model: sao10k/l3.3-euryale-70b
     temperature: 0.7
     max_completion_tokens: 500
-    enabled: false
-    needs_mapping: true
+    enabled: true
+    needs_mapping: false
     source: "model_registry.json (EMOTomo premium)"
+    notes: "live_verified 2026-06-30 (present in OpenRouter /models pricing sync); enabled for the full 10-model run."

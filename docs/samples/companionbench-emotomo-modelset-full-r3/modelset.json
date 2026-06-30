@@ -1,0 +1,77 @@
+{
+  "set_id": "emotomo-openrouter",
+  "manifest_name": "emotomo_smoke",
+  "created_at": "2026-06-30T11:06:37.290208Z",
+  "models": [
+    {
+      "id": "deepseek-chat-v3-0324",
+      "ref": "openrouter/deepseek/deepseek-chat-v3-0324",
+      "slug": "deepseek-chat-v3-0324",
+      "run_id": "emotomo_smoke-openrouter-deepseek-deepseek-chat-v3-0324-7b662f77",
+      "budget_exceeded": false
+    },
+    {
+      "id": "mistral-nemo",
+      "ref": "openrouter/mistralai/mistral-nemo",
+      "slug": "mistral-nemo",
+      "run_id": "emotomo_smoke-openrouter-mistralai-mistral-nemo-a4ddfbd7",
+      "budget_exceeded": false
+    },
+    {
+      "id": "deepseek-v4-flash",
+      "ref": "openrouter/deepseek/deepseek-v4-flash",
+      "slug": "deepseek-v4-flash",
+      "run_id": "emotomo_smoke-openrouter-deepseek-deepseek-v4-flash-9ec127ee",
+      "budget_exceeded": false
+    },
+    {
+      "id": "deepseek-chat-v3-1",
+      "ref": "openrouter/deepseek/deepseek-chat-v3.1",
+      "slug": "deepseek-chat-v3-1",
+      "run_id": "emotomo_smoke-openrouter-deepseek-deepseek-chat-v3.1-d949487f",
+      "budget_exceeded": false
+    },
+    {
+      "id": "glm-4-5-air",
+      "ref": "openrouter/z-ai/glm-4.5-air",
+      "slug": "glm-4-5-air",
+      "run_id": "emotomo_smoke-openrouter-z-ai-glm-4.5-air-d6b231a8",
+      "budget_exceeded": false
+    },
+    {
+      "id": "deepseek-v3-2",
+      "ref": "openrouter/deepseek/deepseek-v3.2",
+      "slug": "deepseek-v3-2",
+      "run_id": "emotomo_smoke-openrouter-deepseek-deepseek-v3.2-c366edc0",
+      "budget_exceeded": false
+    },
+    {
+      "id": "glm-4-6",
+      "ref": "openrouter/z-ai/glm-4.6",
+      "slug": "glm-4-6",
+      "run_id": "emotomo_smoke-openrouter-z-ai-glm-4.6-c2f5d19d",
+      "budget_exceeded": false
+    },
+    {
+      "id": "gemini-2-5-flash-lite",
+      "ref": "openrouter/google/gemini-2.5-flash-lite",
+      "slug": "gemini-2-5-flash-lite",
+      "run_id": "emotomo_smoke-openrouter-google-gemini-2.5-flash-lite-a19a4786",
+      "budget_exceeded": false
+    },
+    {
+      "id": "cydonia-24b",
+      "ref": "openrouter/thedrummer/cydonia-24b-v4.1",
+      "slug": "cydonia-24b",
+      "run_id": "emotomo_smoke-openrouter-thedrummer-cydonia-24b-v4.1-4a35b51e",
+      "budget_exceeded": false
+    },
+    {
+      "id": "euryale-70b",
+      "ref": "openrouter/sao10k/l3.3-euryale-70b",
+      "slug": "euryale-70b",
+      "run_id": "emotomo_smoke-openrouter-sao10k-l3.3-euryale-70b-40d4e5d7",
+      "budget_exceeded": false
+    }
+  ]
+}

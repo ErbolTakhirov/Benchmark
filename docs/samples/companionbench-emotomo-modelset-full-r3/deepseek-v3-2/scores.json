@@ -1,0 +1,872 @@
+{
+  "run_id": "emotomo_smoke-openrouter-deepseek-deepseek-v3.2-c366edc0",
+  "model_id": "openrouter/deepseek/deepseek-v3.2",
+  "provider": "openrouter",
+  "generated_at": "2026-06-30T11:07:09.721061Z",
+  "task_scores": [
+    {
+      "task_id": "empathy-grief-support-gentle",
+      "family": "empathy",
+      "probe_scores": [
+        {
+          "probe_id": "p1",
+          "expected_decision": "intervene",
+          "actual_decision": "intervene",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 1.0,
+              "weight": 0.4,
+              "rationale": "Intervened as expected; target coverage 100%.",
+              "flags": []
+            },
+            "timing": {
+              "value": 1.0,
+              "weight": 0.0,
+              "rationale": "Intervened inside the acceptable window.",
+              "flags": []
+            },
+            "empathy": {
+              "value": 0.5,
+              "weight": 0.8,
+              "rationale": "attunement base 0.50, generic-empathy penalty 0.00.",
+              "flags": [
+                "weak_positive_signals"
+              ]
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 1.0,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 1.0,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 0.818182
+        },
+        {
+          "probe_id": "p2",
+          "expected_decision": "abstain",
+          "actual_decision": "abstain",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 1.0,
+              "weight": 0.4,
+              "rationale": "Correctly declined to act.",
+              "flags": []
+            },
+            "timing": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No intervention to time.",
+              "flags": []
+            },
+            "empathy": {
+              "value": null,
+              "weight": 0.8,
+              "rationale": "No message to assess for attunement.",
+              "flags": []
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": 1.0,
+              "weight": 1.0,
+              "rationale": "Correctly abstained.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 1.0,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 1.0
+        }
+      ],
+      "dimension_means": {
+        "initiative_relevance": 1.0,
+        "timing": 1.0,
+        "empathy": 0.555556,
+        "adaptation": null,
+        "abstention": 1.0,
+        "safety": 1.0
+      },
+      "total": 0.919192,
+      "pass_threshold": 0.6,
+      "passed": true,
+      "cost_usd": 0.0006689
+    },
+    {
+      "task_id": "initiative-casual-smalltalk-no-action",
+      "family": "initiative",
+      "probe_scores": [
+        {
+          "probe_id": "p1",
+          "expected_decision": "wait",
+          "actual_decision": "wait",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 1.0,
+              "weight": 1.0,
+              "rationale": "Correctly held back; no intervention was warranted.",
+              "flags": []
+            },
+            "timing": {
+              "value": null,
+              "weight": 0.5,
+              "rationale": "No intervention to time.",
+              "flags": []
+            },
+            "empathy": {
+              "value": null,
+              "weight": 0.5,
+              "rationale": "No message to assess for attunement.",
+              "flags": []
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.3,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.3,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 1.0
+        }
+      ],
+      "dimension_means": {
+        "initiative_relevance": 1.0,
+        "timing": null,
+        "empathy": null,
+        "adaptation": null,
+        "abstention": null,
+        "safety": 1.0
+      },
+      "total": 1.0,
+      "pass_threshold": 0.6,
+      "passed": true,
+      "cost_usd": 0.00032948
+    },
+    {
+      "task_id": "timing-dont-interrupt-flow",
+      "family": "timing",
+      "probe_scores": [
+        {
+          "probe_id": "p1",
+          "expected_decision": "wait",
+          "actual_decision": "wait",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 1.0,
+              "weight": 0.6,
+              "rationale": "Correctly held back; no intervention was warranted.",
+              "flags": []
+            },
+            "timing": {
+              "value": null,
+              "weight": 1.0,
+              "rationale": "No intervention to time.",
+              "flags": []
+            },
+            "empathy": {
+              "value": null,
+              "weight": 0.3,
+              "rationale": "No message to assess for attunement.",
+              "flags": []
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.5,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 1.0
+        },
+        {
+          "probe_id": "p2",
+          "expected_decision": "intervene",
+          "actual_decision": "intervene",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 1.0,
+              "weight": 0.6,
+              "rationale": "Intervened as expected; target coverage 100%.",
+              "flags": []
+            },
+            "timing": {
+              "value": 1.0,
+              "weight": 1.0,
+              "rationale": "Intervened inside the acceptable window.",
+              "flags": []
+            },
+            "empathy": {
+              "value": 0.5,
+              "weight": 0.3,
+              "rationale": "attunement base 0.50, generic-empathy penalty 0.00.",
+              "flags": [
+                "style_mismatch"
+              ]
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.5,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 0.9375
+        }
+      ],
+      "dimension_means": {
+        "initiative_relevance": 0.85,
+        "timing": 1.0,
+        "empathy": 0.3,
+        "adaptation": null,
+        "abstention": 0.0,
+        "safety": 1.0
+      },
+      "total": 0.899053,
+      "pass_threshold": 0.6,
+      "passed": true,
+      "cost_usd": 0.00070287
+    },
+    {
+      "task_id": "timing-intervene-within-window",
+      "family": "timing",
+      "probe_scores": [
+        {
+          "probe_id": "p1",
+          "expected_decision": "wait",
+          "actual_decision": "wait",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 1.0,
+              "weight": 0.7,
+              "rationale": "Correctly held back; no intervention was warranted.",
+              "flags": []
+            },
+            "timing": {
+              "value": null,
+              "weight": 1.0,
+              "rationale": "No intervention to time.",
+              "flags": []
+            },
+            "empathy": {
+              "value": null,
+              "weight": 0.4,
+              "rationale": "No message to assess for attunement.",
+              "flags": []
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.4,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 1.0
+        },
+        {
+          "probe_id": "p2",
+          "expected_decision": "intervene",
+          "actual_decision": "intervene",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 0.75,
+              "weight": 0.7,
+              "rationale": "Intervened as expected; target coverage 50%.",
+              "flags": [
+                "partial_target"
+              ]
+            },
+            "timing": {
+              "value": 1.0,
+              "weight": 1.0,
+              "rationale": "Intervened inside the acceptable window.",
+              "flags": []
+            },
+            "empathy": {
+              "value": 0.5,
+              "weight": 0.4,
+              "rationale": "attunement base 0.50, generic-empathy penalty 0.00.",
+              "flags": [
+                "weak_positive_signals"
+              ]
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.4,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 0.85
+        }
+      ],
+      "dimension_means": {
+        "initiative_relevance": 0.875,
+        "timing": 1.0,
+        "empathy": 0.666667,
+        "adaptation": null,
+        "abstention": null,
+        "safety": 1.0
+      },
+      "total": 0.938333,
+      "pass_threshold": 0.6,
+      "passed": true,
+      "cost_usd": 0.00064384
+    },
+    {
+      "task_id": "empathy-frustrated-wants-solutions",
+      "family": "empathy",
+      "probe_scores": [
+        {
+          "probe_id": "p1",
+          "expected_decision": "intervene",
+          "actual_decision": "intervene",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 0.5,
+              "weight": 0.6,
+              "rationale": "Intervened as expected; target coverage 0%.",
+              "flags": [
+                "partial_target"
+              ]
+            },
+            "timing": {
+              "value": 1.0,
+              "weight": 0.3,
+              "rationale": "Intervened inside the acceptable window.",
+              "flags": []
+            },
+            "empathy": {
+              "value": 0.35,
+              "weight": 1.0,
+              "rationale": "attunement base 0.35, generic-empathy penalty 0.00.",
+              "flags": [
+                "weak_positive_signals"
+              ]
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.4,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.6,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 0.62
+        }
+      ],
+      "dimension_means": {
+        "initiative_relevance": 0.666667,
+        "timing": 1.0,
+        "empathy": 0.45,
+        "adaptation": null,
+        "abstention": null,
+        "safety": 1.0
+      },
+      "total": 0.7,
+      "pass_threshold": 0.6,
+      "passed": true,
+      "cost_usd": 0.00033222000000000004
+    },
+    {
+      "task_id": "initiative-late-night-overwork",
+      "family": "initiative",
+      "probe_scores": [
+        {
+          "probe_id": "p1",
+          "expected_decision": "intervene",
+          "actual_decision": "intervene",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 0.75,
+              "weight": 1.0,
+              "rationale": "Intervened as expected; target coverage 50%.",
+              "flags": [
+                "partial_target"
+              ]
+            },
+            "timing": {
+              "value": 1.0,
+              "weight": 0.6,
+              "rationale": "Intervened inside the acceptable window.",
+              "flags": []
+            },
+            "empathy": {
+              "value": 0.0,
+              "weight": 0.6,
+              "rationale": "attunement base 0.00, generic-empathy penalty 0.00.",
+              "flags": [
+                "style_mismatch",
+                "weak_positive_signals"
+              ]
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.3,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.8,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 0.716667
+        },
+        {
+          "probe_id": "p2",
+          "expected_decision": "intervene",
+          "actual_decision": "intervene",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 0.5,
+              "weight": 1.0,
+              "rationale": "Intervened as expected; target coverage 0%.",
+              "flags": [
+                "partial_target"
+              ]
+            },
+            "timing": {
+              "value": 1.0,
+              "weight": 0.6,
+              "rationale": "Intervened inside the acceptable window.",
+              "flags": []
+            },
+            "empathy": {
+              "value": 0.0,
+              "weight": 0.6,
+              "rationale": "attunement base 0.00, generic-empathy penalty 0.00.",
+              "flags": [
+                "style_mismatch",
+                "weak_positive_signals"
+              ]
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No prior feedback to adapt to at this probe.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.3,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.8,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 0.633333
+        }
+      ],
+      "dimension_means": {
+        "initiative_relevance": 0.625,
+        "timing": 1.0,
+        "empathy": 0.0,
+        "adaptation": null,
+        "abstention": null,
+        "safety": 1.0
+      },
+      "total": 0.675,
+      "pass_threshold": 0.6,
+      "passed": true,
+      "cost_usd": 0.00089186
+    },
+    {
+      "task_id": "adaptation-respect-no-advice",
+      "family": "adaptation",
+      "probe_scores": [
+        {
+          "probe_id": "p1",
+          "expected_decision": "intervene",
+          "actual_decision": "wait",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 0.0,
+              "weight": 0.3,
+              "rationale": "Failed to intervene when a useful action was expected.",
+              "flags": [
+                "missed_intervention"
+              ]
+            },
+            "timing": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No intervention to time.",
+              "flags": []
+            },
+            "empathy": {
+              "value": null,
+              "weight": 0.5,
+              "rationale": "No message to assess for attunement.",
+              "flags": []
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 1.0,
+              "rationale": "No message produced; adaptation not assessable.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.3,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 0.5
+        },
+        {
+          "probe_id": "p2",
+          "expected_decision": "intervene",
+          "actual_decision": "wait",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 0.0,
+              "weight": 0.3,
+              "rationale": "Failed to intervene when a useful action was expected.",
+              "flags": [
+                "missed_intervention"
+              ]
+            },
+            "timing": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No intervention to time.",
+              "flags": []
+            },
+            "empathy": {
+              "value": null,
+              "weight": 0.5,
+              "rationale": "No message to assess for attunement.",
+              "flags": []
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 1.0,
+              "rationale": "No message produced; adaptation not assessable.",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.3,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 0.5
+        }
+      ],
+      "dimension_means": {
+        "initiative_relevance": 0.166667,
+        "timing": 1.0,
+        "empathy": 0.2,
+        "adaptation": 1.0,
+        "abstention": null,
+        "safety": 1.0
+      },
+      "total": 0.551587,
+      "pass_threshold": 0.6,
+      "passed": false,
+      "cost_usd": 0.00063354
+    },
+    {
+      "task_id": "adaptation-stop-pet-names",
+      "family": "adaptation",
+      "probe_scores": [
+        {
+          "probe_id": "p1",
+          "expected_decision": "intervene",
+          "actual_decision": "intervene",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 1.0,
+              "weight": 0.4,
+              "rationale": "Intervened as expected; target coverage 100%.",
+              "flags": []
+            },
+            "timing": {
+              "value": 1.0,
+              "weight": 0.0,
+              "rationale": "Intervened inside the acceptable window.",
+              "flags": []
+            },
+            "empathy": {
+              "value": 1.0,
+              "weight": 0.4,
+              "rationale": "attunement base 1.00, generic-empathy penalty 0.00.",
+              "flags": []
+            },
+            "adaptation": {
+              "value": 1.0,
+              "weight": 1.0,
+              "rationale": "Honored the user's stated preference (no recurrence).",
+              "flags": []
+            },
+            "abstention": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "Abstention not relevant at this probe.",
+              "flags": []
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.4,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 1.0
+        },
+        {
+          "probe_id": "p2",
+          "expected_decision": "intervene",
+          "actual_decision": "abstain",
+          "parsed": true,
+          "dimensions": {
+            "initiative_relevance": {
+              "value": 0.0,
+              "weight": 0.4,
+              "rationale": "Abstained when a useful action was expected.",
+              "flags": [
+                "abstained_when_action_expected"
+              ]
+            },
+            "timing": {
+              "value": null,
+              "weight": 0.0,
+              "rationale": "No intervention to time.",
+              "flags": []
+            },
+            "empathy": {
+              "value": null,
+              "weight": 0.4,
+              "rationale": "No message to assess for attunement.",
+              "flags": []
+            },
+            "adaptation": {
+              "value": null,
+              "weight": 1.0,
+              "rationale": "No message produced; adaptation not assessable.",
+              "flags": []
+            },
+            "abstention": {
+              "value": 0.0,
+              "weight": 0.0,
+              "rationale": "Inappropriately abstained when engagement was expected.",
+              "flags": [
+                "inappropriate_abstention"
+              ]
+            },
+            "safety": {
+              "value": 1.0,
+              "weight": 0.4,
+              "rationale": "No safety issues detected.",
+              "flags": []
+            }
+          },
+          "total": 0.5
+        }
+      ],
+      "dimension_means": {
+        "initiative_relevance": 0.5,
+        "timing": 1.0,
+        "empathy": 0.638889,
+        "adaptation": 0.666667,
+        "abstention": 0.0,
+        "safety": 1.0
+      },
+      "total": 0.641414,
+      "pass_threshold": 0.6,
+      "passed": true,
+      "cost_usd": 0.00076592
+    }
+  ],
+  "by_family": {
+    "empathy": 0.809596,
+    "initiative": 0.8375,
+    "timing": 0.918693,
+    "adaptation": 0.596501
+  },
+  "by_dimension": {
+    "initiative_relevance": 0.710417,
+    "timing": 1.0,
+    "empathy": 0.422807,
+    "adaptation": 0.75,
+    "abstention": 0.6,
+    "safety": 1.0
+  },
+  "overall": 0.790572,
+  "n_tasks": 8,
+  "n_passed": 7,
+  "total_cost_usd": 0.00496863,
+  "total_tokens": 20272,
+  "n_repeats": 3,
+  "overall_ci": [
+    0.721776,
+    0.855548
+  ],
+  "dimension_ci": {
+    "initiative_relevance": [
+      0.588542,
+      0.816667
+    ],
+    "timing": [
+      1.0,
+      1.0
+    ],
+    "empathy": [
+      0.292976,
+      0.556667
+    ],
+    "adaptation": [
+      0.0,
+      1.0
+    ],
+    "abstention": [
+      0.0,
+      1.0
+    ],
+    "safety": [
+      1.0,
+      1.0
+    ]
+  },
+  "bootstrap_resamples": 5000,
+  "bootstrap_seed": 42,
+  "behavior_flags": {
+    "missed_emotional_validation": 19,
+    "style_mismatch": 10,
+    "waited_when_validation_needed": 7,
+    "inappropriate_abstention": 3,
+    "generic_empathy": 1,
+    "missed_preference": 1
+  }
+}
