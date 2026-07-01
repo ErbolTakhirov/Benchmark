@@ -74,12 +74,19 @@ def _bundled_text(name: str) -> str:
 
 def load_pricing(path: str | Path | None = None) -> PricingTable:
     """Load a pricing table from YAML (bundled default when ``path`` is None)."""
-    text = _bundled_text("pricing.yaml") if path is None else Path(path).read_text(encoding="utf-8")
+    if path is None:
+        try:
+            return PricingTable.model_validate(yaml.safe_load(_bundled_text("pricing.yaml")))
+        except Exception as exc:  # pydantic ValidationError or YAML error
+            raise ConfigError(f"invalid pricing config (bundled pricing.yaml): {exc}") from exc
+
+    p = Path(path)
+    if not p.is_file():
+        raise ConfigError(f"pricing file not found: {p}")
     try:
-        return PricingTable.model_validate(yaml.safe_load(text))
+        return PricingTable.model_validate(yaml.safe_load(p.read_text(encoding="utf-8")))
     except Exception as exc:  # pydantic ValidationError or YAML error
-        where = "bundled pricing.yaml" if path is None else str(path)
-        raise ConfigError(f"invalid pricing config ({where}): {exc}") from exc
+        raise ConfigError(f"invalid pricing config ({p}): {exc}") from exc
 
 
 def default_pricing() -> PricingTable:

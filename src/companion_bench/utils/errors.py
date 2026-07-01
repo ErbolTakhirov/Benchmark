@@ -9,7 +9,6 @@ from __future__ import annotations
 
 __all__ = [
     "AdapterError",
-    "BudgetExceededError",
     "CompanionBenchError",
     "ConfigError",
     "ExportError",
@@ -17,7 +16,6 @@ __all__ = [
     "ProviderAuthError",
     "ProviderResponseError",
     "ProviderTimeoutError",
-    "ResponseParseError",
     "TaskLoadError",
 ]
 
@@ -28,10 +26,6 @@ class CompanionBenchError(Exception):
 
 class ConfigError(CompanionBenchError):
     """Invalid configuration, CLI arguments, or environment."""
-
-
-class BudgetExceededError(CompanionBenchError):
-    """A run was stopped because its estimated cost reached the configured budget."""
 
 
 class ManifestError(ConfigError):
@@ -90,12 +84,3 @@ class ProviderResponseError(AdapterError):
     """
 
     retryable = True
-
-
-class ResponseParseError(AdapterError):
-    """A response was received but no valid CompanionTurn envelope could be parsed.
-
-    Not retryable by default — re-sending the identical request is unlikely to help.
-    """
-
-    retryable = False

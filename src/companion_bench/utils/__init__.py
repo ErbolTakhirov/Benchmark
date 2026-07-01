@@ -11,7 +11,6 @@ from companion_bench.utils.errors import (
     ProviderAuthError,
     ProviderResponseError,
     ProviderTimeoutError,
-    ResponseParseError,
     TaskLoadError,
 )
 from companion_bench.utils.ids import IdFactory, make_run_id, short_hash, slugify
@@ -38,7 +37,6 @@ __all__ = [
     "ProviderResponseError",
     "ProviderTimeoutError",
     "RealClock",
-    "ResponseParseError",
     "Stopwatch",
     "TaskLoadError",
     "collect_secret_values",

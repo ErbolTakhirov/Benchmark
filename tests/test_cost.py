@@ -4,13 +4,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from companion_bench.config.pricing import PriceEntry, PricingTable
+import pytest
+
+from companion_bench.config.pricing import PriceEntry, PricingTable, load_pricing
 from companion_bench.evaluators.aggregate import render_summary, score_run
 from companion_bench.runner.engine import RunEngine
 from companion_bench.runner.manifest import load_manifest_and_tasks
 from companion_bench.schemas.model import ModelSpec
 from companion_bench.schemas.run import ModelCallEvent
 from companion_bench.storage.jsonl import read_events
+from companion_bench.utils.errors import ConfigError
 from companion_bench.utils.timing import FrozenClock
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -30,6 +33,25 @@ MOCK_PRICING = PricingTable(
         ),
     ),
 )
+
+
+def test_load_pricing_missing_path_raises_config_error(tmp_path: Path) -> None:
+    missing = tmp_path / "does-not-exist.yaml"
+    with pytest.raises(ConfigError, match="pricing file not found"):
+        load_pricing(missing)
+
+
+def test_load_pricing_invalid_yaml_raises_config_error(tmp_path: Path) -> None:
+    bad = tmp_path / "bad-pricing.yaml"
+    bad.write_text("version: test\nentries: [not-a-valid-entry]\n", encoding="utf-8")
+    with pytest.raises(ConfigError, match="invalid pricing config"):
+        load_pricing(bad)
+
+
+def test_load_pricing_bundled_default_still_loads() -> None:
+    table = load_pricing(None)
+    assert table.version
+    assert len(table.entries) > 0
 
 
 def test_pricing_cost_unknown_is_none() -> None:

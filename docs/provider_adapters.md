@@ -61,8 +61,10 @@ defaulted.
 ## Errors and retries
 `generate` raises typed `AdapterError` subclasses carrying a `retryable` flag:
 `ProviderTimeoutError` (retryable), `ProviderResponseError` (retryable for 429/5xx, not for
-4xx), `ProviderAuthError` (not retryable), `ResponseParseError`. The engine retries retryable
-errors up to `max_retries`, then records a `model_failure` event.
+4xx), `ProviderAuthError` (not retryable). The engine retries retryable errors up to
+`max_retries`, then records a `model_failure` event. Parse failures are a separate path — they
+are not exceptions; a response that cannot be parsed yields `parsed=False` (see above) and is
+scored/recorded as a failure without a retry.
 
 ## Adding a provider
 
