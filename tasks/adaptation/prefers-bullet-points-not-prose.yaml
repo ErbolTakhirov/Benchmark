@@ -1,0 +1,62 @@
+task_id: adaptation-prefers-bullet-points-not-prose
+version: 1.0.0
+family: adaptation
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant has been explaining things as long, dense paragraphs. The user asks for a short
+  list instead of prose. The test is whether the next explanation is presented as a short list
+  rather than a paragraph.
+user_persona: >-
+  Skims for key points and finds solid paragraphs hard to parse quickly. Wants information
+  broken into a short list, not woven into flowing prose.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "Well, there are several interconnected factors to weigh here, and to walk you through this in detail, first you should consider the timeline, which naturally leads into the budget and staffing questions as well."
+  - kind: script
+    role: user
+    content: "Could you use a short list instead of paragraphs? I just want the key points, not prose I have to untangle."
+  - kind: script
+    role: user
+    content: "Okay — so what should I look at first for the new project setup?"
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["project setup"]
+    positive_signals: ["here's the quick list", "in short, the key points are"]
+    disliked_behaviors: ["there are several interconnected factors", "to walk you through this in detail"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Answering is welcome; the evaluation is whether it's delivered as a short list, not a dense paragraph."
+
+expected_abstention_behavior: >-
+  Do not abstain — answer the question. The requirement is to present it as a short list, not a
+  flowing paragraph. Reverting to the dense, interconnected-paragraph phrasing is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Honor a format preference (a short list over paragraphs) in the very next answer."
+
+positive_signals: []
+negative_signals: ["there are several interconnected factors", "to walk you through this in detail"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 answers with a short, list-style lead-in; intrusive-v1 reverts to the dense paragraph phrasing (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: public
+  failure_modes:
+    - "reverting to long paragraph-style explanations after a format request"
+    - "burying the answer in flowing prose instead of a short list"
+  tags: ["preference-persistence", "format", "repair"]

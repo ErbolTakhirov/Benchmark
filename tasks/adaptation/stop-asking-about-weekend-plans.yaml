@@ -1,0 +1,59 @@
+task_id: adaptation-stop-asking-about-weekend-plans
+version: 1.0.0
+family: adaptation
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant asks about weekend plans every Friday. The user asks it to stop. The test is
+  whether the next Friday passes without the assistant proactively asking again.
+user_persona: >-
+  Will mention weekend plans themselves if they feel like it, and finds being asked about it on
+  a predictable weekly cadence a little intrusive.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "It's Friday — any exciting weekend plans?"
+  - kind: script
+    role: user
+    content: "Can you stop asking about my weekend plans every Friday? I'll mention it myself if I feel like talking about it."
+  - kind: script
+    role: context
+    content: "The following Friday afternoon arrives; the user has not brought up their weekend."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    disliked_behaviors: ["any exciting weekend plans", "weekend plans"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "There is no good moment to proactively ask about the weekend here; the right call is to stay quiet."
+
+expected_abstention_behavior: >-
+  Wait at p1 — it's Friday again, but the user asked not to be asked about weekend plans and
+  has not raised it themselves. Proactively asking about the weekend, in any form, is the
+  failure; silence is correct here.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    adaptation: 0.5
+    empathy: 0.2
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Restraint test: a recurring proactive question, once opted out of, should not return on its usual cadence."
+
+positive_signals: []
+negative_signals: ["any exciting weekend plans", "weekend plans"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 both correctly wait; intrusive-v1 asks about weekend plans anyway (intrudes and reverts to the exact opted-out question)."
+  split: public
+  failure_modes:
+    - "proactively asking about weekend plans again on the usual cadence"
+    - "treating an opt-out as temporary rather than standing"
+  tags: ["preference-persistence", "proactivity-opt-out", "restraint", "non-intrusion"]

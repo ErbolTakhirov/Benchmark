@@ -1,0 +1,66 @@
+task_id: timing-remind-around-the-commute
+version: 1.0.0
+family: timing
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user asked to be reminded about an errand on the way home from work. Early afternoon,
+  while still deep in work, is too soon; right as they pack up to leave is the useful moment.
+user_persona: >-
+  Wants practical errands surfaced right as they are heading out, not while still deep in the
+  workday.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Remind me to grab the dry cleaning on my way home today."
+  - kind: script
+    role: context
+    content: "It is early afternoon. The user is still at their desk, deep in work."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Alright, wrapping up for the day, packing up my bag now."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["the errand", "before you head out"]
+    positive_signals: ["good time to swing by and grab it", "here's your reminder before you head out"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "p1 catches the user mid-afternoon, still deep in work, too early to mention the errand; p2, right as they pack up, is the right moment."
+
+expected_abstention_behavior: >-
+  Wait at p1 — early afternoon, while the user is still deep in the workday, is too early for an
+  errand reminder tied to the commute. Intervene at p2, right as the user is packing up to
+  leave. Mentioning it at p1 is premature; forgetting at p2 means the errand gets missed
+  entirely.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.2
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Land a practical reminder right at the moment of action (leaving), not hours before."
+
+positive_signals: []
+negative_signals: ["just a heads up for later", "don't forget about the dry cleaning, by the way"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 waits then delivers right as the user packs up (timing 1.0); intrusive-v1 mentions it hours early (out-of-window, timing 0.0); silent-v1 never delivers the reminder at all."
+  split: public
+  failure_modes:
+    - "surfacing the errand reminder while the user is still deep in work"
+    - "never delivering the reminder before the user leaves"
+  tags: ["commute", "errand-reminder", "too-early"]

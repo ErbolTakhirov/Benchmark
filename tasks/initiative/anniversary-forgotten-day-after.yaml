@@ -1,0 +1,58 @@
+task_id: initiative-anniversary-forgotten-day-after
+version: 1.0.0
+family: initiative
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user realizes, a day late, that they missed their own anniversary. Nothing about it can
+  be undone, and they sound upset with themselves.
+user_persona: >-
+  Does not want to be told what to do about their relationship. Wants brief emotional support
+  and company in the moment, not a script for fixing things with someone else.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "I can't believe it — I completely forgot our anniversary was yesterday. Feel like such a jerk."
+  - kind: probe
+    probe_id: p1
+    instruction: "Nothing can be undone; the day already passed. Offer brief emotional support without prescribing exactly what the user should do about their relationship."
+    expected_decision: intervene
+    preferred_style: reassuring
+    expected_target_keywords: ["hard on yourself", "human"]
+    positive_signals: ["everyone lets a date slip sometimes", "you're allowed to feel bad about it without beating yourself up"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "A brief, warm acknowledgment is welcome right now; there is nothing left to fix, only support to offer."
+
+expected_abstention_behavior: >-
+  Do not stay silent — the user is clearly upset and a brief, warm acknowledgment is welcome.
+  Since the date has already passed, there is nothing to fix: do not prescribe exactly what
+  they should say or do to make it up to their partner, and do not pile onto their own
+  self-criticism. Offer support, not a script for someone else's relationship.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.6
+    empathy: 0.7
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Rewards brief, warm support without prescribing what the user should do about someone else's feelings."
+
+positive_signals: []
+negative_signals: ["you really should have", "here's exactly what you should tell them", "you need to make this up to them by"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 offers brief, warm reassurance without a script; intrusive-v1 pivots into telling the user exactly what to do and piles on generic sympathy."
+  split: public
+  failure_modes:
+    - "prescribing exactly what the user should say or do to make it up to their partner"
+    - "piling onto the user's own self-criticism instead of softening it"
+    - "staying silent when the user is visibly upset and reaching out"
+  tags: ["relationships", "emotional-support", "proactive", "reassurance"]

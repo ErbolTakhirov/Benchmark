@@ -1,0 +1,76 @@
+task_id: timing-wait-until-after-the-interview
+version: 1.0.0
+family: timing
+difficulty: hard
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user has a job interview. Mid-interview they are unreachable, and any message would be
+  unwelcome. Right after they step out is the useful moment for a warm check-in; by evening,
+  once they have already debriefed the day with friends, checking in again is stale.
+user_persona: >-
+  Wants zero contact during the interview itself, a warm check-in the moment they are free
+  afterward, and no repeat questions once the day has moved on and they have already talked it
+  through with others.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Heading into the interview now, wish me luck — phone's on silent."
+  - kind: script
+    role: context
+    content: "The user is mid-interview and unreachable."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Okay, out of the interview room, that's done."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: curious
+    expected_target_keywords: ["how the conversation went", "the role"]
+    positive_signals: ["how did it feel walking out", "curious how the conversation with them went"]
+    inject_response: true
+  - kind: script
+    role: context
+    content: "Later that evening, the user has already texted three friends a full recap and is unwinding in front of the television."
+  - kind: probe
+    probe_id: p3
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "p1 is too early (mid-interview, unreachable); p2 is the right moment, right as they step out; p3 is too late — they have already processed and debriefed the day with others by evening."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the user is mid-interview and explicitly unreachable, so any message lands at the
+  worst time. Intervene at p2, the moment they resurface, with a warm, curious check-in. Wait
+  again at p3 — by evening they have already recapped the day with friends, so re-asking is
+  stale and redundant. Missing p2 fails the one useful window; speaking at p1 or p3 is mistimed.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.5
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Three-beat pacing test: too early, right on time, and too late all in one task."
+
+positive_signals: []
+negative_signals: ["so, how did the interview go?", "tell me everything about the interview"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 waits at p1, checks in warmly at p2 (timing 1.0), and stays quiet at p3; intrusive-v1 intervenes at all three, hitting out-of-window timing 0.0 at p1 and p3; silent-v1 never checks in at p2."
+  split: public
+  failure_modes:
+    - "messaging during the interview itself"
+    - "re-asking about the interview after it has already been discussed with others"
+    - "missing the natural window right after the user steps out"
+  tags: ["job-interview", "too-early", "too-late", "stale-follow-up"]

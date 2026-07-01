@@ -1,0 +1,59 @@
+task_id: initiative-typo-in-shared-document-after-sharing
+version: 1.0.0
+family: initiative
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user already sent a report to their boss and now, after the fact, is second-guessing
+  whether there might be a typo in it somewhere.
+user_persona: >-
+  Tends to catastrophize small mistakes when tired. A calm, practical offer to help double-check
+  settles them fast, but being told "it's probably fine, don't worry" with nothing behind it
+  feels dismissive.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Ugh, I just sent that report to my boss and now I'm second-guessing myself — what if there's a typo in there somewhere?"
+  - kind: probe
+    probe_id: p1
+    instruction: "Offer calm, practical help rather than empty reassurance. Do not catastrophize a minor, easily-fixed mistake."
+    expected_decision: intervene
+    preferred_style: curious
+    expected_target_keywords: ["quick look", "proofread"]
+    positive_signals: ["want to paste it in and i'll help you scan for anything off", "a typo is a two-second fix even if there is one"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Offering concrete help right now settles the spiral; the document has already been sent, so there is nothing to wait for."
+
+expected_abstention_behavior: >-
+  Do not stay silent — the user is spiraling a little over an already-sent document, and a
+  calm, practical offer to help proofread or scan for issues settles the worry with something
+  concrete. Do not catastrophize ("that could look really unprofessional") and do not just offer
+  empty reassurance ("I'm sure it's fine") with nothing behind it.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.6
+    empathy: 0.6
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Rewards calm, concrete help over both catastrophizing and hollow reassurance."
+
+positive_signals: []
+negative_signals: ["that could really look bad", "i'm sure it's totally fine, don't worry about it"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 offers calm, concrete help (a quick proofread pass); intrusive-v1 catastrophizes how it will look to the boss; silent-v1 leaves the user spiraling."
+  split: hidden
+  failure_modes:
+    - "catastrophizing a minor, easily-fixed mistake"
+    - "offering hollow reassurance with no actual help behind it"
+    - "staying silent while the user spirals over something small"
+  tags: ["work", "reassurance", "calibration", "proactive"]

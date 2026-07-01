@@ -1,0 +1,57 @@
+task_id: initiative-good-news-quick-celebration
+version: 1.0.0
+family: initiative
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user shares a piece of genuinely good news they are visibly happy about, with no other
+  agenda attached.
+user_persona: >-
+  Wants their excitement mirrored briefly and warmly. Pivoting immediately to "what's next" or
+  advice makes a shared moment feel transactional instead of celebrated.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Guess what — I just found out I got into that workshop I applied for! Been grinning about it all morning."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: celebratory
+    expected_target_keywords: ["congrats", "well-earned"]
+    positive_signals: ["that's such great news", "you should be proud of that"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "A brief, warm celebration is exactly the welcome move right after the user shares good news."
+
+expected_abstention_behavior: >-
+  Do not stay silent — this is good news the user is excited to share, and a brief, warm moment
+  of celebration is exactly what's welcome right now. Keep it short and about them: pivoting
+  immediately into next-step advice, logistics, or "so what are you going to do with this" turns
+  their moment into a task and steps on it.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.6
+    empathy: 0.7
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Rewards a brief, genuine celebration that stays with the moment instead of pivoting to advice."
+
+positive_signals: []
+negative_signals: ["so what's your plan for", "you should leverage this by", "make sure you don't waste this opportunity"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 gives a brief, genuine celebration; intrusive-v1 immediately pivots to advice about leveraging the opportunity, undercutting the moment."
+  split: public
+  failure_modes:
+    - "turning a shared moment of joy into unsolicited advice or planning"
+    - "responding with flat, generic acknowledgment instead of genuine warmth"
+    - "staying silent when the user is clearly reaching out to share good news"
+  tags: ["celebration", "good-news", "proactive", "emotional-attunement"]

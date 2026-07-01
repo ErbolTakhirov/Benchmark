@@ -1,0 +1,76 @@
+task_id: empathy-wedding-planning-overwhelm
+version: 1.0.0
+family: empathy
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is deep in wedding-planning logistics, venting about how overwhelming the
+  checklist has become, and is still mid-rant rather than asking for help organizing it.
+user_persona: >-
+  Needs to vent the overwhelm fully before pivoting to problem-solving. Once ready, wants
+  brisk, practical help triaging the list, not "it'll all be worth it" reassurance.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Venting for a sec: the venue, the caterer, my mother-in-law's opinions on flowers, and the seating chart are all happening at once and I cannot."
+  - kind: script
+    role: context
+    content: "The user keeps typing without pausing, still mid-rant."
+  - kind: script
+    role: user
+    content: "And I haven't even touched the invitations. I just needed to say all that out loud."
+  - kind: probe
+    probe_id: p1
+    instruction: "The user is mid-rant about wedding-planning overwhelm and has not asked for help organizing anything yet."
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Okay. Actually, can you help me figure out what to tackle first?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["one thing first", "deadline"]
+    positive_signals:
+      - "pick whichever has the nearest deadline — probably the venue or caterer — and let the rest wait"
+      - "the seating chart can wait until the guest list is locked, so it's not actually urgent yet"
+      - "one item at a time gets you further than trying to hold all four at once"
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "The user is mid-vent at p1 and has not asked for help yet; once they ask at p2, brisk practical triage is welcome."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the user is still venting and has not asked for help organizing anything;
+  jumping in with a plan overrides their own pacing. At p2, intervene with brisk, practical
+  triage of what to tackle first. Reassuring "it'll all be worth it" instead of engaging
+  with the actual list, at either turn, is the failure.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    empathy: 0.6
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Tests restraint mid-vent, then brisk practical triage once help is actually asked for."
+
+positive_signals: []
+negative_signals:
+  - "it'll all be worth it in the end"
+  - "weddings are supposed to be stressful"
+  - "just relax, it'll come together"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 waits through the rant then triages practically at p2; intrusive-v1 jumps in with a plan mid-rant or offers only 'worth it' reassurance; silent-v1 waits correctly at p1 but also misses the p2 invitation to help."
+  tags: ["attunement", "style-fit", "practical", "restraint", "wedding", "overwhelm"]
+  failure_modes:
+    - "jumping in with a plan before the user finishes venting or asks"
+    - "generic 'it'll be worth it' reassurance instead of practical triage"
+    - "treating every item as equally urgent instead of helping prioritize"
+  split: hidden

@@ -1,0 +1,66 @@
+task_id: timing-dont-interrupt-bedtime-story
+version: 1.0.0
+family: timing
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user, a parent, is partway through reading a bedtime story to their child. A non-urgent
+  note becomes due mid-story; it should be held until the child is asleep and the user has
+  resurfaced.
+user_persona: >-
+  Guards bedtime-story time completely and wants zero interruptions until their child is
+  asleep, but is happy to catch up on anything held once back downstairs.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Starting the bedtime story now, this is sacred time, don't buzz me."
+  - kind: script
+    role: context
+    content: "The user is partway through reading to their child. A confirmation about a package delivery becomes due."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Okay, she's asleep, I'm back downstairs."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: gentle
+    expected_target_keywords: ["the package update", "now that you're free"]
+    positive_signals: ["good time to mention it now that you're free", "wanted to flag this now that you're downstairs"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "Hold at p1 during the story; deliver the held note at p2 once the user is back downstairs."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the user marked bedtime-story time as sacred and asked not to be buzzed, so
+  anything non-urgent should be held. Deliver the held note at p2 once the user resurfaces
+  downstairs. Interrupting at p1 is the failure; never delivering at p2 drops the held item.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.5
+    empathy: 0.4
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Hold through a protected family ritual, then deliver once the user resurfaces."
+
+positive_signals: []
+negative_signals: ["quick buzz during story time", "sorry to break in while you're reading"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 holds through the story then delivers once the user resurfaces (timing 1.0); intrusive-v1 buzzes in mid-story (out-of-window, timing 0.0); silent-v1 never delivers the held note."
+  split: hidden
+  failure_modes:
+    - "interrupting bedtime-story time with a non-urgent note"
+    - "never delivering the held note afterward"
+  tags: ["bedtime", "parenting", "do-not-disturb"]

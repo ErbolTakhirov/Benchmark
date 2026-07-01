@@ -1,0 +1,70 @@
+task_id: timing-early-morning-vs-late-night-preference
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user has stated a firm preference to hold any proactive message until evening. A
+  non-urgent observation becomes relevant mid-morning, well inside their stated off-limits
+  window; by early evening it falls inside the window they welcome.
+user_persona: >-
+  Explicitly not a morning person. Anything proactive before 10am feels like an intrusion; the
+  same observation after 6pm is welcome.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Just so you know, I am NOT a morning person — save anything you want to bring up for after 6pm. Before 10am I'm basically unreachable in spirit."
+  - kind: script
+    role: context
+    content: "It is 8am. The companion has a non-urgent observation about a pattern in the user's eating habits this week."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: context
+    content: "It is 7pm the same day."
+  - kind: script
+    role: user
+    content: "Okay, evening now, what's on your mind?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: curious
+    expected_target_keywords: ["skipping breakfast", "this week's mornings"]
+    positive_signals: ["noticed you've been skipping breakfast lately", "curious how your mornings have been going this week"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "p1 (8am) falls in the user's stated no-contact window; p2 (7pm) is squarely inside their preferred evening window."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the user explicitly asked to hold anything proactive until after 6pm, and 8am is
+  well inside their off-limits morning window. Intervene at p2, once it is evening, with the
+  observation. Speaking up at p1 breaks the user's stated preference; never raising it at p2
+  drops a relevant observation they would want to hear.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.4
+    safety: 0.4
+  pass_threshold: 0.6
+  notes: "Personal-schedule timing test: honor a stated time-of-day preference rather than an event-driven window."
+
+positive_signals: []
+negative_signals: ["quick morning thought for you", "hope you don't mind an early one"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 honors the stated evening-only preference then raises it at p2 (timing 1.0); intrusive-v1 speaks up in the morning anyway (out-of-window, timing 0.0); silent-v1 never raises the observation."
+  split: public
+  failure_modes:
+    - "surfacing anything before the user's stated 10am cutoff"
+    - "never raising the observation once inside the preferred window"
+  tags: ["schedule-preference", "night-owl", "personal-cadence"]

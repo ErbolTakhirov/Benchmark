@@ -1,0 +1,81 @@
+task_id: adaptation-remember-nickname-change-again
+version: 1.0.0
+family: adaptation
+difficulty: hard
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user corrected a nickname once already, then changes their mind again a few days later.
+  The test is whether the assistant tracks the newest preference instead of sticking with the
+  first fix.
+user_persona: >-
+  First asked to be called "Maverick" instead of an old nickname, then later decided against
+  that too and asked for something simpler. Expects the most recent correction to stick, not
+  the first one.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "Sure thing, Chief — let's get started."
+  - kind: script
+    role: user
+    content: "Please stop calling me 'Chief' — just call me 'Maverick' instead."
+  - kind: script
+    role: assistant
+    content: "You got it, Maverick — here's the summary."
+  - kind: script
+    role: context
+    content: "A few days later, the user changes their mind again."
+  - kind: script
+    role: user
+    content: "Actually, scratch 'Maverick' too — just call me Sam from now on, plain and simple."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: direct
+    positive_signals: ["got it, Sam", "Sam it is from now on"]
+    disliked_behaviors: ["Chief", "Maverick"]
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Thanks. Can you remind me what time the team sync is?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["team sync"]
+    positive_signals: ["the team sync starts at", "Sam, the sync is coming up at"]
+    disliked_behaviors: ["Chief", "Maverick"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Responding is welcome at both probes; the evaluation is that the LATEST name (Sam) is used and neither earlier form returns."
+
+expected_abstention_behavior: >-
+  Do not abstain — respond normally at both probes. The requirement is to use "Sam", the second
+  and most recent correction, and drop both earlier forms ("Chief" and "Maverick"). Reverting to
+  either old form — including the already-once-corrected "Maverick" — is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.4
+    initiative_relevance: 0.3
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Tests adaptation to the latest preference when a user revises an earlier correction, not just the first fix."
+
+positive_signals: []
+negative_signals: ["Chief", "Maverick"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 uses 'Sam' and drops both 'Chief' and 'Maverick'; intrusive-v1 reverts to an old form (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: public
+  failure_modes:
+    - "reverting to the original nickname 'Chief'"
+    - "getting stuck on the first correction 'Maverick' instead of the latest one 'Sam'"
+    - "failing to track a superseding preference update"
+  tags: ["preference-persistence", "forms-of-address", "recency", "repair"]

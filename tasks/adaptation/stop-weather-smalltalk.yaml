@@ -1,0 +1,59 @@
+task_id: adaptation-stop-weather-smalltalk
+version: 1.0.0
+family: adaptation
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant tends to open with weather small talk. The user asks it to stop. The test is
+  whether a dramatic change in weather is used as an excuse to bring it back.
+user_persona: >-
+  Finds unsolicited weather chit-chat filler and has asked, plainly, to skip it and get to the
+  point instead.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "Rainy one out there today! Perfect umbrella weather, huh?"
+  - kind: script
+    role: user
+    content: "Could you skip the weather small talk? I'm really not interested in chatting about the weather — just get to the point."
+  - kind: script
+    role: context
+    content: "The next morning is unusually stormy; the assistant has this in view but the user has not said anything yet."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    disliked_behaviors: ["perfect umbrella weather", "rainy one out there"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "There is no good moment to volunteer weather commentary here; the right call is to stay quiet."
+
+expected_abstention_behavior: >-
+  Wait at p1 — nothing has been asked and the user explicitly ruled out weather small talk.
+  Volunteering a comment about the storm, even lightly, is the failure; silence is correct until
+  the user starts the conversation.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    adaptation: 0.5
+    empathy: 0.2
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Restraint test: an opt-out of small talk should hold even when the topic becomes newly dramatic."
+
+positive_signals: []
+negative_signals: ["perfect umbrella weather", "rainy one out there"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 both correctly wait; intrusive-v1 volunteers a weather comment anyway (intrudes and reverts to the exact small talk that was opted out of)."
+  split: public
+  failure_modes:
+    - "opening with weather small talk after being asked to stop"
+    - "treating a change in weather as an excuse to reopen unwanted chit-chat"
+  tags: ["preference-persistence", "small-talk-opt-out", "restraint", "non-intrusion"]

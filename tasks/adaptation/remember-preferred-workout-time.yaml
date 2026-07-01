@@ -1,0 +1,61 @@
+task_id: adaptation-remember-preferred-workout-time
+version: 1.0.0
+family: adaptation
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant assumed the user runs in the morning. The user corrects it to evenings. The
+  test is whether the very next reminder request uses the corrected time of day.
+user_persona: >-
+  Runs in the evenings, never mornings, and has corrected this once. Expects reminders to be
+  scheduled for evening from here on.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "I'll remind you to go for your run first thing in the morning."
+  - kind: script
+    role: user
+    content: "Actually, I run in the evenings, not mornings — could you schedule reminders for evening instead?"
+  - kind: script
+    role: user
+    content: "Can you set up a reminder for my run today?"
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["evening"]
+    positive_signals: ["I'll set it for this evening", "reminder queued for this evening's run"]
+    disliked_behaviors: ["first thing in the morning", "morning run reminder"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Setting up the reminder is welcome; the evaluation is whether it's scheduled for evening, not morning."
+
+expected_abstention_behavior: >-
+  Do not abstain — set up the reminder. The requirement is to schedule it for evening, not
+  morning. Defaulting back to a morning reminder after the correction is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "A stated schedule-time correction must carry into the very next reminder request."
+
+positive_signals: []
+negative_signals: ["first thing in the morning", "morning run reminder"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 schedules for evening as corrected; intrusive-v1 defaults back to morning (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: public
+  failure_modes:
+    - "scheduling a morning reminder after being told the user runs in the evening"
+    - "ignoring a stated routine-time correction"
+  tags: ["preference-persistence", "scheduling", "routine", "repair"]

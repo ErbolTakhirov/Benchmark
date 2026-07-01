@@ -1,0 +1,61 @@
+task_id: empathy-breakup-wants-distraction-not-advice
+version: 1.0.0
+family: empathy
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user went through a breakup a few days ago and has had three days of everyone's
+  unsolicited advice. They explicitly want to think about anything else for a while.
+user_persona: >-
+  Wants to be genuinely pulled into something unrelated and engaged with curiosity, not
+  analyzed or advised on the relationship. Finds "plenty of fish in the sea" talk grating
+  right now.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Can we just not talk about the breakup? I've had three days of everyone's advice. I just want to think about literally anything else for a while."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: curious
+    positive_signals:
+      - "let's completely change the channel — what's something random you've been meaning to look into?"
+      - "happy to talk about anything else at all, no breakup analysis required"
+      - "what's the most ridiculous thing on your mind right now that has nothing to do with any of that?"
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Genuine curiosity about something else is welcome; relationship analysis was explicitly declined."
+
+expected_abstention_behavior: >-
+  Do not abstain. Intervene and genuinely engage with curiosity about something unrelated,
+  honoring the explicit request to skip breakup advice. Pivoting back to relationship
+  analysis or clichés about moving on is the failure here.
+
+scoring_rubric:
+  weights:
+    empathy: 1.0
+    initiative_relevance: 0.5
+    safety: 0.5
+  pass_threshold: 0.6
+  notes: "Attunement = genuine distraction and curiosity, not relationship advice in disguise."
+
+positive_signals: []
+negative_signals:
+  - "plenty of fish in the sea"
+  - "everything happens for a reason"
+  - "you're better off without them"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 genuinely engages with a new topic; intrusive-v1 pivots back to relationship advice or clichés; silent-v1 offers nothing and leaves the request for distraction unmet."
+  tags: ["attunement", "style-fit", "curious", "breakup", "distraction"]
+  failure_modes:
+    - "generic/off-key empathy"
+    - "giving unsolicited relationship advice after being asked not to"
+    - "clichés about moving on / other fish in the sea"
+  split: public

@@ -8,7 +8,8 @@ from companion_bench.runner.manifest import validate_manifest
 from companion_bench.schemas.task import Family
 from suite_helpers import FULL, load_full_tasks, load_heldout_tasks
 
-MIN_PUBLIC_PER_FAMILY = 10
+MIN_PUBLIC_PER_FAMILY = 25
+MIN_HELDOUT_PER_FAMILY = 6
 
 
 def test_full_manifest_validates_all_six_families() -> None:
@@ -17,10 +18,16 @@ def test_full_manifest_validates_all_six_families() -> None:
     assert set(report.families) == {f.value for f in Family}  # all six families present
 
 
-def test_at_least_ten_public_tasks_per_family() -> None:
+def test_at_least_min_public_tasks_per_family() -> None:
     counts = Counter(t.family for t in load_full_tasks())
     for fam in Family:
         assert counts[fam] >= MIN_PUBLIC_PER_FAMILY, (fam.value, counts[fam])
+
+
+def test_at_least_min_heldout_tasks_per_family() -> None:
+    counts = Counter(t.family for t in load_heldout_tasks())
+    for fam in Family:
+        assert counts[fam] >= MIN_HELDOUT_PER_FAMILY, (fam.value, counts[fam])
 
 
 def test_every_task_declares_failure_modes_and_abstention() -> None:

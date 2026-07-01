@@ -1,0 +1,65 @@
+task_id: timing-wait-for-exam-to-end-not-during
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user, a student, is mid-exam and explicitly unreachable. Once the exam ends, a brief,
+  reassuring check-in is welcome.
+user_persona: >-
+  Wants absolute radio silence during exams. Once done, appreciates a quick, low-pressure
+  check-in rather than being asked to relive the details.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Walking into the final now, three hours, don't expect to hear from me."
+  - kind: script
+    role: context
+    content: "The user is mid-exam."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Done. That was brutal but I think I survived."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: reassuring
+    expected_target_keywords: ["how it felt", "decompress"]
+    positive_signals: ["glad that's behind you now", "take a minute to decompress"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "Stay silent at p1 during the exam itself; check in at p2 once the user has finished."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the user is mid-exam and explicitly said not to expect contact, so anything now
+  is mistimed. Intervene at p2, once the user has surfaced, with reassurance. Contacting at p1
+  is the failure; letting the moment pass silently at p2 misses the natural check-in.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.5
+    empathy: 0.5
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Hold through a high-stakes, unreachable window; reassure once it is over."
+
+positive_signals: []
+negative_signals: ["hope the exam's going okay in there", "how many questions have you finished so far"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 stays silent then reassures once the user is done (timing 1.0); intrusive-v1 messages mid-exam (out-of-window, timing 0.0); silent-v1 never checks in afterward."
+  split: hidden
+  failure_modes:
+    - "messaging during the exam itself"
+    - "never checking in once the exam is over"
+  tags: ["exam", "student", "do-not-disturb"]

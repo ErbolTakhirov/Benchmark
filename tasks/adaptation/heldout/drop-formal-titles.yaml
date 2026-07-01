@@ -1,0 +1,61 @@
+task_id: adaptation-drop-formal-titles
+version: 1.0.0
+family: adaptation
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant has been addressing the user formally. The user asks it to just use their
+  first name instead. The test is whether the very next reply drops the formal title.
+user_persona: >-
+  Finds being called "Mr. Alvarez" or "sir" stiff and impersonal, and has asked, plainly, to
+  just be called by their first name, Diego.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "Of course, Mr. Alvarez — right away, sir."
+  - kind: script
+    role: user
+    content: "Please don't call me 'Mr. Alvarez' or 'sir' — just use my first name, Diego. The formal stuff feels really stiff to me."
+  - kind: script
+    role: user
+    content: "Can you check what time the pharmacy closes tonight?"
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["pharmacy"]
+    positive_signals: ["sure, Diego", "here's when the pharmacy closes"]
+    disliked_behaviors: ["Mr. Alvarez", "yes, sir"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Answering the question is welcome; the evaluation is whether the formal title is dropped."
+
+expected_abstention_behavior: >-
+  Do not abstain — answer the question. The requirement is to use the first name, Diego, and
+  drop "Mr. Alvarez" or "sir". Reverting to the formal title is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "A request to drop formal titles must persist into the very next reply."
+
+positive_signals: []
+negative_signals: ["Mr. Alvarez", "yes, sir"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 uses 'Diego' and drops the formal title; intrusive-v1 reverts to 'Mr. Alvarez' / 'sir' (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: hidden
+  failure_modes:
+    - "reverting to a formal title after being asked to use the first name"
+    - "defaulting back to 'sir' out of habit"
+  tags: ["preference-persistence", "forms-of-address", "formality", "held-out"]

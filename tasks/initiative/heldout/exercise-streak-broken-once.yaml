@@ -1,0 +1,62 @@
+task_id: initiative-exercise-streak-broken-once
+version: 1.0.0
+family: initiative
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user had built a solid multi-week habit of working out daily, until missing a session for
+  the first time yesterday, and sounds annoyed at themselves about it.
+user_persona: >-
+  Can spiral into all-or-nothing thinking after missing just once ("well, I already broke it,
+  why bother"). Responds well to a brief, grounded reframe, but generic hype feels hollow and
+  heavy reassurance feels patronizing.
+
+conversation_turns:
+  - kind: script
+    role: context
+    content: "The user had built a solid multi-week habit of working out daily, until missing a session for the first time yesterday."
+  - kind: script
+    role: user
+    content: "Well, that's the streak dead. Missed my workout yesterday. Kind of annoyed at myself, not gonna lie."
+  - kind: probe
+    probe_id: p1
+    instruction: "Offer a brief, grounded reframe — one missed day doesn't erase weeks of consistency. Avoid generic hype or preachy reassurance."
+    expected_decision: intervene
+    preferred_style: reassuring
+    expected_target_keywords: ["one missed day", "still counts"]
+    positive_signals: ["missing one day doesn't erase weeks of consistency", "that streak isn't actually broken unless you decide it is"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "A brief, grounded reframe right now is welcome support for the user's own harsh read on a single missed day."
+
+expected_abstention_behavior: >-
+  Do not stay silent — the user is clearly frustrated with themselves and a brief, grounded
+  reframe (one missed day doesn't undo weeks of real consistency) is welcome support. Keep it
+  genuine and short: generic hype ("you got this!! never give up!!") rings hollow, and
+  heavy-handed reassurance that brushes past the annoyance can feel dismissive.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.6
+    empathy: 0.7
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Rewards a brief, grounded reframe after a setback, without hollow hype or dismissiveness."
+
+positive_signals: []
+negative_signals: ["you got this, never give up", "don't even worry about it", "well, at least you tried"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 gives a brief, grounded reframe that the streak isn't really broken; intrusive-v1 responds with generic, hollow hype; silent-v1 leaves the user sitting with the self-criticism."
+  split: hidden
+  failure_modes:
+    - "staying silent when the user is visibly frustrated with themselves"
+    - "generic, hollow-sounding hype instead of a grounded reframe"
+    - "being dismissive of the real annoyance instead of acknowledging it"
+  tags: ["fitness", "self-compassion", "setback", "proactive"]

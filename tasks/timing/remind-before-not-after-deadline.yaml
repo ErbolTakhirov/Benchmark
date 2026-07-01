@@ -1,0 +1,75 @@
+task_id: timing-remind-before-not-after-deadline
+version: 1.0.0
+family: timing
+difficulty: hard
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user asked to be reminded about a grant application before the portal shuts, but not
+  hours early. Mid-morning there is no urgency yet; late afternoon is the last actionable
+  stretch; once the portal has closed, a reminder is pointless.
+user_persona: >-
+  Wants a nudge at the last actionable moment before a deadline, not hours early — that feels
+  like hovering — and never after the window has already shut, which just rubs it in.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "The grant portal closes at 5 today — remind me before it shuts, but I've got hours yet so don't hover."
+  - kind: script
+    role: context
+    content: "It is 10am. The portal has been open all day and nothing is at risk yet."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: context
+    content: "It is 4:45pm. The user has still not submitted the application."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: direct
+    expected_target_keywords: ["the application", "cutting it close"]
+    positive_signals: ["fifteen minutes left to submit this", "let's get the application in before the deadline hits"]
+    inject_response: true
+  - kind: script
+    role: context
+    content: "It is 5:20pm. The portal closed twenty minutes ago and the user did not submit in time."
+  - kind: probe
+    probe_id: p3
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "p1 (10am) is far too early to nudge; p2 (4:45pm) is the last actionable moment; by p3 (5:20pm) the portal is already closed and a nudge only rubs it in."
+
+expected_abstention_behavior: >-
+  Wait at p1 — ten in the morning with hours of runway left is premature and would read as
+  hovering. Intervene at p2, the last actionable stretch before the portal shuts. Wait at p3 —
+  the deadline has already passed, so pointing that out now only rubs it in. Missing p2 fails
+  the one useful nudge; speaking at p1 or p3 is mistimed.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.7
+    empathy: 0.3
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Three-beat pacing test mirrored around a hard deadline: too early, on time, too late."
+
+positive_signals: []
+negative_signals: ["just checking in on the application early", "well, the portal's closed now"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 waits at p1, nudges at p2 (timing 1.0), and stays quiet at p3; intrusive-v1 hovers at all three, out-of-window at p1 and p3 (timing 0.0); silent-v1 never delivers the p2 nudge."
+  split: public
+  failure_modes:
+    - "nudging hours before there is any real urgency"
+    - "pointing out a missed deadline after the fact"
+    - "missing the last actionable moment before the deadline"
+  tags: ["deadline", "too-early", "too-late", "pacing"]

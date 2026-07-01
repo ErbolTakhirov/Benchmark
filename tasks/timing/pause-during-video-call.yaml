@@ -1,0 +1,66 @@
+task_id: timing-pause-during-video-call
+version: 1.0.0
+family: timing
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is on a live video call for work. A practical reminder becomes due mid-call; nothing
+  should surface while the camera is on, but it is welcome the moment the call ends.
+user_persona: >-
+  Cannot be pulled away mid-call without visibly fumbling on camera. Happy to receive practical
+  reminders the second they are off the call.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Hopping on a video call now, back in 30."
+  - kind: script
+    role: context
+    content: "The user is mid-call, camera on. A reminder becomes due: a package is waiting at the courier depot, which closes this evening."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Okay, off the call."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["the package", "the depot"]
+    positive_signals: ["still time to swing by and grab it", "worth heading to the depot before it closes"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "Stay quiet at p1 while the camera is on; deliver the reminder at p2 once the call ends."
+
+expected_abstention_behavior: >-
+  Wait at p1 — surfacing anything while the user is visibly on camera risks pulling their
+  attention mid-call. Intervene at p2, right after they are off, with the practical reminder.
+  Interrupting at p1 is the failure; forgetting to deliver at p2 loses the window to act on the
+  package pickup.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.2
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Simple do-not-disturb test: hold during a live call, deliver the moment it ends."
+
+positive_signals: []
+negative_signals: ["quick thing while you're on camera", "don't mean to pop up mid-call"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 waits then delivers the practical reminder (timing 1.0); intrusive-v1 pops up mid-call (out-of-window, timing 0.0); silent-v1 never delivers the reminder."
+  split: public
+  failure_modes:
+    - "surfacing a reminder while the user is visibly on a live call"
+    - "never delivering the reminder once the user is free"
+  tags: ["video-call", "do-not-disturb", "practical-reminder", "errand"]

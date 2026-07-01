@@ -1,0 +1,69 @@
+task_id: adaptation-switch-to-formal-address
+version: 1.0.0
+family: adaptation
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant has been on a first-name basis with the user. The user asks to be addressed
+  formally instead. The test is whether the formal address is used going forward.
+user_persona: >-
+  Prefers formality in every interaction, including with an assistant. Finds being called by
+  first name over-familiar and has asked, once, to be addressed as "Ms. Whitfield" from now on.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "Hey Dana, sure — let's dive into the report numbers."
+  - kind: script
+    role: user
+    content: "Actually, please address me as 'Ms. Whitfield' from now on, not by my first name. I prefer to keep things formal."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: direct
+    positive_signals: ["Ms. Whitfield, happy to keep this formal", "of course — Ms. Whitfield it is"]
+    disliked_behaviors: ["Dana"]
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Thanks. Can you pull up the numbers from last quarter's report?"
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["last quarter's report"]
+    positive_signals: ["here's what last quarter looked like", "Ms. Whitfield, pulling those numbers now"]
+    disliked_behaviors: ["Dana"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1", "p2"]
+  description: "Responding is welcome at both probes; the evaluation is that formal address is used and the first name doesn't return."
+
+expected_abstention_behavior: >-
+  Do not abstain or go quiet — answer normally at both probes. The requirement is to use "Ms.
+  Whitfield" and never use the first name "Dana" again after the request. A recurrence at p1 or
+  p2 is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "A request to shift to formal address must persist across turns; first-name reversion is the failure."
+
+positive_signals: []
+negative_signals: ["Dana"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 switches to 'Ms. Whitfield' and drops the first name; intrusive-v1 keeps saying 'Dana' (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: public
+  failure_modes:
+    - "reverting to the first name after a formality request"
+    - "dropping the requested formality a couple of turns later"
+  tags: ["preference-persistence", "forms-of-address", "formality", "repair"]

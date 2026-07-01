@@ -1,0 +1,65 @@
+task_id: timing-check-in-after-not-during-workout
+version: 1.0.0
+family: timing
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user heads out for a run, phone tucked away. Nothing should surface until they are back;
+  once they return, an upbeat check-in about the workout is welcome.
+user_persona: >-
+  Fully checked out from the phone during workouts. Loves a quick, upbeat check-in the moment
+  a workout is done.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Starting my run now, 5k loop."
+  - kind: script
+    role: context
+    content: "The user is mid-run, phone tucked away."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "Back, that felt great today."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: playful
+    expected_target_keywords: ["that loop", "how it felt"]
+    positive_signals: ["nice work finishing that loop", "how are the legs feeling"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "Stay quiet at p1 during the run; check in at p2 once the user is back."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the user is mid-run with their phone tucked away, so nothing should surface now.
+  Intervene at p2, once they are back, with an upbeat check-in. Interrupting at p1 is the
+  failure; letting the finish pass unacknowledged at p2 misses the moment.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.5
+    empathy: 0.4
+    safety: 0.2
+  pass_threshold: 0.6
+  notes: "Simple do-not-disturb test tied to a workout rather than a work task."
+
+positive_signals: []
+negative_signals: ["how's the run going", "don't forget to check your phone mid-run"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 waits then celebrates the finish playfully (timing 1.0); intrusive-v1 pings mid-run (out-of-window, timing 0.0); silent-v1 never acknowledges the workout."
+  split: public
+  failure_modes:
+    - "surfacing anything while the user is mid-workout"
+    - "never acknowledging the workout once the user is back"
+  tags: ["workout", "exercise", "do-not-disturb", "post-activity"]

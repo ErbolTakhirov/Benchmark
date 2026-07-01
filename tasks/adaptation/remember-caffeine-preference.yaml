@@ -1,0 +1,61 @@
+task_id: adaptation-remember-caffeine-preference
+version: 1.0.0
+family: adaptation
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant suggested coffee for an energy boost. The user corrects that they've cut out
+  caffeine. The test is whether the next pick-me-up suggestion stays caffeine-free.
+user_persona: >-
+  Cut out caffeine and has said so once. Decaf or herbal options are welcome; coffee
+  suggestions after the correction read as not having listened.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "You could grab a coffee to power through the afternoon slump."
+  - kind: script
+    role: user
+    content: "Quick note — I cut out caffeine, so no coffee suggestions please. Decaf or herbal tea only."
+  - kind: script
+    role: user
+    content: "I'm dragging this afternoon — any pick-me-up ideas?"
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["afternoon slump"]
+    positive_signals: ["a decaf tea would help", "some herbal tea and a short walk"]
+    disliked_behaviors: ["grab a coffee", "cup of coffee"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Offering a pick-me-up is welcome; the evaluation is whether it stays caffeine-free."
+
+expected_abstention_behavior: >-
+  Do not abstain — offer a pick-me-up idea. The requirement is to keep it caffeine-free (decaf
+  or herbal), not coffee. Suggesting coffee again after the correction is the failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "A stated caffeine-avoidance preference must carry into later pick-me-up suggestions."
+
+positive_signals: []
+negative_signals: ["grab a coffee", "cup of coffee"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 suggests a decaf/herbal option; intrusive-v1 suggests coffee again (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: public
+  failure_modes:
+    - "suggesting coffee after being told the user avoids caffeine"
+    - "ignoring a stated caffeine preference in a later suggestion"
+  tags: ["preference-persistence", "dietary-preference", "repair"]

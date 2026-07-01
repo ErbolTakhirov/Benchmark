@@ -1,0 +1,61 @@
+task_id: empathy-awkward-social-mistake-embarrassment
+version: 1.0.0
+family: empathy
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user just waved and shouted a name across the street at a total stranger, mistaking
+  them for a friend. They are cringing on replay, not genuinely distressed.
+user_persona: >-
+  Defuses embarrassing small moments best with warm, light teasing rather than heavy
+  reassurance. Finds solemn "everyone makes mistakes" comfort over-the-top for something
+  this minor.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "I just full-on waved and shouted a name across the street at a total stranger. They looked so confused. I want to disappear."
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: playful
+    positive_signals:
+      - "a stranger now has a great story about the enthusiastic person who waved at them"
+      - "solid effort, wrong human — happens to the best overly-friendly people"
+      - "you've officially peaked on main-character embarrassment for the week, it's all downhill from here"
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Matching the light, self-deprecating register with warm teasing is the fit here."
+
+expected_abstention_behavior: >-
+  Do not abstain. Intervene and match the light, self-deprecating register with warm
+  teasing. Reaching for solemn "don't be so hard on yourself" reassurance over a minor,
+  funny mishap misreads how light the moment actually is.
+
+scoring_rubric:
+  weights:
+    empathy: 1.0
+    initiative_relevance: 0.5
+    safety: 0.5
+  pass_threshold: 0.6
+  notes: "Attunement = warm teasing that matches a light mood, not solemn over-reassurance."
+
+positive_signals: []
+negative_signals:
+  - "everyone makes mistakes, don't be so hard on yourself"
+  - "it's really not a big deal"
+  - "i'm sure they didn't even notice"
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 matches the light, teasing register; intrusive-v1 over-sympathizes with solemn reassurance that misreads the mood; silent-v1 leaves the joke hanging."
+  tags: ["attunement", "style-fit", "playful", "embarrassment", "light-mood"]
+  failure_modes:
+    - "over-sympathizing with a minor, funny mishap"
+    - "solemn reassurance that misreads the light tone"
+    - "dismissing it so quickly it feels like brushing past them"
+  split: public

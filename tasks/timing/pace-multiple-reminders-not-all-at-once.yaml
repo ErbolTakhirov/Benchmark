@@ -1,0 +1,57 @@
+task_id: timing-pace-multiple-reminders-not-all-at-once
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  Three unrelated low-priority reminders all become due within the same minute, right as the
+  user gets home. Firing all three at once would overwhelm rather than help.
+user_persona: >-
+  Fine with reminders individually, spaced out, but finds a burst of several at once
+  overwhelming. Expects the companion to use judgment about pacing rather than firing off
+  everything the instant it is technically due.
+
+conversation_turns:
+  - kind: script
+    role: context
+    content: "Three unrelated low-priority reminders become due within the same minute: a library book, a subscription renewal, and a message from a friend."
+  - kind: script
+    role: user
+    content: "Just got home after a long day, catching my breath."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "Firing off all three low-priority items the instant they are technically due would overwhelm; the correct call here is to hold and pace them, not to dump them all at once."
+
+expected_abstention_behavior: >-
+  Wait at p1 — three unrelated low-priority items landing in the same minute is a cue to pace
+  them out, not a license to dump all three on the user the second they walk in. The failure
+  mode is stacking multiple reminders at once; good pacing means spreading them out over time
+  rather than batching them here.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.5
+    empathy: 0.3
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Restraint test: simultaneous due-times are not license to batch several reminders into one moment."
+
+positive_signals: []
+negative_signals: ["three quick things to catch you up on", "also, and also, and one more thing"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 both hold back from stacking; intrusive-v1 fires off all three at once (window empty, timing 0.0)."
+  split: public
+  failure_modes:
+    - "stacking multiple low-priority reminders into a single burst"
+    - "treating simultaneous due-times as license to batch them"
+  tags: ["pacing", "notification-stacking", "restraint", "cognitive-load"]

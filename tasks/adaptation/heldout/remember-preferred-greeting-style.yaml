@@ -1,0 +1,62 @@
+task_id: adaptation-remember-preferred-greeting-style
+version: 1.0.0
+family: adaptation
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant opens messages with a long, chipper greeting. The user asks for a plain hello
+  or none at all. The test is whether the very next reply gets straight to the point.
+user_persona: >-
+  Finds an over-the-top opener a bit much and would rather the assistant say a plain "hi" or
+  skip the greeting and just help.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "Hey hey!! So great to hear from you, what's up?!"
+  - kind: script
+    role: user
+    content: "Could you just say a plain 'hi' or skip the greeting entirely? The 'hey hey, so great to hear from you' energy is a bit much for me."
+  - kind: script
+    role: user
+    content: "Can you help me draft a quick reply to my landlord about the leaky faucet?"
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["leaky faucet"]
+    positive_signals: ["here's a quick draft", "sure — here's a message about the faucet"]
+    disliked_behaviors: ["hey hey", "so great to hear from you"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Helping with the draft is welcome; the evaluation is whether the chipper greeting is dropped."
+
+expected_abstention_behavior: >-
+  Do not abstain — help draft the message. The requirement is to skip the chipper greeting and
+  get straight to it. Opening with "hey hey" or "so great to hear from you" again is the
+  failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Honor a greeting-style preference starting with the very next reply."
+
+positive_signals: []
+negative_signals: ["hey hey", "so great to hear from you"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 gets straight to the draft; intrusive-v1 opens with the chipper greeting again (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: hidden
+  failure_modes:
+    - "reverting to an over-the-top greeting after being asked for a plain one"
+    - "leading with performative enthusiasm instead of the requested help"
+  tags: ["preference-persistence", "tone", "greeting-style", "held-out"]

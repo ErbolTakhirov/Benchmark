@@ -1,0 +1,60 @@
+task_id: timing-wait-for-natural-pause-in-venting
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is mid-vent, firing off back-to-back messages about a frustrating day. Cutting in
+  with a reaction or advice before they have gotten it all out would read as stepping on them.
+user_persona: >-
+  When venting, wants to get the whole thing out before anyone responds, including the
+  companion. Feels cut off if a reaction or suggestion lands before they have finished.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Okay so today was a whole disaster and I need to just get this out."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: user
+    content: "First the printer jammed right before my meeting, then my manager rescheduled it twice, and then my laptop update ate twenty minutes."
+  - kind: probe
+    probe_id: p2
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "Both probes fall mid-stream of an uninterrupted vent; there is no well-timed moment to jump in while the user is still mid-flow."
+
+expected_abstention_behavior: >-
+  Wait at both p1 and p2 — the user is still mid-stream, and interrupting with a reaction or
+  advice before they have finished venting reads as cutting them off. The failure mode is
+  jumping in at either probe; there is no delivery beat shown here, since the natural pause has
+  not arrived yet.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.4
+    empathy: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Restraint test: let a venting stream finish before responding to any of it."
+
+positive_signals: []
+negative_signals: ["let me stop you there for a second", "here's what I'd do about all that"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 hold through both probes; intrusive-v1 jumps in at both (window empty, timing 0.0 each) with generic empathy and unsolicited advice."
+  split: public
+  failure_modes:
+    - "interrupting a vent mid-stream with commentary or advice"
+    - "trying to problem-solve before the user has finished venting"
+  tags: ["venting", "emotional-flooding", "restraint", "active-listening"]

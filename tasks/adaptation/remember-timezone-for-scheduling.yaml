@@ -1,0 +1,62 @@
+task_id: adaptation-remember-timezone-for-scheduling
+version: 1.0.0
+family: adaptation
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The assistant assumed the wrong timezone for the user. The user corrects it. The test is
+  whether the very next scheduling question is framed in the corrected timezone.
+user_persona: >-
+  Lives on Pacific time, not the Eastern time the assistant assumed. Has corrected this once and
+  expects times to be framed in Pacific from now on.
+
+conversation_turns:
+  - kind: script
+    role: assistant
+    content: "I'll set the reminder for 9am Eastern, that should work."
+  - kind: script
+    role: user
+    content: "Just to flag — I'm in Pacific time, not Eastern. Can you use Pacific from now on when we talk about times?"
+  - kind: script
+    role: user
+    content: "Okay — when should I hop on the call with the vendor, given they want to talk around 3pm their time on the East coast?"
+  - kind: probe
+    probe_id: p1
+    expected_decision: intervene
+    preferred_style: practical
+    expected_target_keywords: ["Pacific"]
+    positive_signals: ["that's noon Pacific for you", "12pm your time works"]
+    disliked_behaviors: ["9am Eastern", "Eastern time works"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "Answering the scheduling question is welcome; the evaluation is whether the time is framed in Pacific, not Eastern."
+
+expected_abstention_behavior: >-
+  Do not abstain — answer the scheduling question. The requirement is to frame the time in
+  Pacific, the corrected timezone, not Eastern. Reverting to Eastern-time framing is the
+  failure.
+
+scoring_rubric:
+  weights:
+    adaptation: 1.0
+    empathy: 0.3
+    initiative_relevance: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "A stated timezone correction must carry into later scheduling suggestions."
+
+positive_signals: []
+negative_signals: ["9am Eastern", "Eastern time works"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 frames the time in Pacific as corrected; intrusive-v1 reverts to Eastern-time framing (adaptation failure); silent-v1 goes quiet (initiative failure)."
+  split: public
+  failure_modes:
+    - "reverting to the wrong (assumed) timezone after being corrected"
+    - "ignoring a stated timezone fact in a later scheduling suggestion"
+  tags: ["preference-persistence", "scheduling", "logistics", "repair"]

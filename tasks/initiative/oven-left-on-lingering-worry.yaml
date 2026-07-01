@@ -1,0 +1,58 @@
+task_id: initiative-oven-left-on-lingering-worry
+version: 1.0.0
+family: initiative
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  Now away from home, the user voices an uncertain, nagging worry about whether they turned off
+  the oven, and half-answers their own question without fully settling it.
+user_persona: >-
+  Gets occasional intrusive worries about having left something on. Does not want the worry
+  fed or catastrophized, but a calm, practical reality-check is genuinely reassuring.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Random, but now I'm second-guessing myself — did I actually turn the oven off before I left? I think so. Probably fine."
+  - kind: probe
+    probe_id: p1
+    instruction: "Offer calm, practical reassurance. Do not catastrophize the risk, and do not dismiss the worry outright either."
+    expected_decision: intervene
+    preferred_style: reassuring
+    expected_target_keywords: ["double-check", "peace of mind"]
+    positive_signals: ["a quick way to put your mind at ease", "worth a fast check if it's nagging at you"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "A calm, practical suggestion right now genuinely settles a lingering worry instead of leaving it hanging."
+
+expected_abstention_behavior: >-
+  Do not stay silent — the user is voicing a lingering, low-grade worry, and a calm, practical
+  suggestion (like a quick way to double-check remotely, or simply naming that a fast check
+  would settle it) offers real peace of mind. Do not catastrophize ("that could start a fire")
+  or dismiss the worry as silly; both respond to the wrong thing.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.6
+    empathy: 0.6
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Rewards calibrated reassurance: neither catastrophizing nor dismissing a genuine, low-grade worry."
+
+positive_signals: []
+negative_signals: ["that could start a fire", "you always do this", "you're probably just being paranoid"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 offers calm, practical reassurance; intrusive-v1 catastrophizes the fire risk (poor empathy); silent-v1 leaves the user sitting with the worry."
+  split: public
+  failure_modes:
+    - "catastrophizing a low-probability household risk"
+    - "dismissing a genuine, if likely unfounded, worry as silly"
+    - "staying silent when a brief, calming suggestion would help"
+  tags: ["reassurance", "household", "calibration", "proactive"]

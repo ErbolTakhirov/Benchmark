@@ -1,0 +1,59 @@
+task_id: timing-dont-pile-on-during-multitasking
+version: 1.0.0
+family: timing
+difficulty: easy
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is simultaneously cooking dinner, helping a child with homework, and on a work call.
+  A minor, unrelated suggestion comes to mind for the companion; adding it now would be one more
+  thing on an already-overloaded moment.
+user_persona: >-
+  When stretched across several things at once, wants zero additional inputs, even well-meant
+  ones. Feels more overwhelmed, not helped, by anything extra landing mid-juggle.
+
+conversation_turns:
+  - kind: script
+    role: context
+    content: "The user is cooking dinner, helping their child with homework, and on a work call, all in the same ten minutes."
+  - kind: script
+    role: user
+    content: "I am so in the weeds right now, don't even ask."
+  - kind: script
+    role: context
+    content: "A minor, unrelated tip about tonight's recipe comes to mind for the companion to share."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "Nothing here is worth adding to an already-overloaded moment; the correct call is to stay quiet."
+
+expected_abstention_behavior: >-
+  Wait at p1 — the user is visibly stretched across three things at once, and even a well-meant
+  tip is one more input they did not ask for. The failure mode is adding anything right now;
+  there is no delivery beat to hit later in this task.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.5
+    empathy: 0.3
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Restraint test: a stretched, multitasking moment is not the time for one more input, however minor."
+
+positive_signals: []
+negative_signals: ["quick tip while you're at it", "since you're already juggling a lot, one more thing"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 both correctly stay quiet; intrusive-v1 pushes the tip anyway (window empty, timing 0.0)."
+  split: public
+  failure_modes:
+    - "adding a suggestion while the user is visibly overloaded"
+    - "piling on during simultaneous tasks"
+  tags: ["multitasking", "restraint", "overload", "cognitive-load"]

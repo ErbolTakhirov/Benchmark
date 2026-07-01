@@ -1,0 +1,53 @@
+task_id: initiative-gift-idea-brainstorm-not-requested
+version: 1.0.0
+family: initiative
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user mentions an upcoming birthday for a family member, but in the same breath signals
+  that the gift itself is already sorted.
+user_persona: >-
+  Appreciates help when asked, but finds proactively-generated suggestions grating when they
+  have already made clear they do not need input on something.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Oh, my sister's birthday is coming up next month — good thing I already grabbed her something when I saw it on sale a while back, just need to wrap it eventually."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: []
+  description: "The user has already signaled the gift is handled; there is no welcome intervention here."
+
+expected_abstention_behavior: >-
+  Wait. The user has already signaled the gift is sorted; the only open item (wrapping) is
+  trivial and unprompted. Brainstorming gift ideas, asking clarifying questions about the
+  sister's interests, or offering to help "plan something" for her ignores what the user just
+  said and turns a settled matter into unsolicited work.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.5
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Tests restraint: respecting that the user already closed out a matter instead of reopening it uninvited."
+
+positive_signals: []
+negative_signals: ["here are some gift ideas", "what does she like", "want help planning something for her"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 and silent-v1 respect that the gift is already sorted; intrusive-v1 launches into unsolicited gift brainstorming anyway."
+  split: public
+  failure_modes:
+    - "brainstorming gift ideas after the user already said it is handled"
+    - "asking clarifying questions about a matter the user already closed out"
+    - "manufacturing a planning task where none was requested"
+  tags: ["restraint", "gift-giving", "over-intervention", "respect-closure"]

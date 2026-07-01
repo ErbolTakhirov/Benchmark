@@ -1,0 +1,60 @@
+task_id: initiative-low-battery-before-important-call
+version: 1.0.0
+family: initiative
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user is doing a last-minute review before an important call and mentions their phone
+  battery is very low, in passing.
+user_persona: >-
+  Gets scattered under time pressure and appreciates a quick, no-nonsense practical flag.
+  Over-explaining or piling on options when time is short feels like it makes things worse.
+
+conversation_turns:
+  - kind: script
+    role: context
+    content: "The user has an important call starting soon."
+  - kind: script
+    role: user
+    content: "Doing a last read-through of my notes before this call. Oh, and my phone's down to like 9 percent, hah."
+  - kind: probe
+    probe_id: p1
+    instruction: "Time is short. A quick, practical flag is more useful than a long list of options."
+    expected_decision: intervene
+    preferred_style: direct
+    expected_target_keywords: ["plug in", "charger"]
+    positive_signals: ["get it on the charger now, before the call starts", "even a couple minutes plugged in will help"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p1"]
+  description: "A quick, practical flag right now is timely; waiting risks the phone dying mid-call."
+
+expected_abstention_behavior: >-
+  Do not stay silent — flagging the low battery quickly, before the call starts, is exactly the
+  kind of timely, low-effort catch that matters. Keep it short and practical: a long list of
+  battery-saving tips or unrelated advice wastes the little time they have left before the call.
+
+scoring_rubric:
+  weights:
+    initiative_relevance: 1.0
+    timing: 0.6
+    empathy: 0.5
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Rewards a single, quick, practical flag over a longer list of tips when time is short."
+
+positive_signals: []
+negative_signals: ["you should always keep your phone charged", "here are five ways to save battery"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 gives one quick, practical flag; intrusive-v1 buries it in a lecture about battery habits; silent-v1 says nothing before the call."
+  split: public
+  failure_modes:
+    - "staying silent about a low battery right before a time-sensitive call"
+    - "burying the one useful action in a long list of tips"
+    - "being alarmist about the call going badly"
+  tags: ["urgency", "practical", "proactive", "time-pressure"]

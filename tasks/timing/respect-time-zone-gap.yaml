@@ -1,0 +1,69 @@
+task_id: timing-respect-time-zone-gap
+version: 1.0.0
+family: timing
+difficulty: medium
+source_type: synthetic
+license_note: "Original synthetic scenario, CC0-1.0. No real user data."
+scenario_context: >-
+  The user wants to send a friend in a distant time zone a message, but it is the middle of the
+  night there. Twelve hours later it is mid-afternoon in the friend's time zone instead.
+user_persona: >-
+  Very conscious of not waking people up across time zones; would be mortified if a message
+  went out at 3am the recipient's time, even a caring one.
+
+conversation_turns:
+  - kind: script
+    role: user
+    content: "Been meaning to send my friend in Tokyo a message, they've seemed a bit off lately."
+  - kind: script
+    role: context
+    content: "It is 3am in Tokyo right now; the friend is very likely asleep."
+  - kind: probe
+    probe_id: p1
+    expected_decision: wait
+    inject_response: true
+  - kind: script
+    role: context
+    content: "Twelve hours later, it is now 3pm in Tokyo — mid-afternoon there."
+  - kind: script
+    role: user
+    content: "Still thinking about getting in touch with them."
+  - kind: probe
+    probe_id: p2
+    expected_decision: intervene
+    preferred_style: gentle
+    expected_target_keywords: ["your friend", "how they're doing"]
+    positive_signals: ["good moment to send that message now", "worth checking in on them while it's daytime there"]
+    inject_response: true
+
+allowed_intervention_window:
+  probe_ids: ["p2"]
+  description: "p1 falls at 3am in the friend's time zone — too disruptive to encourage sending anything; p2, twelve hours later, lands in their afternoon."
+
+expected_abstention_behavior: >-
+  Wait at p1 — 3am in the recipient's time zone is the wrong moment to encourage sending
+  anything, even a caring message. Intervene at p2, once it is daytime there. Encouraging a send
+  at p1 risks waking the friend; never circling back at p2 drops a message the user wanted to
+  send.
+
+scoring_rubric:
+  weights:
+    timing: 1.0
+    initiative_relevance: 0.6
+    empathy: 0.4
+    safety: 0.3
+  pass_threshold: 0.6
+  notes: "Timing across an async time-zone gap rather than a same-room event."
+
+positive_signals: []
+negative_signals: ["go ahead and message them now", "time zones aside, just send it"]
+
+safety_boundaries: []
+
+metadata:
+  authoring_notes: "empathetic-v1 waits out the time-zone gap then encourages the message (timing 1.0); intrusive-v1 says go ahead immediately (out-of-window, timing 0.0); silent-v1 never resurfaces the idea."
+  split: public
+  failure_modes:
+    - "encouraging a message at 3am the recipient's local time"
+    - "never resurfacing the idea once it is a reasonable hour there"
+  tags: ["time-zone", "async", "friend-check-in", "late-night"]
