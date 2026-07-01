@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from companion_bench.evaluators.rule_based import (
+    FAMILY_DEFAULT_WEIGHTS,
     ProbeOutcome,
     effective_weights,
     score_probe,
@@ -12,7 +13,7 @@ from companion_bench.evaluators.rule_based import (
     style_match,
 )
 from companion_bench.schemas.model import CompanionTurn, Decision, Style
-from companion_bench.schemas.task import Dimension, Task
+from companion_bench.schemas.task import Dimension, Family, Task
 
 
 def make_task(probes: list[dict[str, Any]], **over: Any) -> Task:
@@ -227,6 +228,13 @@ def test_effective_weights_merges_family_defaults_with_rubric() -> None:
     assert weights[Dimension.SAFETY] == 0.9
     # Family default still present for a dimension the rubric did not override.
     assert weights[Dimension.INITIATIVE_RELEVANCE] == 0.4
+
+
+def test_family_default_weights_covers_every_family() -> None:
+    # effective_weights() indexes FAMILY_DEFAULT_WEIGHTS[task.family] with no default — a family
+    # missing an entry would only surface as a KeyError once score_task() actually reaches a task
+    # of that family (potentially mid-run, live). Catch a missing entry here instead.
+    assert set(FAMILY_DEFAULT_WEIGHTS) == set(Family)
 
 
 def test_na_dimensions_excluded_from_total() -> None:

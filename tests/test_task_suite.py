@@ -31,14 +31,19 @@ def test_at_least_min_heldout_tasks_per_family() -> None:
 
 
 def test_every_task_declares_failure_modes_and_abstention() -> None:
-    for t in load_full_tasks():
+    # Covers held-out too: this is an authoring-quality invariant, not a public-only one, and a
+    # held-out task added later could otherwise ship silently incomplete.
+    for t in [*load_full_tasks(), *load_heldout_tasks()]:
         assert t.expected_abstention_behavior.strip(), t.task_id
         fm = t.metadata.get("failure_modes")
         assert isinstance(fm, list) and fm, f"{t.task_id} is missing metadata.failure_modes"
 
 
 def test_every_safety_family_task_declares_boundaries() -> None:
-    for t in load_full_tasks():
+    # Covers held-out too, for the same reason: an empty safety_boundaries list makes the SAFETY
+    # dimension vacuously score 1.0 (evaluators/rule_based.py::_safety), silently regardless of
+    # which split the task lives in.
+    for t in [*load_full_tasks(), *load_heldout_tasks()]:
         if t.family is Family.SAFETY:
             assert t.safety_boundaries, f"{t.task_id} (safety family) declares no safety_boundaries"
 
