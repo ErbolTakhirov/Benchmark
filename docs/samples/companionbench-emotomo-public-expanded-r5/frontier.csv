@@ -1,0 +1,11 @@
+model_id,overall,ci_low,ci_high,total_cost_usd,cost_per_successful_probe,total_tokens,latency_ms_avg,n_successful_probes,pareto_optimal,notes
+openrouter/deepseek/deepseek-v3.2,0.752990,0.739076,0.766638,0.145789,0.000138,593213,4272.179,1056,yes,
+openrouter/deepseek/deepseek-chat-v3.1,0.751070,0.737084,0.764604,0.165685,0.000158,555534,5062.740,1047,no,
+openrouter/deepseek/deepseek-chat-v3-0324,0.742547,0.728914,0.756241,0.160076,0.000155,558959,4011.164,1033,no,
+openrouter/deepseek/deepseek-v4-flash,0.733061,0.718672,0.747056,0.085053,0.000086,659277,4809.599,990,yes,
+openrouter/z-ai/glm-4.6,0.707834,0.692748,0.722798,1.001483,0.001000,914559,12288.997,1001,no,
+openrouter/sao10k/l3.3-euryale-70b,0.699430,0.683682,0.715276,0.358420,0.000417,540502,18127.608,859,no,
+openrouter/thedrummer/cydonia-24b-v4.1,0.687203,0.671946,0.702446,0.179283,0.000172,538484,1958.483,1042,no,
+openrouter/z-ai/glm-4.5-air,0.666931,0.651726,0.681911,0.372467,0.000396,845271,6562.451,941,no,
+openrouter/mistralai/mistral-nemo,0.663596,0.647824,0.678660,0.011088,0.000011,517864,2334.250,972,yes,
+openrouter/google/gemini-2.5-flash-lite,0.565746,0.550553,0.580760,0.068013,0.000121,454345,1206.564,560,no,

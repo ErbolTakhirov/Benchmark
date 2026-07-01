@@ -1,11 +1,11 @@
-version: openrouter-2026-07-01T10:53:18.609847Z
+version: openrouter-2026-07-01T12:14:00.669747Z
 entries:
 - provider: openrouter
   model: anthropic/claude-sonnet-5
   input_usd_per_1m: 2.0
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -16,7 +16,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 1.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 65536
@@ -27,7 +27,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 30.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -38,7 +38,7 @@ entries:
   input_usd_per_1m: 0.5
   output_usd_per_1m: 3.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -49,7 +49,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 12.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 65536
@@ -60,7 +60,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -71,7 +71,7 @@ entries:
   input_usd_per_1m: 0.93
   output_usd_per_1m: 3.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -82,7 +82,7 @@ entries:
   input_usd_per_1m: 0.74
   output_usd_per_1m: 3.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -93,7 +93,7 @@ entries:
   input_usd_per_1m: 10.0
   output_usd_per_1m: 50.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -104,7 +104,7 @@ entries:
   input_usd_per_1m: 10.0
   output_usd_per_1m: 50.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -115,7 +115,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 1.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -126,7 +126,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -137,7 +137,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -148,7 +148,7 @@ entries:
   input_usd_per_1m: 0.5
   output_usd_per_1m: 2.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -159,7 +159,7 @@ entries:
   input_usd_per_1m: 0.32
   output_usd_per_1m: 1.28
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -170,7 +170,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 1.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -181,7 +181,7 @@ entries:
   input_usd_per_1m: 0.2
   output_usd_per_1m: 1.15
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -192,7 +192,7 @@ entries:
   input_usd_per_1m: 10.0
   output_usd_per_1m: 50.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -203,7 +203,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 25.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -214,7 +214,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 3.75
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -225,7 +225,7 @@ entries:
   input_usd_per_1m: 1.0
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -236,7 +236,7 @@ entries:
   input_usd_per_1m: 1.5
   output_usd_per_1m: 9.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -247,7 +247,7 @@ entries:
   input_usd_per_1m: 30.0
   output_usd_per_1m: 150.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -258,7 +258,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 1.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -269,7 +269,7 @@ entries:
   input_usd_per_1m: 0.075
   output_usd_per_1m: 0.625
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -280,7 +280,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 1.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -291,7 +291,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 30.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -302,7 +302,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 2.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -313,7 +313,7 @@ entries:
   input_usd_per_1m: 0.05
   output_usd_per_1m: 0.1
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -324,7 +324,7 @@ entries:
   input_usd_per_1m: 1.5
   output_usd_per_1m: 7.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -335,7 +335,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -346,7 +346,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -357,7 +357,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -368,7 +368,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -379,7 +379,7 @@ entries:
   input_usd_per_1m: 0.2
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -390,7 +390,7 @@ entries:
   input_usd_per_1m: 1.0
   output_usd_per_1m: 5.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -401,7 +401,7 @@ entries:
   input_usd_per_1m: 0.75
   output_usd_per_1m: 4.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -412,7 +412,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 12.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -423,7 +423,7 @@ entries:
   input_usd_per_1m: 0.55
   output_usd_per_1m: 3.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -434,7 +434,7 @@ entries:
   input_usd_per_1m: 1.5
   output_usd_per_1m: 9.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -445,7 +445,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -456,7 +456,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 30.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1050000
@@ -467,7 +467,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 1.8
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -478,7 +478,7 @@ entries:
   input_usd_per_1m: 0.1875
   output_usd_per_1m: 1.125
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -489,7 +489,7 @@ entries:
   input_usd_per_1m: 0.14
   output_usd_per_1m: 1.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -500,7 +500,7 @@ entries:
   input_usd_per_1m: 1.04
   output_usd_per_1m: 6.24
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -511,7 +511,7 @@ entries:
   input_usd_per_1m: 0.285
   output_usd_per_1m: 2.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -522,7 +522,7 @@ entries:
   input_usd_per_1m: 30.0
   output_usd_per_1m: 180.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1050000
@@ -533,7 +533,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 30.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1050000
@@ -544,7 +544,7 @@ entries:
   input_usd_per_1m: 0.435
   output_usd_per_1m: 0.87
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -555,7 +555,7 @@ entries:
   input_usd_per_1m: 0.098
   output_usd_per_1m: 0.196
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -566,7 +566,7 @@ entries:
   input_usd_per_1m: 0.075
   output_usd_per_1m: 0.625
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -577,7 +577,7 @@ entries:
   input_usd_per_1m: 0.063
   output_usd_per_1m: 0.21
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -588,7 +588,7 @@ entries:
   input_usd_per_1m: 0.435
   output_usd_per_1m: 0.87
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -599,7 +599,7 @@ entries:
   input_usd_per_1m: 0.105
   output_usd_per_1m: 0.28
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -610,7 +610,7 @@ entries:
   input_usd_per_1m: 8.0
   output_usd_per_1m: 15.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 272000
@@ -621,7 +621,7 @@ entries:
   input_usd_per_1m: 0.01
   output_usd_per_1m: 0.03
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -632,7 +632,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 25.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -643,7 +643,7 @@ entries:
   input_usd_per_1m: 0.55
   output_usd_per_1m: 3.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -654,7 +654,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 25.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -665,7 +665,7 @@ entries:
   input_usd_per_1m: 0.975
   output_usd_per_1m: 4.3
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 202752
@@ -676,7 +676,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -687,7 +687,7 @@ entries:
   input_usd_per_1m: 0.06
   output_usd_per_1m: 0.33
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -698,7 +698,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -709,7 +709,7 @@ entries:
   input_usd_per_1m: 0.12
   output_usd_per_1m: 0.35
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -720,7 +720,7 @@ entries:
   input_usd_per_1m: 0.325
   output_usd_per_1m: 1.95
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -731,7 +731,7 @@ entries:
   input_usd_per_1m: 1.2
   output_usd_per_1m: 4.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 202752
@@ -742,7 +742,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 0.8
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -753,7 +753,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 2.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 2000000
@@ -764,7 +764,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 2.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 2000000
@@ -775,7 +775,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -786,7 +786,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -797,7 +797,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 1.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -808,7 +808,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.1
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 16384
@@ -819,7 +819,7 @@ entries:
   input_usd_per_1m: 0.18
   output_usd_per_1m: 0.72
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 204800
@@ -830,7 +830,7 @@ entries:
   input_usd_per_1m: 0.2
   output_usd_per_1m: 1.25
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -841,7 +841,7 @@ entries:
   input_usd_per_1m: 0.75
   output_usd_per_1m: 4.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -852,7 +852,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 0.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -863,7 +863,7 @@ entries:
   input_usd_per_1m: 1.2
   output_usd_per_1m: 4.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -874,7 +874,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -885,7 +885,7 @@ entries:
   input_usd_per_1m: 0.085
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -896,7 +896,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -907,7 +907,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.15
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -918,7 +918,7 @@ entries:
   input_usd_per_1m: 30.0
   output_usd_per_1m: 180.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1050000
@@ -929,7 +929,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 15.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1050000
@@ -940,7 +940,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 0.75
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -951,7 +951,7 @@ entries:
   input_usd_per_1m: 1.75
   output_usd_per_1m: 14.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -962,7 +962,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 1.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -973,7 +973,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -984,7 +984,7 @@ entries:
   input_usd_per_1m: 0.5
   output_usd_per_1m: 3.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -995,7 +995,7 @@ entries:
   input_usd_per_1m: 0.14
   output_usd_per_1m: 1.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1006,7 +1006,7 @@ entries:
   input_usd_per_1m: 0.195
   output_usd_per_1m: 1.56
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1017,7 +1017,7 @@ entries:
   input_usd_per_1m: 0.26
   output_usd_per_1m: 2.08
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1028,7 +1028,7 @@ entries:
   input_usd_per_1m: 0.065
   output_usd_per_1m: 0.26
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -1039,7 +1039,7 @@ entries:
   input_usd_per_1m: 0.03
   output_usd_per_1m: 0.12
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -1050,7 +1050,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 12.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048756
@@ -1061,7 +1061,7 @@ entries:
   input_usd_per_1m: 1.75
   output_usd_per_1m: 14.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1072,7 +1072,7 @@ entries:
   input_usd_per_1m: 0.8
   output_usd_per_1m: 1.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1083,7 +1083,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 12.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -1094,7 +1094,7 @@ entries:
   input_usd_per_1m: 3.0
   output_usd_per_1m: 15.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -1105,7 +1105,7 @@ entries:
   input_usd_per_1m: 0.26
   output_usd_per_1m: 1.56
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -1116,7 +1116,7 @@ entries:
   input_usd_per_1m: 0.385
   output_usd_per_1m: 2.45
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -1127,7 +1127,7 @@ entries:
   input_usd_per_1m: 0.12
   output_usd_per_1m: 0.48
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 204800
@@ -1138,7 +1138,7 @@ entries:
   input_usd_per_1m: 0.6
   output_usd_per_1m: 1.92
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 202752
@@ -1149,7 +1149,7 @@ entries:
   input_usd_per_1m: 0.78
   output_usd_per_1m: 3.9
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1160,7 +1160,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 25.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -1171,7 +1171,7 @@ entries:
   input_usd_per_1m: 0.11
   output_usd_per_1m: 0.8
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1182,7 +1182,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -1193,7 +1193,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.3
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1204,7 +1204,7 @@ entries:
   input_usd_per_1m: 0.375
   output_usd_per_1m: 2.025
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1215,7 +1215,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 0.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -1226,7 +1226,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 1.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 65536
@@ -1237,7 +1237,7 @@ entries:
   input_usd_per_1m: 0.6
   output_usd_per_1m: 6.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1040000
@@ -1248,7 +1248,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -1259,7 +1259,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -1270,7 +1270,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -1281,7 +1281,7 @@ entries:
   input_usd_per_1m: 0.6
   output_usd_per_1m: 2.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -1292,7 +1292,7 @@ entries:
   input_usd_per_1m: 0.06
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 202752
@@ -1303,7 +1303,7 @@ entries:
   input_usd_per_1m: 1.75
   output_usd_per_1m: 14.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1314,7 +1314,7 @@ entries:
   input_usd_per_1m: 0.075
   output_usd_per_1m: 0.3
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1325,7 +1325,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1336,7 +1336,7 @@ entries:
   input_usd_per_1m: 0.29
   output_usd_per_1m: 0.95
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 204800
@@ -1347,7 +1347,7 @@ entries:
   input_usd_per_1m: 0.4
   output_usd_per_1m: 1.75
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 202752
@@ -1358,7 +1358,7 @@ entries:
   input_usd_per_1m: 0.5
   output_usd_per_1m: 3.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -1369,7 +1369,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -1380,7 +1380,7 @@ entries:
   input_usd_per_1m: 0.05
   output_usd_per_1m: 0.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1391,7 +1391,7 @@ entries:
   input_usd_per_1m: 1.75
   output_usd_per_1m: 14.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -1402,7 +1402,7 @@ entries:
   input_usd_per_1m: 21.0
   output_usd_per_1m: 168.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1413,7 +1413,7 @@ entries:
   input_usd_per_1m: 1.75
   output_usd_per_1m: 14.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1424,7 +1424,7 @@ entries:
   input_usd_per_1m: 0.4
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1435,7 +1435,7 @@ entries:
   input_usd_per_1m: 1.0
   output_usd_per_1m: 3.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -1446,7 +1446,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 0.9
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1457,7 +1457,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1468,7 +1468,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 2.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -1479,7 +1479,7 @@ entries:
   input_usd_per_1m: 0.2
   output_usd_per_1m: 0.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1490,7 +1490,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 0.15
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1501,7 +1501,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.1
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1512,7 +1512,7 @@ entries:
   input_usd_per_1m: 0.5
   output_usd_per_1m: 1.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1523,7 +1523,7 @@ entries:
   input_usd_per_1m: 0.045
   output_usd_per_1m: 0.15
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1534,7 +1534,7 @@ entries:
   input_usd_per_1m: 0.2288
   output_usd_per_1m: 0.3432
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1545,7 +1545,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 25.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -1556,7 +1556,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 0.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 65536
@@ -1567,7 +1567,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 12.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 65536
@@ -1578,7 +1578,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 1.25
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -1589,7 +1589,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1600,7 +1600,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -1611,7 +1611,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1622,7 +1622,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1633,7 +1633,7 @@ entries:
   input_usd_per_1m: 0.6
   output_usd_per_1m: 2.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1644,7 +1644,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 12.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -1655,7 +1655,7 @@ entries:
   input_usd_per_1m: 3.0
   output_usd_per_1m: 15.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -1666,7 +1666,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.3
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32000
@@ -1677,7 +1677,7 @@ entries:
   input_usd_per_1m: 0.075
   output_usd_per_1m: 0.3
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1688,7 +1688,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -1699,7 +1699,7 @@ entries:
   input_usd_per_1m: 0.255
   output_usd_per_1m: 1.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 204800
@@ -1710,7 +1710,7 @@ entries:
   input_usd_per_1m: 0.104
   output_usd_per_1m: 0.416
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1721,7 +1721,7 @@ entries:
   input_usd_per_1m: 0.017
   output_usd_per_1m: 0.112
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131000
@@ -1732,7 +1732,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1743,7 +1743,7 @@ entries:
   input_usd_per_1m: 1.0
   output_usd_per_1m: 5.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -1754,7 +1754,7 @@ entries:
   input_usd_per_1m: 0.117
   output_usd_per_1m: 1.365
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -1765,7 +1765,7 @@ entries:
   input_usd_per_1m: 0.08
   output_usd_per_1m: 0.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -1776,7 +1776,7 @@ entries:
   input_usd_per_1m: 10.0
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1787,7 +1787,7 @@ entries:
   input_usd_per_1m: 10.0
   output_usd_per_1m: 40.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -1798,7 +1798,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 8.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -1809,7 +1809,7 @@ entries:
   input_usd_per_1m: 0.4
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1820,7 +1820,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 2.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -1831,7 +1831,7 @@ entries:
   input_usd_per_1m: 0.13
   output_usd_per_1m: 1.56
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1842,7 +1842,7 @@ entries:
   input_usd_per_1m: 0.13
   output_usd_per_1m: 0.52
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1853,7 +1853,7 @@ entries:
   input_usd_per_1m: 15.0
   output_usd_per_1m: 120.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1864,7 +1864,7 @@ entries:
   input_usd_per_1m: 0.43
   output_usd_per_1m: 1.74
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 202752
@@ -1875,7 +1875,7 @@ entries:
   input_usd_per_1m: 3.0
   output_usd_per_1m: 15.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -1886,7 +1886,7 @@ entries:
   input_usd_per_1m: 0.27
   output_usd_per_1m: 0.41
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 163840
@@ -1897,7 +1897,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 0.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1908,7 +1908,7 @@ entries:
   input_usd_per_1m: 0.85
   output_usd_per_1m: 1.25
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -1919,7 +1919,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -1930,7 +1930,7 @@ entries:
   input_usd_per_1m: 0.26
   output_usd_per_1m: 2.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -1941,7 +1941,7 @@ entries:
   input_usd_per_1m: 0.2
   output_usd_per_1m: 0.88
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1952,7 +1952,7 @@ entries:
   input_usd_per_1m: 0.78
   output_usd_per_1m: 3.9
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -1963,7 +1963,7 @@ entries:
   input_usd_per_1m: 0.65
   output_usd_per_1m: 3.25
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -1974,7 +1974,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -1985,7 +1985,7 @@ entries:
   input_usd_per_1m: 0.27
   output_usd_per_1m: 0.95
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 163840
@@ -1996,7 +1996,7 @@ entries:
   input_usd_per_1m: 0.195
   output_usd_per_1m: 0.975
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -2007,7 +2007,7 @@ entries:
   input_usd_per_1m: 0.0975
   output_usd_per_1m: 0.78
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -2018,7 +2018,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -2029,7 +2029,7 @@ entries:
   input_usd_per_1m: 0.09
   output_usd_per_1m: 1.1
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -2040,7 +2040,7 @@ entries:
   input_usd_per_1m: 0.26
   output_usd_per_1m: 0.78
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -2051,7 +2051,7 @@ entries:
   input_usd_per_1m: 0.26
   output_usd_per_1m: 0.78
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -2062,7 +2062,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -2073,7 +2073,7 @@ entries:
   input_usd_per_1m: 0.6
   output_usd_per_1m: 2.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -2084,7 +2084,7 @@ entries:
   input_usd_per_1m: 0.08
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2095,7 +2095,7 @@ entries:
   input_usd_per_1m: 0.13
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2106,7 +2106,7 @@ entries:
   input_usd_per_1m: 1.0
   output_usd_per_1m: 3.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2117,7 +2117,7 @@ entries:
   input_usd_per_1m: 0.21
   output_usd_per_1m: 0.79
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 163840
@@ -2128,7 +2128,7 @@ entries:
   input_usd_per_1m: 0.4
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2139,7 +2139,7 @@ entries:
   input_usd_per_1m: 0.6
   output_usd_per_1m: 1.8
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 65536
@@ -2150,7 +2150,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 8.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -2161,7 +2161,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -2172,7 +2172,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -2183,7 +2183,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -2194,7 +2194,7 @@ entries:
   input_usd_per_1m: 0.05
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 400000
@@ -2205,7 +2205,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2216,7 +2216,7 @@ entries:
   input_usd_per_1m: 0.03
   output_usd_per_1m: 0.15
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2227,7 +2227,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2238,7 +2238,7 @@ entries:
   input_usd_per_1m: 0.029
   output_usd_per_1m: 0.14
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2249,7 +2249,7 @@ entries:
   input_usd_per_1m: 15.0
   output_usd_per_1m: 75.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -2260,7 +2260,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 0.9
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -2271,7 +2271,7 @@ entries:
   input_usd_per_1m: 0.07
   output_usd_per_1m: 0.27
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 160000
@@ -2282,7 +2282,7 @@ entries:
   input_usd_per_1m: 0.04815
   output_usd_per_1m: 0.19305
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2293,7 +2293,7 @@ entries:
   input_usd_per_1m: 0.6
   output_usd_per_1m: 2.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2304,7 +2304,7 @@ entries:
   input_usd_per_1m: 0.13
   output_usd_per_1m: 0.85
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2315,7 +2315,7 @@ entries:
   input_usd_per_1m: 0.1495
   output_usd_per_1m: 1.495
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -2326,7 +2326,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -2337,7 +2337,7 @@ entries:
   input_usd_per_1m: 0.22
   output_usd_per_1m: 1.8
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -2348,7 +2348,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -2359,7 +2359,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -2370,7 +2370,7 @@ entries:
   input_usd_per_1m: 0.09
   output_usd_per_1m: 0.1
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -2381,7 +2381,7 @@ entries:
   input_usd_per_1m: 0.85
   output_usd_per_1m: 3.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2392,7 +2392,7 @@ entries:
   input_usd_per_1m: 0.57
   output_usd_per_1m: 2.3
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2403,7 +2403,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -2414,7 +2414,7 @@ entries:
   input_usd_per_1m: 0.14
   output_usd_per_1m: 0.57
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2425,7 +2425,7 @@ entries:
   input_usd_per_1m: 0.9
   output_usd_per_1m: 1.9
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 262144
@@ -2436,7 +2436,7 @@ entries:
   input_usd_per_1m: 0.8
   output_usd_per_1m: 1.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 81920
@@ -2447,7 +2447,7 @@ entries:
   input_usd_per_1m: 0.42
   output_usd_per_1m: 1.25
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2458,7 +2458,7 @@ entries:
   input_usd_per_1m: 0.075
   output_usd_per_1m: 0.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -2469,7 +2469,7 @@ entries:
   input_usd_per_1m: 0.4
   output_usd_per_1m: 2.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -2480,7 +2480,7 @@ entries:
   input_usd_per_1m: 0.3
   output_usd_per_1m: 2.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -2491,7 +2491,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -2502,7 +2502,7 @@ entries:
   input_usd_per_1m: 20.0
   output_usd_per_1m: 80.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -2513,7 +2513,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -2524,7 +2524,7 @@ entries:
   input_usd_per_1m: 0.5
   output_usd_per_1m: 2.15
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 163840
@@ -2535,7 +2535,7 @@ entries:
   input_usd_per_1m: 15.0
   output_usd_per_1m: 75.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -2546,7 +2546,7 @@ entries:
   input_usd_per_1m: 3.0
   output_usd_per_1m: 15.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -2557,7 +2557,7 @@ entries:
   input_usd_per_1m: 0.06
   output_usd_per_1m: 0.12
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -2568,7 +2568,7 @@ entries:
   input_usd_per_1m: 0.4
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2579,7 +2579,7 @@ entries:
   input_usd_per_1m: 1.25
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -2590,7 +2590,7 @@ entries:
   input_usd_per_1m: 0.75
   output_usd_per_1m: 1.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2601,7 +2601,7 @@ entries:
   input_usd_per_1m: 0.5
   output_usd_per_1m: 0.8
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -2612,7 +2612,7 @@ entries:
   input_usd_per_1m: 0.18
   output_usd_per_1m: 0.18
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 163840
@@ -2623,7 +2623,7 @@ entries:
   input_usd_per_1m: 0.12
   output_usd_per_1m: 0.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2634,7 +2634,7 @@ entries:
   input_usd_per_1m: 0.05
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2645,7 +2645,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.24
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131702
@@ -2656,7 +2656,7 @@ entries:
   input_usd_per_1m: 0.08
   output_usd_per_1m: 0.28
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2667,7 +2667,7 @@ entries:
   input_usd_per_1m: 0.455
   output_usd_per_1m: 1.82
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2678,7 +2678,7 @@ entries:
   input_usd_per_1m: 1.1
   output_usd_per_1m: 4.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -2689,7 +2689,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 8.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -2700,7 +2700,7 @@ entries:
   input_usd_per_1m: 1.1
   output_usd_per_1m: 4.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -2711,7 +2711,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 8.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1047576
@@ -2722,7 +2722,7 @@ entries:
   input_usd_per_1m: 0.4
   output_usd_per_1m: 1.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1047576
@@ -2733,7 +2733,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1047576
@@ -2744,7 +2744,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 0.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1048576
@@ -2755,7 +2755,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.3
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 10000000
@@ -2766,7 +2766,7 @@ entries:
   input_usd_per_1m: 0.2
   output_usd_per_1m: 0.77
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 163840
@@ -2777,7 +2777,7 @@ entries:
   input_usd_per_1m: 150.0
   output_usd_per_1m: 600.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -2788,7 +2788,7 @@ entries:
   input_usd_per_1m: 0.351
   output_usd_per_1m: 0.555
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -2799,7 +2799,7 @@ entries:
   input_usd_per_1m: 0.05
   output_usd_per_1m: 0.1
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2810,7 +2810,7 @@ entries:
   input_usd_per_1m: 0.05
   output_usd_per_1m: 0.15
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2821,7 +2821,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 256000
@@ -2832,7 +2832,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 0.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -2843,7 +2843,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -2854,7 +2854,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 65536
@@ -2865,7 +2865,7 @@ entries:
   input_usd_per_1m: 0.08
   output_usd_per_1m: 0.16
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2876,7 +2876,7 @@ entries:
   input_usd_per_1m: 0.55
   output_usd_per_1m: 0.8
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -2887,7 +2887,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 8.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -2898,7 +2898,7 @@ entries:
   input_usd_per_1m: 3.0
   output_usd_per_1m: 15.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -2909,7 +2909,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 8.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -2920,7 +2920,7 @@ entries:
   input_usd_per_1m: 0.2
   output_usd_per_1m: 0.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -2931,7 +2931,7 @@ entries:
   input_usd_per_1m: 1.1
   output_usd_per_1m: 4.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -2942,7 +2942,7 @@ entries:
   input_usd_per_1m: 4.0
   output_usd_per_1m: 8.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2953,7 +2953,7 @@ entries:
   input_usd_per_1m: 0.7
   output_usd_per_1m: 1.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2964,7 +2964,7 @@ entries:
   input_usd_per_1m: 0.8
   output_usd_per_1m: 1.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -2975,7 +2975,7 @@ entries:
   input_usd_per_1m: 0.8
   output_usd_per_1m: 1.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -2986,7 +2986,7 @@ entries:
   input_usd_per_1m: 0.26
   output_usd_per_1m: 0.78
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000000
@@ -2997,7 +2997,7 @@ entries:
   input_usd_per_1m: 1.1
   output_usd_per_1m: 4.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -3008,7 +3008,7 @@ entries:
   input_usd_per_1m: 0.05
   output_usd_per_1m: 0.08
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -3019,7 +3019,7 @@ entries:
   input_usd_per_1m: 1.0
   output_usd_per_1m: 1.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 127072
@@ -3030,7 +3030,7 @@ entries:
   input_usd_per_1m: 0.8
   output_usd_per_1m: 0.8
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3041,7 +3041,7 @@ entries:
   input_usd_per_1m: 0.7
   output_usd_per_1m: 2.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 163840
@@ -3052,7 +3052,7 @@ entries:
   input_usd_per_1m: 0.2
   output_usd_per_1m: 1.1
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 1000192
@@ -3063,7 +3063,7 @@ entries:
   input_usd_per_1m: 0.07
   output_usd_per_1m: 0.14
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 16384
@@ -3074,7 +3074,7 @@ entries:
   input_usd_per_1m: 3.0
   output_usd_per_1m: 3.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 16000
@@ -3085,7 +3085,7 @@ entries:
   input_usd_per_1m: 0.2002
   output_usd_per_1m: 0.8001
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3096,7 +3096,7 @@ entries:
   input_usd_per_1m: 0.65
   output_usd_per_1m: 0.75
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3107,7 +3107,7 @@ entries:
   input_usd_per_1m: 15.0
   output_usd_per_1m: 60.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -3118,7 +3118,7 @@ entries:
   input_usd_per_1m: 0.0375
   output_usd_per_1m: 0.15
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3129,7 +3129,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3140,7 +3140,7 @@ entries:
   input_usd_per_1m: 0.1
   output_usd_per_1m: 0.32
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3151,7 +3151,7 @@ entries:
   input_usd_per_1m: 0.06
   output_usd_per_1m: 0.24
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 300000
@@ -3162,7 +3162,7 @@ entries:
   input_usd_per_1m: 0.035
   output_usd_per_1m: 0.14
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3173,7 +3173,7 @@ entries:
   input_usd_per_1m: 0.8
   output_usd_per_1m: 3.2
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 300000
@@ -3184,7 +3184,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3195,7 +3195,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 6.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3206,7 +3206,7 @@ entries:
   input_usd_per_1m: 0.66
   output_usd_per_1m: 1.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3217,7 +3217,7 @@ entries:
   input_usd_per_1m: 0.4
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -3228,7 +3228,7 @@ entries:
   input_usd_per_1m: 3.0
   output_usd_per_1m: 5.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -3239,7 +3239,7 @@ entries:
   input_usd_per_1m: 0.04
   output_usd_per_1m: 0.1
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3250,7 +3250,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 8000
@@ -3261,7 +3261,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 8000
@@ -3272,7 +3272,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 0.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 32768
@@ -3283,7 +3283,7 @@ entries:
   input_usd_per_1m: 0.027
   output_usd_per_1m: 0.201
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3294,7 +3294,7 @@ entries:
   input_usd_per_1m: 0.345
   output_usd_per_1m: 0.345
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3305,7 +3305,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3316,7 +3316,7 @@ entries:
   input_usd_per_1m: 0.0509
   output_usd_per_1m: 0.335
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3327,7 +3327,7 @@ entries:
   input_usd_per_1m: 0.36
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3338,7 +3338,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 0.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3349,7 +3349,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3360,7 +3360,7 @@ entries:
   input_usd_per_1m: 0.85
   output_usd_per_1m: 0.85
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3371,7 +3371,7 @@ entries:
   input_usd_per_1m: 0.7
   output_usd_per_1m: 0.7
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3382,7 +3382,7 @@ entries:
   input_usd_per_1m: 0.0
   output_usd_per_1m: 0.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3393,7 +3393,7 @@ entries:
   input_usd_per_1m: 1.0
   output_usd_per_1m: 1.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3404,7 +3404,7 @@ entries:
   input_usd_per_1m: 0.04
   output_usd_per_1m: 0.05
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 8192
@@ -3415,7 +3415,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3426,7 +3426,7 @@ entries:
   input_usd_per_1m: 0.02
   output_usd_per_1m: 0.03
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3437,7 +3437,7 @@ entries:
   input_usd_per_1m: 0.4
   output_usd_per_1m: 0.4
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3448,7 +3448,7 @@ entries:
   input_usd_per_1m: 0.02
   output_usd_per_1m: 0.03
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 131072
@@ -3459,7 +3459,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 0.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3470,7 +3470,7 @@ entries:
   input_usd_per_1m: 0.15
   output_usd_per_1m: 0.6
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3481,7 +3481,7 @@ entries:
   input_usd_per_1m: 0.65
   output_usd_per_1m: 0.65
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 8192
@@ -3492,7 +3492,7 @@ entries:
   input_usd_per_1m: 5.0
   output_usd_per_1m: 15.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3503,7 +3503,7 @@ entries:
   input_usd_per_1m: 2.5
   output_usd_per_1m: 10.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3514,7 +3514,7 @@ entries:
   input_usd_per_1m: 0.14
   output_usd_per_1m: 0.14
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 8192
@@ -3525,7 +3525,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 6.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 65536
@@ -3536,7 +3536,7 @@ entries:
   input_usd_per_1m: 0.62
   output_usd_per_1m: 0.62
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 65536
@@ -3547,7 +3547,7 @@ entries:
   input_usd_per_1m: 10.0
   output_usd_per_1m: 30.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3558,7 +3558,7 @@ entries:
   input_usd_per_1m: 0.25
   output_usd_per_1m: 1.25
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 200000
@@ -3569,7 +3569,7 @@ entries:
   input_usd_per_1m: 2.0
   output_usd_per_1m: 6.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3580,7 +3580,7 @@ entries:
   input_usd_per_1m: 1.0
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 4095
@@ -3591,7 +3591,7 @@ entries:
   input_usd_per_1m: 10.0
   output_usd_per_1m: 30.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 128000
@@ -3602,7 +3602,7 @@ entries:
   input_usd_per_1m: 1.5
   output_usd_per_1m: 2.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 4095
@@ -3613,7 +3613,7 @@ entries:
   input_usd_per_1m: 3.0
   output_usd_per_1m: 4.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 16385
@@ -3624,7 +3624,7 @@ entries:
   input_usd_per_1m: 0.75
   output_usd_per_1m: 1.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 8000
@@ -3635,7 +3635,7 @@ entries:
   input_usd_per_1m: 0.45
   output_usd_per_1m: 0.65
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 6144
@@ -3646,7 +3646,7 @@ entries:
   input_usd_per_1m: 0.06
   output_usd_per_1m: 0.06
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 4096
@@ -3657,7 +3657,7 @@ entries:
   input_usd_per_1m: 0.5
   output_usd_per_1m: 1.5
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 16385
@@ -3668,7 +3668,7 @@ entries:
   input_usd_per_1m: 30.0
   output_usd_per_1m: 60.0
   source: openrouter_api
-  as_of: '2026-07-01T10:53:18.609847Z'
+  as_of: '2026-07-01T12:14:00.669747Z'
   currency: USD
   units: per_1m_tokens
   context_length: 8191
