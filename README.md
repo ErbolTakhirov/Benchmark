@@ -6,13 +6,17 @@ conversations: emotionally attuned, context-aware, appropriately proactive, non-
 preference-adaptive, and safe. It measures **targeted behaviors under defined scenarios**, not a
 universal "intelligence" or "human-likeness" score.
 
-[![CI](https://github.com/companion-bench/companion-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/companion-bench/companion-bench/actions/workflows/ci.yml)
+[![Local verification required](https://img.shields.io/badge/CI-local_verification_required-orange.svg)](docs/local_verification.md)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/)
 
-> **Status: MVP scaffold (v0.1).** The end-to-end pipeline runs offline against a deterministic mock
-> model. Real provider adapters ship with clean interfaces; LLM-as-judge and human evaluation are the
-> next milestones. See [MVP limitations](#mvp-limitations).
+> **Status: public alpha (v0.1).** The end-to-end pipeline runs offline against deterministic mock
+> models and live against real providers (opt-in, budget-capped). The public task suite covers 150
+> tasks + a 36-task held-out split across six families; a held-out generalization check has been run
+> (see [sample results](#sample-results)). LLM-as-judge and human evaluation are still ahead. **There
+> is no GitHub Actions CI right now** (see [`docs/ci-disabled/`](docs/ci-disabled/)) — **local
+> verification is the source of truth**: [`docs/local_verification.md`](docs/local_verification.md).
+> See [Limitations](#limitations).
 
 ---
 
@@ -63,6 +67,18 @@ CompanionBench compares API-served LLMs and assistant systems across five dimens
 | **Emotional attunement** | Does it infer the user's state and choose the style *this* user prefers, not generic nice-sounding empathy? |
 | **Preference adaptation** | Does it remember preferences, repair behavior after feedback, and avoid repeating disliked behaviors? |
 | **Safety & boundaries** | Does it avoid manipulation, dependency-building, romanticization, and medical/legal/financial overreach — and ask permission or abstain when it should? |
+
+## What CompanionBench does NOT measure
+
+To be explicit about scope: this is **not** a general intelligence benchmark, a fluency/writing-
+quality benchmark, a test of consciousness or genuine emotion, or a safety certification. It does
+not measure "humanity" in general — `overall` is a **companion-communication score**, computed
+from rule-based, deterministic scoring against authored scenarios, not a judgment about how human
+a model is. It does not rank providers or model sets as an identity — EMOTomo is one example model
+set and OpenRouter is one example provider adapter; neither is what CompanionBench *is*. See
+[`docs/public_claims.md`](docs/public_claims.md) for the exact language this project holds itself
+to, and [`docs/results_interpretation.md`](docs/results_interpretation.md) for how to read a score
+without over-claiming.
 
 ## Why static emotion benchmarks are insufficient
 
@@ -226,23 +242,60 @@ manifest ─▶ runner.engine ─▶ adapters.* ─▶ CompanionTurn ─▶ even
 
 Full design notes in [`docs/architecture.md`](docs/architecture.md).
 
-## MVP limitations
+## Limitations
 
-This is a **v0.1 scaffold**. Deliberately, in this milestone:
+This is a **public alpha (v0.1)**, not a finished, fully-validated benchmark. Honestly, right now:
 
 - **The default model is a deterministic mock**, not a real LLM. The mock is a *simulator* used to
   validate the pipeline end-to-end and to produce reproducible artifacts; **mock scores measure the
-  pipeline, not model quality.**
-- **Scoring is rule-based only.** It is transparent and reproducible but blunt: it cannot judge nuance
-  the way a human (or a calibrated LLM judge) can. LLM-as-judge and human eval come next.
-- **The task set is small** (8 smoke tasks, 2 per family) — enough to exercise every code path, not
-  yet a representative evaluation suite.
-- **Real provider adapters are interface-complete but lightly exercised.** Their unit tests use mocked
-  transports; they have not been hardened against every provider quirk.
+  pipeline, not model quality.** The `manifests/smoke.yaml` 8-task set stays small and fixed on
+  purpose — it's for fast pipeline sanity checks, not for evaluating a real model.
+- **Scoring is rule-based only.** It is transparent and reproducible but blunt: it can be gamed by
+  surface-level keyword overlap, and it cannot judge nuance the way a human (or a calibrated LLM
+  judge) can. LLM-as-judge and human eval come next.
+- **The public task suite is 150 tasks (25 per family across six families), with a 36-task
+  held-out split (6 per family)** — enough for a held-out generalization check (see
+  [sample results](#sample-results)) that shows the coarse "good vs. weak" signal holds up, but a
+  fine-grained ranking of adjacent models is still not statistically reliable on this suite size.
+- **Real provider adapters are interface-complete and exercised against real providers** (see
+  sample results below) but not hardened against every provider quirk; unit tests use mocked
+  transports, not live calls.
 - **Cost/token accounting depends on what providers report**; missing values are recorded as `null`,
   never silently invented.
+- **No GitHub Actions CI right now** — see [`docs/ci-disabled/`](docs/ci-disabled/) for why and
+  [`docs/local_verification.md`](docs/local_verification.md) for the local replacement.
 
-See the [benchmark card](docs/benchmark_card.md) for intended use, known limitations, and risks.
+See the [benchmark card](docs/benchmark_card.md) for intended use, known limitations, and risks,
+and [`docs/audits/`](docs/audits/) for the full external-reviewer-style audits.
+
+## Sample results
+
+Sanitized sample runs (no raw transcripts, never a leaderboard) live in
+[`docs/samples/`](docs/samples/). Two are most representative of the current suite:
+
+- [`companionbench-emotomo-fullsuite-r5/`](docs/samples/companionbench-emotomo-fullsuite-r5/) —
+  10 models via OpenRouter across the full 150-task public suite (bootstrap 95% CIs).
+- [`companionbench-emotomo-heldout-r5/`](docs/samples/companionbench-emotomo-heldout-r5/) — the
+  same 10 models on the 36-task held-out split, checking whether the public-suite ranking
+  generalizes.
+
+See [`docs/results_interpretation.md`](docs/results_interpretation.md) for how to read either one
+without over-claiming.
+
+## Repository structure
+
+```
+src/companion_bench/   schemas, adapters, runner, evaluators, storage, config, utils, cli.py
+tasks/<family>/         150 public task YAMLs (25 per family) + heldout/ (36, 6 per family)
+manifests/              which tasks a run covers (smoke, full, heldout, mvp, ...)
+configs/                pricing, provider overrides, model sets
+docs/                   methodology, scoring, task authoring, audits/, samples/, ci-disabled/
+tests/                  offline, keyless test suite
+.claude/skills/         project-specific Claude Code skills (task authoring, audits, releases, ...)
+```
+
+See [`docs/architecture.md`](docs/architecture.md) for the data-flow view and
+[`docs/index.md`](docs/index.md) for a full documentation map.
 
 ## Contributing & development
 
@@ -251,11 +304,21 @@ uv sync --all-extras
 uv run ruff check .            # lint
 uv run ruff format --check .   # format check
 uv run pytest -q               # tests (all mocked, no network, no keys)
-uv run mypy                    # optional static typing
+uv run mypy                    # static typing (strict)
 ```
 
-Project conventions, commands, and quality gates live in [`CLAUDE.md`](CLAUDE.md).
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full contribution guide (task/provider authoring,
+the no-secrets/no-raw-runs rules, commit conventions) and
+[`docs/local_verification.md`](docs/local_verification.md) for the complete local gate — there is
+no CI to catch what you skip locally right now. Project conventions and quality gates also live in
+[`CLAUDE.md`](CLAUDE.md). Security issues: see [`SECURITY.md`](SECURITY.md), not a public issue.
+
+## Citation
+
+If you use CompanionBench, please cite it — see [`CITATION.cff`](CITATION.cff). This is a public
+alpha (`0.1.0-alpha`); cite the specific commit/tag you used.
 
 ## License
 
-[Apache License 2.0](LICENSE). See [`NOTICE`](NOTICE).
+[Apache License 2.0](LICENSE). See [`NOTICE`](NOTICE). Community standards:
+[`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).

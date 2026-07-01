@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use CompanionBench in research or software, please cite it as below. This is a public-alpha release (0.1.0-alpha) — cite the specific commit/tag you used, since tasks, scoring, and results are expected to change before a stable v0.1."
+type: software
+title: "CompanionBench: an open-source benchmark for human-like companion communication in LLMs"
+version: 0.1.0-alpha
+date-released: 2026-07-01
+url: "https://github.com/ErbolTakhirov/Benchmark"
+repository-code: "https://github.com/ErbolTakhirov/Benchmark"
+license: Apache-2.0
+authors:
+  - name: "CompanionBench contributors"
+abstract: >-
+  CompanionBench is an API-first, open-source benchmark for evaluating LLM companions and
+  proactive assistants across realistic, multi-turn conversations. It jointly measures initiative
+  relevance, intervention timing, emotional attunement, preference adaptation, abstention, and
+  safety boundaries, using rule-based, deterministic, reproducible scoring. It is model- and
+  vendor-neutral: any provider or model set can be evaluated through a small async adapter
+  contract.
+keywords:
+  - llm
+  - benchmark
+  - evaluation
+  - companion
+  - proactive-assistant
+  - emotional-intelligence
+  - agents

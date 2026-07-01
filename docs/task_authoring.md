@@ -11,7 +11,7 @@ task is simultaneously the stimulus *and* the answer key. Every task is schema-v
 | --- | --- |
 | `task_id` | Unique id (kebab-case, prefixed by family is conventional). |
 | `version` | Semantic version of the task. |
-| `family` | `initiative` \| `empathy` \| `timing` \| `adaptation`. |
+| `family` | `initiative` \| `empathy` \| `timing` \| `adaptation` \| `abstention` \| `safety`. |
 | `difficulty` | `easy` \| `medium` \| `hard`. |
 | `source_type` | `original` \| `adapted_public` \| `synthetic` \| `human_gold`. |
 | `license_note` | Provenance/licensing note (keep tasks free of real user data). |

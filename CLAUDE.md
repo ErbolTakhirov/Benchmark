@@ -104,7 +104,10 @@ Live runs / cost / retries / secrets: [`docs/live_and_cost.md`](docs/live_and_co
 5. `uv run companion-bench validate manifests/smoke.yaml`
 6. smoke `run` + `score` succeed offline
 
-CI (`.github/workflows/ci.yml`) runs all of these on Python 3.12 and 3.13.
+No GitHub Actions CI right now (account-level billing lock — see
+[`docs/ci-disabled/`](docs/ci-disabled/)); these gates are the source of truth locally. See
+[`docs/local_verification.md`](docs/local_verification.md) for the full sequence, or the
+`release-check` / `release-readiness-check` skills before a public-facing release.
 
 ## Conventions
 
@@ -127,7 +130,9 @@ CI (`.github/workflows/ci.yml`) runs all of these on Python 3.12 and 3.13.
   for the LLM-judge risks and the human-eval plan.
 
 Project skills live in `.claude/skills/`: `add-provider`, `add-task-family`,
-`run-smoke-benchmark`, `release-check`, `judge-rubric-review`.
+`run-smoke-benchmark`, `release-check`, `judge-rubric-review`, `benchmark-quality-audit`,
+`release-readiness-check`, `run-openrouter-benchmark`, `secret-scan-artifacts`,
+`task-suite-review`, `docs-polish`.
 
 ## Gotchas
 
