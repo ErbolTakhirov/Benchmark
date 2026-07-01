@@ -50,8 +50,9 @@ communication *choices* a thoughtful companion makes in a scripted moment — wh
 speak, ask permission, hold a boundary, or abstain. Non-goals (general intelligence, fluency,
 consciousness, genuine emotion, safety certification) are explicit and repeated in
 `README.md`/`docs/public_claims.md`. Model-set/provider separation from the benchmark's identity
-is **mechanically enforced** by `tests/test_public_claims.py`, which fails the build on
-"EMOTomo/OpenRouter benchmark" phrasing. No "humanity score" naming survives anywhere in code
+is **mechanically enforced** by `tests/test_public_claims.py`, which fails the build if a model
+set or provider name is branded as if it were the benchmark's own identity, unqualified. No
+"humanity score" naming survives anywhere in code
 (`schemas/score.py` carries an explicit guard comment); the only `human`-adjacent identifier is the
 unrelated `SourceType.HUMAN_GOLD` (task provenance, not a score).
 
