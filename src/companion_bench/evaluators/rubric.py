@@ -1,15 +1,16 @@
-"""Rubric evaluator interface — the seam for future LLM-as-judge and human evaluation.
+"""Rubric evaluator interface + the per-probe LLM-as-judge adapter.
 
-The MVP scores with transparent rules (:mod:`companion_bench.evaluators.rule_based`). This
-module defines the *interface* a future judge will implement so it can be dropped in
-alongside (or compared against) the rule-based scorer, without changing the runner or the
-artifact schema. **It is intentionally not implemented in the MVP.**
+The MVP scores with transparent rules (:mod:`companion_bench.evaluators.rule_based`). This module
+defines the *interface* a judge implements so it drops in **alongside** (never replacing) the
+rule-based scorer. As of the calibration pilot the LLM-judge seam is realized:
+:class:`LLMJudgeRubricEvaluator` delegates to the versioned prompts in
+:mod:`companion_bench.evaluators.judge_prompts` through an injected provider adapter. Batch judging
++ artifacts + cost gating live in :mod:`companion_bench.evaluators.judge`.
 
-Why not ship a judge now? See ``docs/benchmark_card.md`` — LLM judges introduce
-self-preference, stylistic bias, prompt-sensitivity, and non-determinism. The plan is to
-(1) keep rule-based scoring as a reproducible baseline, (2) add an LLM judge behind this
-interface with published prompts and seeds, and (3) calibrate both against a human-rated
-gold set before reporting judge-based numbers.
+Judge output is a biased, opt-in calibration signal (self-preference, stylistic/verbosity bias,
+prompt-sensitivity, non-determinism — see ``docs/benchmark_card.md`` /
+``docs/judge_calibration.md``). It is reported next to, and calibrated against, the rule-based
+baseline and human gold labels — never as the source of truth.
 """
 
 from __future__ import annotations
@@ -17,7 +18,11 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
+from companion_bench.adapters.base import ChatAdapter
+from companion_bench.evaluators.judge_prompts import build_judge_messages, parse_judge_verdict
 from companion_bench.evaluators.rule_based import ProbeOutcome
+from companion_bench.schemas.gold import GoldResponse
+from companion_bench.schemas.model import ChatMessage, ChatRequest, ModelSpec, Role
 from companion_bench.schemas.task import Dimension, ProbeTurn, Task
 
 __all__ = ["LLMJudgeRubricEvaluator", "RubricEvaluator", "RubricVerdict"]
@@ -49,16 +54,57 @@ class RubricEvaluator(ABC):
 
 
 class LLMJudgeRubricEvaluator(RubricEvaluator):
-    """Placeholder for the future LLM-as-judge evaluator (not implemented in the MVP)."""
+    """Per-probe LLM-as-judge: versioned prompt -> injected adapter -> validated verdict.
 
-    def __init__(self, judge_model: str = "anthropic/claude-sonnet-4-6") -> None:
+    The adapter is injected so this is testable offline with a stub and so the live gate stays in
+    the CLI. A verdict that does not parse yields a zero-confidence :class:`RubricVerdict` flagged
+    ``judge_parse_failure`` — never a coerced high score.
+    """
+
+    def __init__(self, adapter: ChatAdapter, *, provider: str, judge_model: str) -> None:
+        self._adapter = adapter
+        self.provider = provider
         self.judge_model = judge_model
 
     async def evaluate_probe(
         self, task: Task, probe: ProbeTurn, outcome: ProbeOutcome
     ) -> RubricVerdict:
-        raise NotImplementedError(
-            "LLM-as-judge scoring is a planned milestone, not part of the MVP. "
-            "Use the rule-based evaluator (companion_bench.evaluators.rule_based). "
-            "See docs/scoring.md and docs/benchmark_card.md for the judge/human-eval plan."
+        turn = outcome.turn
+        response = GoldResponse(
+            response_id=f"{task.task_id}:{probe.probe_id}",
+            task_id=task.task_id,
+            probe_id=probe.probe_id,
+            parsed=turn is not None,
+            output_text=outcome.output_text or (turn.message if turn else ""),
+            decision=turn.decision if turn else None,
+            message=turn.message if turn else "",
+            target=turn.target if turn else None,
+            style=turn.style if turn else None,
+            ask_permission=turn.ask_permission if turn else False,
+        )
+        messages = tuple(
+            ChatMessage(role=Role(m["role"]), content=m["content"])
+            for m in build_judge_messages(task, probe, response)
+        )
+        chat = await self._adapter.generate(
+            ChatRequest(
+                model=ModelSpec(provider=self.provider, model=self.judge_model),
+                messages=messages,
+                temperature=0.0,
+                response_format="json_object",
+            )
+        )
+        verdict = parse_judge_verdict(chat.content)
+        if verdict is None:
+            return RubricVerdict(
+                scores={},
+                rationale="judge output did not parse into a valid verdict",
+                confidence=0.0,
+                flags=("judge_parse_failure",),
+            )
+        return RubricVerdict(
+            scores=dict(verdict.dimension_scores),
+            rationale=verdict.rationale,
+            confidence=verdict.confidence,
+            flags=verdict.flags,
         )

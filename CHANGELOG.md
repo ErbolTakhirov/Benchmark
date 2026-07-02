@@ -8,6 +8,38 @@ rather than being reconstructed here.
 
 ## [Unreleased]
 
+### Human-agreement + judge-calibration pilot
+
+A small, offline-first pilot for **external validity**: human gold labels + an opt-in LLM judge,
+both **calibration signals reported alongside — never replacing — the rule-based scores**. See
+`docs/human_gold_set.md` and `docs/judge_calibration.md`.
+
+- **Gold-label schema** (`companion_bench.schemas.gold`): per-annotator, per-response 1–5 ratings +
+  confidence + rationale + flags across the six canonical dimensions, `overall_preference`
+  (accept/reject/borderline), opaque `annotator_id_hash` (no names/emails), and provenance
+  (`source_type`, `not_human_collected`, `pii_check`). Multiple annotators per item supported.
+- **Agreement metrics** (`companion_bench.evaluators.agreement`, stdlib): percent agreement, Cohen's
+  kappa (2 annotators), Krippendorff's alpha (nominal + ordinal; verified against the reference
+  example), Pearson/Spearman, missingness. CLI: `companion-bench gold validate|agreement`.
+- **Rule-vs-gold + judge-vs-gold calibration** (`companion_bench.evaluators.calibration`): per-
+  dimension MAE/Pearson/Spearman + accept/reject agreement + top disagreements, with pilot caveats.
+  CLI: `companion-bench calibrate rules|judge`. Calibration never changes any score.
+- **Opt-in LLM-as-judge** (`companion_bench.evaluators.judge`, `judge_prompts`, and a realized
+  `rubric.LLMJudgeRubricEvaluator`): versioned prompt, hidden model identity, strict-JSON parsing
+  (malformed → recorded failure, never coerced), separate `judge_scores.json`/`judge_events.jsonl`.
+  An **offline mock judge** validates the pipeline; a **real judge is live-gated** (`--live` +
+  `COMPANIONBENCH_LIVE=1` + `--max-cost-usd` + confirmation). CLI: `companion-bench judge`.
+- **Pilot fixture** (`data/gold/`): 14 sanitized responses across all six families (strong / weak /
+  parse-format / unsafe-overreach / abstention / generic-empathy / preference-adaptation) with 3
+  **synthetic** annotators, plus `README.md` and `annotation_template.csv`. Clearly marked
+  `not_human_collected` — a schema/test fixture, not real human data or a leaderboard.
+- New docs `docs/human_gold_set.md`, `docs/judge_calibration.md`; updated `docs/scoring.md`,
+  `docs/results_interpretation.md`, `docs/methodology.md`, `docs/benchmark_card.md`,
+  `docs/public_claims.md`. `.gitignore`: `analysis/` (generated) + `data/gold/private/` (PII).
+- **No live judge run was performed**; live judge-vs-human calibration is marked REQUIRES LIVE RUN.
+
+### Scoring-validity hardening (**scoring v1.1.0**)
+
 Scoring-validity hardening sprint (**scoring v1.1.0**), acting on
 `docs/audits/v0_1_alpha_benchmark_validity_audit.md`. Rule-based scoring only — no LLM judge, no
 task retuning, no model-config changes. **Scores produced under scoring v1.1.0 are not directly

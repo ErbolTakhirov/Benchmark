@@ -26,6 +26,10 @@ These are fine because each is bounded by what the run actually measured:
 - "The EMOTomo model set is an example model set; OpenRouter is one provider adapter."
 - "This is a sample run, not a final leaderboard."
 - "With 95% bootstrap CIs over N repeats, the difference was / was not statistically distinguishable."
+- "On the small synthetic pilot, the rule scorer agreed with the human consensus at rate X per
+  dimension." (Calibration on a fixture — a workflow proof, not validation.)
+- "The LLM judge (model M, prompt version V) is a biased, opt-in signal reported alongside the
+  rule-based scores." (Never in place of them.)
 
 ## Not allowed (overclaims)
 
@@ -38,6 +42,12 @@ Do not write these, because the repository does not support them:
 - ❌ "CompanionBench is the first / definitive / final benchmark for companions." (Unproven.)
 - ❌ "Model X is safe for vulnerable users." (A score is not a safety certification.)
 - ❌ "Model X is emotionally intelligent / empathic" as a global trait. (Behavior on scenarios only.)
+- ❌ "CompanionBench is human-validated / human-approved." (The shipped gold set is a *synthetic
+  pilot fixture*; no real human study has been run.)
+- ❌ "The LLM judge shows model X is best." (The judge is a biased calibration signal, not a
+  leaderboard, and never the source of truth.)
+- ❌ "Human ratings prove the benchmark is correct." (Human labels *calibrate*; they do not
+  validate the task design or make a small pilot definitive.)
 
 ## Naming: model set and provider are not the benchmark
 

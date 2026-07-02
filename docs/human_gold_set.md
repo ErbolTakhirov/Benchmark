@@ -1,0 +1,79 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+# Human gold set & calibration
+
+CompanionBench scores are automated (rule-based today; an optional LLM judge alongside — see
+[`judge_calibration.md`](judge_calibration.md)). Automated numbers are only trustworthy if they
+track what **people** actually value. The human gold set is how we check that: a small set of
+human ratings of companion responses, against which the automated scorers are *calibrated*. Human
+labels **calibrate** the benchmark; they do not become a new leaderboard or the source of truth.
+
+This page documents the schema, the metrics, and the **pilot** — which is a workflow proof, not a
+study. The pilot labels shipped in `data/gold/` are **synthetic test fixtures**, clearly marked
+`not_human_collected: true`; no result here is a claim about any model.
+
+## Why human labels, and why agreement
+
+- **Why labels:** rule-based scoring is a blunt proxy. Only humans can say whether a "correct"
+  decision was delivered with genuine attunement, or whether a keyword match reflects real quality.
+- **Why inter-rater agreement first:** if annotators don't agree with *each other*, the dimension
+  is ambiguous or the rubric is underspecified — a finding about the benchmark, not the models. We
+  report agreement before trusting any calibration number.
+
+## Schema (`companion_bench.schemas.gold`)
+
+One `GoldLabel` = one annotator's rating of one response. Multiple annotators rate the same
+response by sharing `(task_id, probe_id, response_id)`. Dimensions reuse the canonical scorer
+`Dimension` enum (`empathy`, `initiative_relevance`, `timing`, `adaptation`, `abstention`,
+`safety`) so calibration is 1:1; the human-friendly names are in
+[`../data/gold/README.md`](../../data/gold/README.md). Each dimension carries a 1–5 `rating`
+(or `null` if skipped), 1–5 `confidence`, a short `rationale`, and free-text `flags`; the label
+also has an `overall_preference` (`accept`/`reject`/`borderline`), an opaque `annotator_id_hash`
+(**never** a name/email), and provenance fields (`source_type`, `not_human_collected`, `purpose`,
+`pii_check`).
+
+## Agreement metrics (`companion_bench.evaluators.agreement`)
+
+Complementary views, each with blind spots — read them together with the missingness report:
+
+- **Percent agreement** — intuitive, chance-uncorrected.
+- **Cohen's kappa** — chance-corrected, exactly two annotators, nominal (`overall_preference`).
+- **Krippendorff's alpha** — any number of annotators, missing data, nominal **or** ordinal; the
+  right tool for 1–5 Likert dimensions. (Verified against the reference implementation's documented
+  example: nominal ≈ 0.691, ordinal ≈ 0.807 — see `tests/test_agreement.py`.)
+- **Pearson/Spearman** — correlation of two annotators' numeric ratings.
+
+```bash
+companion-bench gold validate  data/gold/pilot_v0_1_alpha.jsonl   # schema + range + PII check
+companion-bench gold agreement data/gold/pilot_v0_1_alpha.jsonl   # per-dimension + overall
+```
+
+## Rule-vs-gold calibration
+
+`companion-bench calibrate rules --gold <labels> --responses <responses>` re-scores the *same*
+responses with the rule-based scorer and compares them, per dimension, to the human consensus
+(mean of annotators, with 1–5 normalized to `[0,1]` via `(r-1)/4`). It reports per-dimension MAE +
+Pearson + Spearman, an overall accept/reject agreement, and the top disagreements. It **never
+changes any score** — it only measures fit.
+
+### Pilot result (synthetic fixture — illustrative only)
+
+On the 14-item synthetic pilot the rule scorer tracks the (synthetic) consensus closely — overall
+accept/reject agreement ≈ 0.93, per-dimension Pearson ~0.83 (initiative) to ~1.0 (adaptation),
+MAE ≤ ~0.28. **This is a pipeline proof on synthetic data, not evidence about real models or real
+human judgment.** Reproduce with the command above (writes to the git-ignored `analysis/`).
+
+## Limitations (read before citing anything)
+
+- **The pilot is synthetic and tiny (14 items).** It validates the schema/metrics/commands, not
+  model quality; the numbers say nothing about any model or about real human preferences.
+- **Human ratings are subjective**; a consensus is a mean over a handful of annotators.
+- Agreement/calibration on this size is **not statistically definitive**.
+- Real collection (recruitment, multiple independent annotators, adjudication, IRB/consent where
+  applicable) is future work; real annotations with any PII must live in `data/gold/private/`
+  (git-ignored), never in the committed set.
+
+## Allowed vs. forbidden claims
+
+See [`public_claims.md`](public_claims.md). In short: you may say "the rule scorer agreed with the
+pilot consensus at rate X on this small synthetic fixture." You may **not** say the benchmark is
+"human-validated", that a model is "human-approved", or present any pilot number as a leaderboard.

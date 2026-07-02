@@ -8,7 +8,9 @@ environment. Both ``companion-bench <cmd>`` and ``python -m companion_bench.cli 
 from __future__ import annotations
 
 import asyncio
+import json
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, NoReturn, cast
@@ -33,16 +35,32 @@ from companion_bench.config.openrouter_pricing import (
 )
 from companion_bench.config.pricing import PricingTable, default_pricing, load_pricing
 from companion_bench.config.providers import default_providers_config, load_providers_config
-from companion_bench.evaluators.aggregate import render_summary, score_run
+from companion_bench.evaluators.aggregate import build_outcomes, render_summary, score_run
+from companion_bench.evaluators.agreement import AgreementReport, compute_agreement
+from companion_bench.evaluators.calibration import (
+    CalibrationReport,
+    calibrate_judge_vs_gold,
+    calibrate_rules_vs_gold,
+    render_calibration_md,
+)
 from companion_bench.evaluators.frontier import (
     FrontierRow,
     mark_pareto,
     render_csv,
     render_markdown,
 )
+from companion_bench.evaluators.judge import (
+    JudgeItem,
+    build_items_from_responses,
+    run_live_judge,
+    run_mock_judge,
+    write_judge_artifacts,
+)
 from companion_bench.runner.engine import RunEngine, RunResult
 from companion_bench.runner.manifest import load_manifest_and_tasks, validate_manifest
 from companion_bench.runner.selection import select_tasks
+from companion_bench.schemas.gold import GoldLabel, GoldResponse
+from companion_bench.schemas.judge import JudgeRunScores
 from companion_bench.schemas.model import ModelSpec
 from companion_bench.schemas.run import (
     ModelCallEvent,
@@ -52,7 +70,7 @@ from companion_bench.schemas.run import (
     RunMetadata,
 )
 from companion_bench.schemas.score import RunScores
-from companion_bench.schemas.task import Dimension
+from companion_bench.schemas.task import Dimension, Task
 from companion_bench.storage.export import ExportFormat, export_run
 from companion_bench.storage.jsonl import read_events, read_model_json
 from companion_bench.utils.errors import CompanionBenchError
@@ -75,6 +93,18 @@ app.add_typer(models_app)
 
 pricing_app = typer.Typer(name="pricing", help="Pricing tables.", no_args_is_help=True)
 app.add_typer(pricing_app)
+
+gold_app = typer.Typer(
+    name="gold", help="Human gold-label validation and inter-rater agreement.", no_args_is_help=True
+)
+app.add_typer(gold_app)
+
+calibrate_app = typer.Typer(
+    name="calibrate",
+    help="Calibrate automated scores against human gold labels (never replaces them).",
+    no_args_is_help=True,
+)
+app.add_typer(calibrate_app)
 
 
 def _load_local_dotenv() -> None:
@@ -589,6 +619,156 @@ def models_validate(
     console.print(f"[green]✓[/] model set [bold]{report.set_id}[/] is valid")
 
 
+# --------------------------------------------------------------------------- gold + calibration
+@gold_app.command("validate")
+def gold_validate(
+    path: Path = typer.Argument(..., help="Gold-label JSONL file."),
+) -> None:
+    """Validate a gold-label file: schema, rating ranges (1-5), and a light PII (email) check."""
+    labels = _load_gold_labels(path)
+    pii = _scan_pii(labels)
+    if pii:
+        _fail(
+            f"possible PII (email) in gold labels for {len(pii)} item(s): {sorted(set(pii))[:5]}… "
+            "Redact free-text/annotator fields before committing."
+        )
+    items = {(lab.task_id, lab.probe_id, lab.response_id) for lab in labels}
+    annotators = {lab.annotator_id_hash for lab in labels}
+    synthetic = sum(1 for lab in labels if lab.not_human_collected)
+    console.print(
+        f"[green]✓[/] {len(labels)} gold label(s) valid — {len(items)} item(s), "
+        f"{len(annotators)} annotator(s). PII check: clean."
+    )
+    if synthetic:
+        console.print(
+            f"[yellow]note:[/] {synthetic}/{len(labels)} labels are marked "
+            "[bold]not_human_collected[/] (synthetic fixture — not real human ratings)."
+        )
+
+
+@gold_app.command("agreement")
+def gold_agreement(
+    path: Path = typer.Argument(..., help="Gold-label JSONL file."),
+) -> None:
+    """Report inter-rater agreement (per-dimension + overall) for a gold-label file."""
+    labels = _load_gold_labels(path)
+    report = compute_agreement(labels)
+    _print_agreement(report)
+
+
+@calibrate_app.command("rules")
+def calibrate_rules(
+    gold: Path = typer.Option(..., "--gold", help="Gold-label JSONL."),
+    responses: Path = typer.Option(..., "--responses", help="Rated responses JSONL."),
+    out: Path | None = typer.Option(None, "--out", help="Write the Markdown report here."),
+) -> None:
+    """Calibrate rule-based scores against the human gold consensus (does not change any score)."""
+    labels = _load_gold_labels(gold)
+    resps = _load_gold_responses(responses)
+    tasks_by_id = _load_tasks_index()
+    report = calibrate_rules_vs_gold(labels, resps, tasks_by_id)
+    _emit_calibration(report, out)
+
+
+@calibrate_app.command("judge")
+def calibrate_judge(
+    gold: Path = typer.Option(..., "--gold", help="Gold-label JSONL."),
+    judge: Path = typer.Option(..., "--judge", help="A judge_scores.json produced by `judge`."),
+    out: Path | None = typer.Option(None, "--out", help="Write the Markdown report here."),
+) -> None:
+    """Calibrate LLM-judge scores against the human gold consensus (reported alongside rules)."""
+    labels = _load_gold_labels(gold)
+    if not judge.is_file():
+        _fail(f"judge scores file not found: {judge}")
+    try:
+        judge_scores = JudgeRunScores.model_validate_json(judge.read_text(encoding="utf-8"))
+    except Exception as exc:
+        _fail(f"invalid judge_scores.json: {exc}")
+    report = calibrate_judge_vs_gold(labels, judge_scores)
+    _emit_calibration(report, out)
+
+
+@app.command()
+def judge(
+    out: Path = typer.Option(..., "--out", help="Output directory for judge artifacts."),
+    run: Path | None = typer.Option(None, "--run", help="Score a run directory's responses."),
+    responses: Path | None = typer.Option(
+        None, "--responses", help="Score a rated-responses JSONL (e.g. the gold pilot)."
+    ),
+    judge_provider: str = typer.Option(
+        "mock", "--judge-provider", help="'mock' (offline) or a real provider (needs live gate)."
+    ),
+    judge_model: str = typer.Option("demo", "--judge-model", help="Judge model slug."),
+    live: bool = typer.Option(
+        False, "--live", help=f"Allow real judge calls (needs {LIVE_ENV}=1)."
+    ),
+    yes: bool = typer.Option(False, "--yes", help="Skip the live-judge confirmation prompt."),
+    max_cost_usd: float | None = typer.Option(
+        None, "--max-cost-usd", help="Cost budget (USD); REQUIRED for a real judge."
+    ),
+    pricing: Path | None = typer.Option(None, "--pricing", help="Pricing YAML (bundled default)."),
+) -> None:
+    """Run an opt-in LLM-as-judge; writes judge_scores.json + judge_events.jsonl (never rule scores)."""
+    if (run is None) == (responses is None):
+        _fail("pass exactly one of --run <dir> or --responses <jsonl>.")
+    tasks_by_id = _load_tasks_index()
+    if responses is not None:
+        items, warnings = build_items_from_responses(_load_gold_responses(responses), tasks_by_id)
+    else:
+        assert run is not None
+        items, warnings = _judge_items_from_run(run, tasks_by_id)
+    for w in warnings:
+        err_console.print(f"[yellow]⚠ {w}[/]")
+    if not items:
+        _fail("no judgeable items found.")
+
+    generated_at = RealClock().now_iso()
+    judge_run_id = f"judge-{slugify(judge_provider)}-{slugify(judge_model)}"
+    if judge_provider == "mock":
+        scores = run_mock_judge(
+            items, judge_run_id=judge_run_id, generated_at=generated_at, judge_model=judge_model
+        )
+    else:
+        _check_judge_live(judge_provider, judge_model, live, yes, max_cost_usd, len(items))
+        pricing_table = load_pricing(pricing) if pricing else default_pricing()
+        # A --max-cost-usd cap can only bound spend for a priced model — otherwise every call
+        # returns cost=None, the cap never fires, and the "budget" is silently ineffective.
+        if pricing_table.rate(judge_provider, judge_model) is None:
+            _fail(
+                f"--max-cost-usd cannot bound spend for unpriced judge model "
+                f"{judge_provider}/{judge_model}. Add a price with --pricing <file> "
+                "(refusing an unbounded paid judge run)."
+            )
+        settings = default_providers_config().for_provider(judge_provider)
+        try:
+            scores = asyncio.run(
+                run_live_judge(
+                    items,
+                    provider=judge_provider,
+                    model=judge_model,
+                    judge_run_id=judge_run_id,
+                    generated_at=generated_at,
+                    settings=settings,
+                    pricing=pricing_table,
+                    max_cost_usd=max_cost_usd,
+                )
+            )
+        except CompanionBenchError as exc:
+            _fail(str(exc))
+
+    scores_path, _events_path = write_judge_artifacts(out, scores)
+    cost = "n/a" if scores.total_cost_usd is None else f"${scores.total_cost_usd:.6f}"
+    console.print(
+        f"[green]✓[/] judged {scores.n_probes - scores.n_failed}/{scores.n_probes} item(s) "
+        f"[bold]({scores.source})[/] with {scores.judge_provider}/{scores.judge_model} "
+        f"[dim](prompt {scores.judge_prompt_version}, cost {cost})[/] → {scores_path}"
+    )
+    console.print(
+        "[dim]Judge output is a separate, biased, opt-in signal — it does not change rule-based "
+        f"scores. Calibrate with: companion-bench calibrate judge --judge {scores_path}[/]"
+    )
+
+
 # --------------------------------------------------------------------------- helpers
 def _merge_config(
     base: RunConfig, *, seed: int | None, limit: int | None, concurrency: int | None
@@ -804,6 +984,181 @@ def _frontier_row(run_dir: Path) -> FrontierRow:
         n_successful_probes=n_successful,
         notes="" if cost is not None else "cost unknown (unpriced)",
     )
+
+
+# --------------------------------------------------------------------------- gold/judge helpers
+_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+
+
+def _load_jsonl_records(path: Path) -> list[dict[str, object]]:
+    if not path.is_file():
+        _fail(f"file not found: {path}")
+    records: list[dict[str, object]] = []
+    for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            records.append(json.loads(line))
+        except json.JSONDecodeError as exc:
+            _fail(f"{path} line {i} is not valid JSON: {exc}")
+    return records
+
+
+def _load_gold_labels(path: Path) -> list[GoldLabel]:
+    labels: list[GoldLabel] = []
+    for i, rec in enumerate(_load_jsonl_records(path), start=1):
+        try:
+            labels.append(GoldLabel.model_validate(rec))
+        except Exception as exc:
+            _fail(f"invalid gold label on line {i} of {path}: {exc}")
+    if not labels:
+        _fail(f"no gold labels found in {path}")
+    return labels
+
+
+def _load_gold_responses(path: Path) -> list[GoldResponse]:
+    resps: list[GoldResponse] = []
+    for i, rec in enumerate(_load_jsonl_records(path), start=1):
+        try:
+            resps.append(GoldResponse.model_validate(rec))
+        except Exception as exc:
+            _fail(f"invalid gold response on line {i} of {path}: {exc}")
+    if not resps:
+        _fail(f"no responses found in {path}")
+    return resps
+
+
+def _load_tasks_index() -> dict[str, Task]:
+    """Index every suite task by id (public + held-out) so calibration can re-score responses."""
+    idx: dict[str, Task] = {}
+    for name in ("full", "heldout"):
+        path = Path("manifests") / f"{name}.yaml"
+        if path.is_file():
+            try:
+                _, tasks = load_manifest_and_tasks(path)
+            except CompanionBenchError as exc:
+                _fail(str(exc))
+            for task in tasks:
+                idx[task.task_id] = task
+    if not idx:
+        _fail("could not load tasks (run from the repo root; needs manifests/full.yaml).")
+    return idx
+
+
+def _scan_pii(labels: list[GoldLabel]) -> list[str]:
+    """Return response_ids whose free-text/annotator fields contain an email-shaped string."""
+    hits: list[str] = []
+    for lab in labels:
+        blobs = [
+            lab.annotator_id_hash,
+            lab.notes,
+            *(dr.rationale for dr in lab.dimensions.values()),
+            *(f for dr in lab.dimensions.values() for f in dr.flags),
+        ]
+        if any(_EMAIL_RE.search(b) for b in blobs):
+            hits.append(lab.response_id)
+    return hits
+
+
+def _judge_items_from_run(
+    run_dir: Path, tasks_by_id: dict[str, Task]
+) -> tuple[list[JudgeItem], list[str]]:
+    """Build judge items from a scored run directory's per-probe outcomes."""
+    meta_path, events_path = run_dir / "run.json", run_dir / "events.jsonl"
+    if not meta_path.is_file() or not events_path.is_file():
+        _fail(f"{run_dir} is not a run directory (need run.json and events.jsonl).")
+    meta = read_model_json(meta_path, _RUN_META_ADAPTER)
+    outcomes = build_outcomes(read_events(events_path))
+    resps: list[GoldResponse] = []
+    for task_id, probes in outcomes.items():
+        for probe_id, oc in probes.items():
+            turn = oc.turn
+            resps.append(
+                GoldResponse(
+                    response_id=f"{meta.model_id}:{task_id}:{probe_id}",
+                    task_id=task_id,
+                    probe_id=probe_id,
+                    model_id=meta.model_id,
+                    parsed=turn is not None,
+                    output_text=oc.output_text,
+                    decision=turn.decision if turn else None,
+                    message=turn.message if turn else "",
+                    target=turn.target if turn else None,
+                    style=turn.style if turn else None,
+                    ask_permission=turn.ask_permission if turn else False,
+                )
+            )
+    return build_items_from_responses(resps, tasks_by_id)
+
+
+def _check_judge_live(
+    provider: str, model: str, live: bool, yes: bool, max_cost_usd: float | None, n_items: int
+) -> None:
+    if not live:
+        _fail(f"a real judge ({provider}) requires --live (and {LIVE_ENV}=1).")
+    if not _live_enabled():
+        _fail(f"--live requires {LIVE_ENV}=1 (live network calls are opt-in).")
+    if max_cost_usd is None:
+        _fail("a real judge requires --max-cost-usd as a budget guard.")
+    if not yes and not typer.confirm(
+        f"About to make LIVE judge calls with {provider}/{model} for {n_items} item(s), "
+        f"budget ${max_cost_usd}. Continue?"
+    ):
+        _fail("aborted by user (no --yes).")
+
+
+def _opt(v: float | None) -> str:
+    return "n/a" if v is None else f"{v:.3f}"
+
+
+def _print_agreement(report: AgreementReport) -> None:
+    o = report.overall
+    console.print(
+        f"[bold]Agreement[/] — gold_set {report.gold_set_id!r}: "
+        f"{o.n_items} item(s), {o.n_annotators} annotator(s)"
+    )
+    console.print(
+        f"  overall_preference: percent {_opt(o.percent)} · Cohen's kappa {_opt(o.cohens_kappa)} "
+        f"· Krippendorff alpha(nominal) {_opt(o.alpha_nominal)}"
+    )
+    table = Table(title="Per-dimension agreement (1-5 ratings)")
+    for col in ("dimension", "n", "alpha(ord)", "Pearson", "Spearman", "missing"):
+        table.add_column(col, justify="left" if col == "dimension" else "right")
+    for dim in Dimension:
+        da = report.per_dimension[dim]
+        table.add_row(
+            dim.value,
+            str(da.n_items),
+            _opt(da.alpha_ordinal),
+            _opt(da.pearson),
+            _opt(da.spearman),
+            f"{da.missing_frac:.0%}",
+        )
+    console.print(table)
+    for w in report.warnings:
+        err_console.print(f"[yellow]warn:[/] {w}")
+
+
+def _emit_calibration(report: CalibrationReport, out: Path | None) -> None:
+    if out is not None:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(render_calibration_md(report), encoding="utf-8")
+    console.print(
+        f"[bold]{report.label}[/] — {report.n_items} item(s) · accept/reject agreement "
+        f"{_opt(report.overall_accept_agreement)}"
+    )
+    table = Table(title=f"{report.label} (per dimension)")
+    for col in ("dimension", "n", "MAE", "Pearson", "Spearman"):
+        table.add_column(col, justify="left" if col == "dimension" else "right")
+    for dim in Dimension:
+        dc = report.per_dimension.get(dim)
+        if dc is None:
+            continue
+        table.add_row(dim.value, str(dc.n), _opt(dc.mae), _opt(dc.pearson), _opt(dc.spearman))
+    console.print(table)
+    if out is not None:
+        console.print(f"  report: {out}")
+    console.print(f"[dim]{report.caveats[0]}[/]")
 
 
 if __name__ == "__main__":  # pragma: no cover

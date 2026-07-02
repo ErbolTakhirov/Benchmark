@@ -28,6 +28,12 @@ runs/
 *.parquet
 *.duckdb
 
+# Generated calibration / judge analysis outputs (regenerated from committed inputs)
+analysis/
+
+# Real human annotations may carry PII — keep them out of git; only synthetic pilots are committed
+data/gold/private/
+
 # OS / editor cruft
 .DS_Store
 .idea/

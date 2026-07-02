@@ -131,7 +131,14 @@ self-prefer a model family. That makes it the right baseline and the right defau
 truth. It is also blunt: keyword/regex/structural signals miss paraphrase, nuance, and
 genuinely-novel-but-good responses.
 
-An **LLM-as-judge** is planned only as a *future, optional calibration layer* — never the source of
+A **human gold set** and an **opt-in LLM-as-judge** now exist as *calibration layers* beside the
+rule scorer — never replacing it. Human 1–5 ratings support inter-rater agreement (percent, Cohen's
+kappa, Krippendorff's alpha) and rule-vs-human calibration (`companion-bench gold`,
+`companion-bench calibrate`); the judge (`companion-bench judge`, live-gated, stored separately in
+`judge_scores.json`) adds a second, biased automated signal. Both are pilots today — see
+[`human_gold_set.md`](human_gold_set.md) and [`judge_calibration.md`](judge_calibration.md).
+
+An **LLM-as-judge** remains only an *optional calibration layer* — never the source of
 truth. When added it must be reported **alongside** the rule-based baseline, with published prompts
 and seeds, pinned judge versions, saved transcripts, multi-judge disagreement, and explicit
 calibration against humans. The documented risks (self-preference, verbosity/stylistic bias, prompt

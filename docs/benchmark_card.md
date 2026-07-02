@@ -95,15 +95,22 @@ reported **alongside** the rule-based baseline, never replacing it.
 
 ## Human evaluation plan
 
+The **workflow** for this plan is now implemented as a pilot (schema, agreement metrics,
+calibration commands, and an opt-in judge) — see [`human_gold_set.md`](human_gold_set.md) and
+[`judge_calibration.md`](judge_calibration.md). The shipped pilot labels are **synthetic test
+fixtures** (`data/gold/`, marked `not_human_collected`), so steps 1 and 4 below (real collection,
+expert review) remain future work; steps 2–3 (agreement + calibration) run today on any gold file.
+
 1. **Gold set.** Sample probes across families/difficulties; collect ≥3 independent human
-   ratings per probe per dimension with a written rubric.
-2. **Agreement.** Report inter-rater reliability (e.g. Krippendorff's α) per dimension; revise
-   rubrics where humans disagree.
+   ratings per probe per dimension with a written rubric. *(Schema shipped; real collection TODO.)*
+2. **Agreement.** Report inter-rater reliability (percent, Cohen's κ, Krippendorff's α) per
+   dimension; revise rubrics where humans disagree. *(Shipped: `companion-bench gold agreement`.)*
 3. **Calibration.** Measure rule-vs-human and judge-vs-human agreement per dimension. Treat
-   humans as the reference; report where rules/judges systematically diverge.
+   humans as the reference; report where rules/judges systematically diverge. *(Shipped:
+   `companion-bench calibrate rules|judge`.)*
 4. **Vulnerable-context review.** Have domain experts (mental-health, safety) review the
-   safety/abstention tasks specifically.
-5. **Cadence.** Re-validate when tasks, the envelope, or the judge change.
+   safety/abstention tasks specifically. *(TODO.)*
+5. **Cadence.** Re-validate when tasks, the envelope, the scorer, or the judge change.
 
 ## Reproducibility checklist
 

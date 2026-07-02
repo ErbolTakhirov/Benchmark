@@ -128,18 +128,19 @@ every report's **Provenance** block. When the scoring semantics change, this bum
 policy, safety-on-empty, self-report verification, timing de-redundancy, and task-clustered CIs
 above; earlier sample results were produced under the pre-1.1 rules.
 
-## Why not LLM-as-judge yet?
+## Rule-based is the source of truth; judge + human are calibration
 
-Rule-based scoring is blunt but reproducible and auditable, which is the right foundation. An
-LLM judge is planned behind the `RubricEvaluator` interface (`evaluators/rubric.py`) and will
-ship only with published prompts/seeds and calibration against a human-rated gold set. The
-risks it introduces (self-preference, stylistic bias, prompt-sensitivity, non-determinism) are
-documented in [`benchmark_card.md`](benchmark_card.md).
+Rule-based scoring is blunt but reproducible and auditable, which is the right foundation and the
+default source of truth. Two calibration layers now sit **alongside** it — never replacing it:
 
-## The future judge/human path
+- **Human gold set** — a small set of human 1–5 ratings per dimension, with inter-rater agreement
+  and rule-vs-human calibration. See [`human_gold_set.md`](human_gold_set.md).
+- **LLM-as-judge (opt-in, live-gated)** — a second automated signal behind the `RubricEvaluator`
+  seam (`evaluators/rubric.py`, `evaluators/judge.py`), with a versioned prompt, strict-JSON
+  parsing, hidden model identity, and its own separate `judge_scores.json`. It is biased
+  (self-preference, verbosity/position bias, prompt-sensitivity, non-determinism) and is reported
+  next to — never in place of — the rule-based numbers. See [`judge_calibration.md`](judge_calibration.md).
 
-1. Keep rule-based scoring as a reproducible baseline.
-2. Implement `RubricEvaluator` (LLM judge) with versioned prompts and fixed seeds; record
-   judge transcripts as artifacts.
-3. Collect a human-rated gold set per dimension; report rule/judge/human agreement.
-4. Only then report judge-based numbers, alongside (not replacing) the rule-based baseline.
+The order of trust is unchanged: **rules are the baseline; a judge and human labels calibrate it.**
+Judge-based numbers are only ever reported alongside the rule-based baseline, with the judge model
+and prompt version disclosed. Live judge-vs-human calibration at scale is still future work.

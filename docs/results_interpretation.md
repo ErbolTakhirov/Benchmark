@@ -82,6 +82,16 @@ timing de-redundancy, and task-clustered CIs — see [`scoring.md`](scoring.md))
 **not directly comparable** to the pre-1.1 results in `docs/samples/` unless those are re-scored or
 re-run. When in doubt, compare the `scoring_version` fields before comparing the numbers.
 
+## Human labels and the LLM judge are calibration, not the score
+
+CompanionBench has an optional human gold set and an opt-in LLM judge. Both are **calibration
+signals reported alongside — never replacing — the rule-based scores** (`scores.json` is
+untouched; judge output lives in a separate `judge_scores.json`). The judge is biased and
+live-gated; the shipped gold set is a **synthetic pilot fixture**, not real human data. So: don't
+read a calibration number as a benchmark result, don't call the benchmark "human-validated", and
+don't treat the judge as a leaderboard. See [`human_gold_set.md`](human_gold_set.md) and
+[`judge_calibration.md`](judge_calibration.md).
+
 ## What NOT to conclude from any of this
 
 Don't say a run "proves model X is the best" or is "the most human." Don't compare across
