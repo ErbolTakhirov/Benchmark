@@ -16,6 +16,8 @@ maps everything under `docs/`.
 - [`results_interpretation.md`](results_interpretation.md) — how to read a `scores.json`/
   `summary.md` without over-claiming (mock vs. real, CIs, public-vs-held-out generalization,
   behavior flags, cost/frontier).
+- [`results_v0_1_alpha.md`](results_v0_1_alpha.md) — the v0.1.0-alpha results writeup: the
+  10-model score table, cost-quality frontier, and public-vs-held-out generalization numbers.
 
 ## Building and running
 
@@ -42,6 +44,8 @@ maps everything under `docs/`.
   final state after that pass).
 - [`samples/`](samples/) — sanitized sample runs (no raw transcripts). Each has its own README
   explaining what was run and what it does/doesn't show; none of them are a leaderboard.
+- [`release_notes/v0.1.0-alpha.md`](release_notes/v0.1.0-alpha.md) — the v0.1.0-alpha release
+  notes: summary, installation, quickstart, result caveats, known limitations, roadmap.
 
 ## Elsewhere in the repo
 

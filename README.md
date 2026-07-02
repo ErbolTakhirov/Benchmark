@@ -10,10 +10,11 @@ universal "intelligence" or "human-likeness" score.
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/)
 
-> **Status: public alpha (v0.1).** The end-to-end pipeline runs offline against deterministic mock
-> models and live against real providers (opt-in, budget-capped). The public task suite covers 150
-> tasks + a 36-task held-out split across six families; a held-out generalization check has been run
-> (see [sample results](#sample-results)). LLM-as-judge and human evaluation are still ahead. **There
+> **Status: public alpha (v0.1.0-alpha).** The end-to-end pipeline runs offline against
+> deterministic mock models and live against real providers (opt-in, budget-capped). The public task
+> suite covers 150 tasks + a 36-task held-out split across six families; a held-out generalization
+> check has been run and shows strong agreement (Pearson 0.968, Spearman 0.939 — see
+> [Results](#results-public-alpha)). LLM-as-judge and human evaluation are still ahead. **There
 > is no GitHub Actions CI right now** (see [`docs/ci-disabled/`](docs/ci-disabled/)) — **local
 > verification is the source of truth**: [`docs/local_verification.md`](docs/local_verification.md).
 > See [Limitations](#limitations).
@@ -244,22 +245,39 @@ Full design notes in [`docs/architecture.md`](docs/architecture.md).
 
 ## Limitations
 
-This is a **public alpha (v0.1)**, not a finished, fully-validated benchmark. Honestly, right now:
+This is a **public alpha (v0.1.0-alpha)**, not a finished, fully-validated benchmark. Honestly,
+right now:
 
+- **Rule-based scoring only — no LLM-as-judge or human calibration yet.** Scoring is transparent
+  and fully reproducible, but blunt: it matches signals and patterns rather than judging nuance the
+  way a human (or a calibrated LLM judge) could. Both an LLM-as-judge path (behind the existing
+  `RubricEvaluator` interface) and a human gold-label calibration set are planned, not started —
+  see the [benchmark card](docs/benchmark_card.md).
+- **Substring/keyword gaming is possible.** Because scoring looks for signal phrases in a model's
+  output, a response engineered to include the right keywords without genuinely exhibiting the
+  behavior can score better than it should. Tasks use multiple paraphrased signal variants per probe
+  to reduce this, but it is not eliminated — see [`docs/scoring.md`](docs/scoring.md).
+- **Parse-format entanglement.** A model that fails to return the expected structured envelope
+  (`decision`/`message`/`style`/...) scores poorly for format-compliance reasons that are separate
+  from companion-communication quality — check a model's parse rate (see
+  [`docs/results_v0_1_alpha.md`](docs/results_v0_1_alpha.md)) before reading a low score as "bad at
+  companionship."
+- **Tasks are synthetic, AI-authored, and English-only.** No real user data is used, by design (see
+  [`docs/task_authoring.md`](docs/task_authoring.md)), but that also means the suite has not yet
+  been reviewed by outside human evaluators and does not yet cover other languages or cultural
+  contexts of companion communication.
+- **The public task suite is 150 tasks (25 per family across six families), with a 36-task
+  held-out split (6 per family)** — enough for a held-out generalization check (see
+  [Results](#results-public-alpha)) that now shows both the coarse ranking and the fine-grained rank
+  order holding up well, but this is still one suite generation, not a suite stress-tested across
+  many.
 - **The default model is a deterministic mock**, not a real LLM. The mock is a *simulator* used to
   validate the pipeline end-to-end and to produce reproducible artifacts; **mock scores measure the
   pipeline, not model quality.** The `manifests/smoke.yaml` 8-task set stays small and fixed on
   purpose — it's for fast pipeline sanity checks, not for evaluating a real model.
-- **Scoring is rule-based only.** It is transparent and reproducible but blunt: it can be gamed by
-  surface-level keyword overlap, and it cannot judge nuance the way a human (or a calibrated LLM
-  judge) can. LLM-as-judge and human eval come next.
-- **The public task suite is 150 tasks (25 per family across six families), with a 36-task
-  held-out split (6 per family)** — enough for a held-out generalization check (see
-  [sample results](#sample-results)) that shows the coarse "good vs. weak" signal holds up, but a
-  fine-grained ranking of adjacent models is still not statistically reliable on this suite size.
 - **Real provider adapters are interface-complete and exercised against real providers** (see
-  sample results below) but not hardened against every provider quirk; unit tests use mocked
-  transports, not live calls.
+  [Results](#results-public-alpha)) but not hardened against every provider quirk; unit tests use
+  mocked transports, not live calls.
 - **Cost/token accounting depends on what providers report**; missing values are recorded as `null`,
   never silently invented.
 - **No GitHub Actions CI right now** — see [`docs/ci-disabled/`](docs/ci-disabled/) for why and
@@ -268,19 +286,62 @@ This is a **public alpha (v0.1)**, not a finished, fully-validated benchmark. Ho
 See the [benchmark card](docs/benchmark_card.md) for intended use, known limitations, and risks,
 and [`docs/audits/`](docs/audits/) for the full external-reviewer-style audits.
 
-## Sample results
+## Results (public alpha)
+
+**Headline (2026-07-02):** the EMOTomo model set (10 models via OpenRouter) was evaluated across
+the full 150-task public suite and the 36-task held-out split, 5 repeats each, with bootstrap 95%
+confidence intervals. `deepseek/deepseek-v3.2` scores highest overall (0.753, 95% CI
+[0.739, 0.767]); `mistralai/mistral-nemo` is the cheapest Pareto-optimal option (all 150 tasks for
+$0.011). These are **companion-communication scores on this task suite**, not a general capability
+ranking — see [What CompanionBench does NOT measure](#what-companionbench-does-not-measure). Full
+numbers, per-family breakdown, and cost/latency: [`docs/results_v0_1_alpha.md`](docs/results_v0_1_alpha.md).
+This is **a snapshot, not a final leaderboard** — see [Limitations](#limitations).
+
+### Public suite vs. held-out validation
+
+CompanionBench keeps a **public task suite** (`manifests/full.yaml`, 150 tasks) that anyone can
+read, and a **held-out split** (`manifests/heldout.yaml`, 36 tasks) that is deliberately excluded
+from the public suite and never used to tune tasks or scoring. Running the same models on both and
+comparing the rankings answers a simple question: *does a model's public-suite score predict how it
+does on tasks it hasn't effectively been "shown"?* If yes, the public suite is a reasonable proxy
+for companion-communication quality in general, not just on these exact 150 tasks.
+
+We compare the two rankings with two standard statistics, in plain language:
+
+- **Pearson correlation** — how closely the raw *scores* track together between the two suites
+  (1.0 = a perfect line, 0 = no relationship). Answers: "if a model scores high on the public
+  suite, does it also score high on held-out?"
+- **Spearman correlation** — how well the *rank order* (1st, 2nd, 3rd, …) matches between the two
+  suites, ignoring the exact score gaps. Answers: "is the 3rd-best model on the public suite also
+  roughly the 3rd-best on held-out?" This is the stricter, more useful test for anything read as a
+  ranking.
+
+On the current suites, at their full size: **Pearson 0.968, Spearman 0.939** — both the scores and
+the rank order track closely between the public suite and the held-out split. All three score tiers
+(top-4 / middle-2 / bottom-4) survived with at most a 2-rank shuffle. This is the strongest
+generalization result the project has recorded; see
+[`docs/results_v0_1_alpha.md`](docs/results_v0_1_alpha.md) for the full breakdown, including the
+earlier, weaker correlations measured at smaller suite sizes (reported honestly, not
+cherry-picked).
+
+### Sanitized samples
 
 Sanitized sample runs (no raw transcripts, never a leaderboard) live in
-[`docs/samples/`](docs/samples/). Two are most representative of the current suite:
+[`docs/samples/`](docs/samples/). The two most current and representative:
 
-- [`companionbench-emotomo-fullsuite-r5/`](docs/samples/companionbench-emotomo-fullsuite-r5/) —
-  10 models via OpenRouter across the full 150-task public suite (bootstrap 95% CIs).
-- [`companionbench-emotomo-heldout-r5/`](docs/samples/companionbench-emotomo-heldout-r5/) — the
-  same 10 models on the 36-task held-out split, checking whether the public-suite ranking
+- [`companionbench-emotomo-public-expanded-r5/`](docs/samples/companionbench-emotomo-public-expanded-r5/)
+  — 10 models via OpenRouter across the full 150-task public suite (bootstrap 95% CIs).
+- [`companionbench-emotomo-heldout-expanded-r5/`](docs/samples/companionbench-emotomo-heldout-expanded-r5/)
+  — the same 10 models on the 36-task held-out split, checking whether the public-suite ranking
   generalizes.
 
-See [`docs/results_interpretation.md`](docs/results_interpretation.md) for how to read either one
-without over-claiming.
+Earlier, smaller-suite samples (`companionbench-emotomo-fullsuite-r5/`,
+`companionbench-emotomo-heldout-r5/`, and others) remain in `docs/samples/` for history but are
+superseded by the two above as the current reference point.
+
+See [`docs/results_interpretation.md`](docs/results_interpretation.md) for how to read any of these
+without over-claiming, and [`docs/results_v0_1_alpha.md`](docs/results_v0_1_alpha.md) for the full
+v0.1.0-alpha results writeup.
 
 ## Repository structure
 

@@ -6,9 +6,10 @@ All notable changes to CompanionBench are documented here. Format loosely follow
 scaffold, provider adapters, EMOTomo model set, pricing/frontier/bootstrap work) lives in `git log`
 rather than being reconstructed here.
 
-## [0.1.0-alpha] - 2026-07-01
+## [0.1.0-alpha] - 2026-07-02
 
-Public-alpha readiness pass: local-first, expanded task suite, full open-source scaffolding.
+Public-alpha readiness pass: local-first, expanded task suite, full open-source scaffolding, and
+a completed live evaluation run on the expanded suite.
 
 ### Added
 
@@ -21,11 +22,21 @@ Public-alpha readiness pass: local-first, expanded task suite, full open-source 
 - Open-source project scaffolding: `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`,
   `CITATION.cff`, this `CHANGELOG.md`.
 - New docs: `docs/index.md`, `docs/local_verification.md`, `docs/results_interpretation.md`,
-  `docs/release_checklist.md`, `docs/ci-disabled/` (archived CI workflow + rationale).
+  `docs/release_checklist.md`, `docs/results_v0_1_alpha.md` (the release results writeup),
+  `docs/release_notes/v0.1.0-alpha.md`, `docs/ci-disabled/` (archived CI workflow + rationale).
 - New project skills: `task-suite-review` (suite-wide invariant sweep), `docs-polish`
   (doc-freshness sweep).
 - `docs/audits/final_open_source_readiness_audit.md` (baseline, before this pass) and
   `docs/audits/public_alpha_release_readiness.md` (final state, after this pass).
+- **A completed live OpenRouter model-set run on the fully expanded suite**: 10 models × 150
+  public tasks and 10 models × 36 held-out tasks, 5 repeats each, bootstrap 95% CIs. Sanitized
+  samples added at
+  [`docs/samples/companionbench-emotomo-public-expanded-r5/`](docs/samples/companionbench-emotomo-public-expanded-r5/)
+  and
+  [`docs/samples/companionbench-emotomo-heldout-expanded-r5/`](docs/samples/companionbench-emotomo-heldout-expanded-r5/)
+  (raw transcripts excluded, secret-scanned clean). This is the first like-for-like comparison of
+  both suites at their final expanded sizes: Pearson 0.968, Spearman 0.939 — see
+  `docs/results_v0_1_alpha.md`.
 
 ### Changed
 
