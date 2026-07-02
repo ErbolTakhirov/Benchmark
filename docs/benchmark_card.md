@@ -95,14 +95,17 @@ reported **alongside** the rule-based baseline, never replacing it.
 
 ## Human evaluation plan
 
-The **workflow** for this plan is now implemented as a pilot (schema, agreement metrics,
-calibration commands, and an opt-in judge) — see [`human_gold_set.md`](human_gold_set.md) and
-[`judge_calibration.md`](judge_calibration.md). The shipped pilot labels are **synthetic test
-fixtures** (`data/gold/`, marked `not_human_collected`), so steps 1 and 4 below (real collection,
-expert review) remain future work; steps 2–3 (agreement + calibration) run today on any gold file.
+The **workflow** for this plan is implemented (schema, agreement metrics, calibration commands, an
+opt-in judge, a distributable annotation packet, and a privacy-safe de-identification importer) —
+see [`human_gold_set.md`](human_gold_set.md) and [`judge_calibration.md`](judge_calibration.md). The
+committed pilot labels are still **synthetic test fixtures** (`data/gold/`, marked
+`not_human_collected`); a **real** round is now *runnable* (packet at
+`analysis/annotation_round_v0_1/`, `companion-bench gold import-human`) but not yet done. Expert
+review (step 4) remains future work; steps 2–3 run today on any gold file.
 
 1. **Gold set.** Sample probes across families/difficulties; collect ≥3 independent human
-   ratings per probe per dimension with a written rubric. *(Schema shipped; real collection TODO.)*
+   ratings per probe per dimension with a written rubric. *(Packet + de-identifying importer
+   shipped; real collection not yet run.)*
 2. **Agreement.** Report inter-rater reliability (percent, Cohen's κ, Krippendorff's α) per
    dimension; revise rubrics where humans disagree. *(Shipped: `companion-bench gold agreement`.)*
 3. **Calibration.** Measure rule-vs-human and judge-vs-human agreement per dimension. Treat

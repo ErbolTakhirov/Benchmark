@@ -8,6 +8,14 @@ rule-based scores, and a judge never replaces either. See
 [`docs/human_gold_set.md`](../../docs/human_gold_set.md) and
 [`docs/judge_calibration.md`](../../docs/judge_calibration.md).
 
+## Real annotation round
+
+To collect **real** human labels, use the packet at
+[`../../analysis/annotation_round_v0_1/`](../../analysis/annotation_round_v0_1/) and the
+`companion-bench gold import-human` de-identifier. Raw returned files go in
+[`private/`](private/README.md) (git-ignored); only the de-identified aggregate is committed. Full
+workflow: [`../../docs/human_gold_set.md`](../../docs/human_gold_set.md).
+
 ## ⚠️ The pilot here is SYNTHETIC, not real human ratings
 
 `pilot_v0_1_alpha.jsonl` is a **test fixture**: every label is marked

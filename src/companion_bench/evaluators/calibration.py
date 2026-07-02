@@ -206,6 +206,14 @@ def calibrate_rules_vs_gold(
     g_dims, g_accept = gold_consensus(labels)
     r_dims, r_overall, warnings = rule_values(responses, tasks_by_id)
     r_accept = {rid: total >= _PASS_THRESHOLD for rid, total in r_overall.items()}
+    # Surface response_ids that were labeled by humans but have no matching scored response — a
+    # mismatched packet, not a real 0-item calibration.
+    unmatched = sorted(set(g_dims) - set(r_dims))
+    if unmatched:
+        warnings.append(
+            f"{len(unmatched)} gold response_id(s) have no matching scored response "
+            f"(e.g. {unmatched[:3]}); check the --responses packet matches the labels."
+        )
     caveats = [*_PILOT_CAVEATS, *(f"WARNING: {w}" for w in warnings)]
     return _compare(
         r_dims,
@@ -234,6 +242,12 @@ def calibrate_judge_vs_gold(labels: list[GoldLabel], judge: JudgeRunScores) -> C
     if judge.source == "mock":
         caveats.append(
             "MOCK judge = offline deterministic simulator; real judge-vs-human is REQUIRES LIVE RUN."
+        )
+    unmatched = sorted(set(g_dims) - set(j_dims))
+    if unmatched:
+        caveats.append(
+            f"WARNING: {len(unmatched)} gold response_id(s) have no matching judge verdict "
+            f"(e.g. {unmatched[:3]}); check the judge run covered the labeled items."
         )
     return _compare(
         j_dims,

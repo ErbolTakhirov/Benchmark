@@ -62,8 +62,19 @@ simulator that mirrors the rule-based signal, so mock judge-vs-gold ≈ rule-vs-
 ## Status
 
 - **Judge interface:** implemented (offline mock + live-gated real provider path).
-- **Live judge-vs-human calibration: REQUIRES LIVE RUN.** No live judge run was performed in this
-  pilot; the numbers here come from the offline mock only.
+- **Live judge-vs-human calibration: REQUIRES LIVE RUN.** No live judge run was performed; the
+  numbers here come from the offline mock only.
+- For the real human round, a **tiny, budget-capped** live judge can score the *same* items the
+  humans rated, then be calibrated against them:
+  ```bash
+  COMPANIONBENCH_LIVE=1 companion-bench judge \
+    --responses analysis/annotation_round_v0_1/annotation_packet.jsonl \
+    --judge-provider openrouter --judge-model <slug> --out analysis/judge/round_v0_1 \
+    --live --yes --max-cost-usd 2
+  companion-bench calibrate judge --gold data/gold/human_v0_1_deidentified.jsonl \
+    --judge analysis/judge/round_v0_1/judge_scores.json --out analysis/calibration/judge_vs_human_v0_1.md
+  ```
+  Keep it small and separate; the judge never replaces the rule-based or human numbers.
 
 ## Allowed vs. forbidden claims
 

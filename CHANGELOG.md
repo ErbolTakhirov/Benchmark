@@ -8,6 +8,30 @@ rather than being reconstructed here.
 
 ## [Unreleased]
 
+### Real human-annotation workflow
+
+Prepares (but does not fabricate) a **real** human-annotation round to calibrate the rule scorer
+against human judgment. See `docs/human_gold_set.md`.
+
+- **Annotation packet** at `analysis/annotation_round_v0_1/`: `README_FOR_ANNOTATORS.md`,
+  `annotation_instructions.md`, `annotation_examples.md`, `rubric_short.md`, `rubric_full.md`,
+  `consent_and_privacy_note.md`, and a **blinded** `annotation_packet.csv` + `.jsonl` — 72 items,
+  12 per family, incl. strong / weak / parse-format / unsafe-overreach / abstention / generic-empathy
+  / preference-adaptation cases. Stimuli are offline-simulator outputs over real tasks (NOT
+  model-under-test outputs); model identity is hidden and the `response_id → source` map is kept
+  private/git-ignored.
+- **De-identifying importer** `companion-bench gold import-human`
+  (`companion_bench.gold_ingest`): salted-hash of annotator handles, drops name/email/phone columns,
+  validates ratings, and **refuses to write** if an email/phone survives in the free text. Stamps
+  `source_type=real_human_pilot`. Salt comes from `--annotator-id-hash-salt-env`; no network.
+- **Privacy**: raw annotations live only in `data/gold/private/` (git-ignored — README + `.gitkeep`
+  tracked, contents never); `.gitignore` re-includes the committed packet but keeps its `private/`
+  working dir (blinding map) ignored. `calibrate rules` now surfaces mismatched gold/response ids.
+- Docs updated (`human_gold_set.md`, `judge_calibration.md`, `results_interpretation.md`,
+  `benchmark_card.md`); tests in `tests/test_gold_import.py`.
+- **No real labels collected yet** — operator sends the packet to ≥3 annotators, drops returned
+  files in `data/gold/private/`, runs `gold import-human`, then `gold agreement` + `calibrate rules`.
+
 ### Human-agreement + judge-calibration pilot
 
 A small, offline-first pilot for **external validity**: human gold labels + an opt-in LLM judge,

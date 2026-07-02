@@ -29,10 +29,16 @@ runs/
 *.duckdb
 
 # Generated calibration / judge analysis outputs (regenerated from committed inputs)
-analysis/
+analysis/*
+# …except the committed annotation packet (its private/ working dir stays ignored).
+!analysis/annotation_round_v0_1
+analysis/annotation_round_v0_1/private/
 
-# Real human annotations may carry PII — keep them out of git; only synthetic pilots are committed
-data/gold/private/
+# Real human annotations may carry PII — keep them out of git; only synthetic pilots are committed.
+# The private dir itself is tracked (README + .gitkeep) but its label files never are.
+data/gold/private/*
+!data/gold/private/README.md
+!data/gold/private/.gitkeep
 
 # OS / editor cruft
 .DS_Store

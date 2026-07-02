@@ -87,10 +87,13 @@ re-run. When in doubt, compare the `scoring_version` fields before comparing the
 CompanionBench has an optional human gold set and an opt-in LLM judge. Both are **calibration
 signals reported alongside — never replacing — the rule-based scores** (`scores.json` is
 untouched; judge output lives in a separate `judge_scores.json`). The judge is biased and
-live-gated; the shipped gold set is a **synthetic pilot fixture**, not real human data. So: don't
-read a calibration number as a benchmark result, don't call the benchmark "human-validated", and
-don't treat the judge as a leaderboard. See [`human_gold_set.md`](human_gold_set.md) and
-[`judge_calibration.md`](judge_calibration.md).
+live-gated; the committed gold set is a **synthetic pilot fixture**, not real human data. A **real**
+human round is now runnable (packet + de-identifying importer — see
+[`human_gold_set.md`](human_gold_set.md)), but even a completed round is a **small pilot**:
+**check inter-rater agreement first** (low agreement = the rubric is ambiguous, not the models),
+and never read one round as validation. So: don't read a calibration number as a benchmark result,
+don't call the benchmark "human-validated", and don't treat the judge as a leaderboard. See
+[`human_gold_set.md`](human_gold_set.md) and [`judge_calibration.md`](judge_calibration.md).
 
 ## What NOT to conclude from any of this
 

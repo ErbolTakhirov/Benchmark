@@ -8,6 +8,7 @@ environment. Both ``companion-bench <cmd>`` and ``python -m companion_bench.cli 
 from __future__ import annotations
 
 import asyncio
+import csv
 import json
 import os
 import re
@@ -56,6 +57,7 @@ from companion_bench.evaluators.judge import (
     run_mock_judge,
     write_judge_artifacts,
 )
+from companion_bench.gold_ingest import import_human_rows
 from companion_bench.runner.engine import RunEngine, RunResult
 from companion_bench.runner.manifest import load_manifest_and_tasks, validate_manifest
 from companion_bench.runner.selection import select_tasks
@@ -654,6 +656,70 @@ def gold_agreement(
     labels = _load_gold_labels(path)
     report = compute_agreement(labels)
     _print_agreement(report)
+
+
+@gold_app.command("import-human")
+def gold_import_human(
+    input_csv: Path = typer.Option(
+        ..., "--input", help="Raw filled annotation CSV (kept private)."
+    ),
+    out: Path = typer.Option(..., "--out", help="De-identified GoldLabel JSONL to write."),
+    annotator_id_hash_salt_env: str = typer.Option(
+        "COMPANIONBENCH_ANNOTATOR_SALT",
+        "--annotator-id-hash-salt-env",
+        help="Env var holding the secret salt used to hash annotator ids.",
+    ),
+    gold_set_id: str = typer.Option("human-v0.1", "--gold-set-id", help="Gold set id to stamp."),
+) -> None:
+    """De-identify a raw human-annotation CSV into committable GoldLabel JSONL (offline).
+
+    Hashes annotator ids with a salt from ``--annotator-id-hash-salt-env``, drops name/email/phone
+    columns, validates ratings, and REFUSES to write if any email/phone survives in the retained
+    free-text. The raw input file is never modified — keep it in ``data/gold/private/``.
+    """
+    if not input_csv.is_file():
+        _fail(f"input CSV not found: {input_csv}")
+    salt = os.environ.get(annotator_id_hash_salt_env, "").strip()
+    if not salt:
+        _fail(
+            f"set {annotator_id_hash_salt_env} to a secret salt before de-identifying "
+            "(annotator ids are hashed with it; without a salt they would be reversible)."
+        )
+    with input_csv.open(encoding="utf-8", newline="") as fh:
+        rows = [
+            {str(k): ("" if v is None else str(v)) for k, v in row.items()}
+            for row in csv.DictReader(fh)
+        ]
+    if not rows:
+        _fail(f"no rows in {input_csv}")
+    labels, issues = import_human_rows(
+        rows, salt=salt, gold_set_id=gold_set_id, annotation_timestamp=RealClock().now_iso()
+    )
+    if issues:
+        err_console.print(
+            f"[red]refusing to write[/] — {len(issues)} issue(s); the raw file is left untouched:"
+        )
+        for msg in issues[:20]:
+            err_console.print(f"  [red]•[/] {msg}")
+        raise typer.Exit(code=1)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # Atomic write: build in a temp file then replace, so an interrupted run never leaves a
+    # truncated de-identified file that could be mistaken for complete.
+    tmp = out.with_suffix(out.suffix + ".tmp")
+    with tmp.open("w", encoding="utf-8") as fh:
+        for lab in labels:
+            fh.write(lab.model_dump_json() + "\n")
+    tmp.replace(out)
+    annotators = {lab.annotator_id_hash for lab in labels}
+    console.print(
+        f"[green]✓[/] de-identified {len(labels)} label(s) from {len(annotators)} annotator(s) "
+        f"(source_type=real_human_pilot) → {out}"
+    )
+    console.print(
+        "[dim]Annotator ids were hashed; name/email/phone columns dropped. Keep the raw CSV private "
+        "(data/gold/private/, git-ignored). Next: companion-bench gold agreement "
+        f"{out}[/]"
+    )
 
 
 @calibrate_app.command("rules")
