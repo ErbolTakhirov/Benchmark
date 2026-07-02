@@ -10,9 +10,15 @@ from __future__ import annotations
 
 import random
 from collections import Counter, defaultdict
+from typing import Literal
 
 from companion_bench.evaluators.flags import behavior_flags
-from companion_bench.evaluators.rule_based import ProbeOutcome, score_task
+from companion_bench.evaluators.rule_based import (
+    SCORER_TYPE,
+    SCORING_VERSION,
+    ProbeOutcome,
+    score_task,
+)
 from companion_bench.schemas.run import Event, ModelCallEvent, ModelFailureEvent, RunMetadata
 from companion_bench.schemas.score import RunScores, TaskScore
 from companion_bench.schemas.task import Dimension, Family, Task
@@ -66,8 +72,14 @@ def score_run(
     bootstrap: bool = False,
     bootstrap_resamples: int = 2000,
     bootstrap_seed: int = 0,
+    bootstrap_cluster: Literal["task", "unit"] = "task",
 ) -> RunScores:
-    """Score a run (across repeats), roll up by family/dimension, optionally bootstrap CIs."""
+    """Score a run (across repeats), roll up by family/dimension, optionally bootstrap CIs.
+
+    ``bootstrap_cluster`` picks the resampling unit: ``"task"`` (default, recommended) resamples
+    whole tasks so repeats of one task are treated as the pseudo-replicates they are; ``"unit"``
+    resamples every (task, repeat) unit (legacy — narrower, over-confident CIs).
+    """
     by_repeat = build_outcomes_by_repeat(events)
     repeats = sorted(by_repeat) or [0]
     cost_by_task, total_cost, total_tokens, any_cost = _cost_rollup(events)
@@ -124,8 +136,16 @@ def score_run(
 
     overall_ci: tuple[float, float] | None = None
     dimension_ci: dict[Dimension, tuple[float, float] | None] = {}
-    if bootstrap and len(units) >= 2:
-        overall_ci, dimension_ci = _bootstrap(units, bootstrap_resamples, bootstrap_seed)
+    if bootstrap:
+        # Each method needs >= 2 of its own resampling units: the unit bootstrap needs >= 2
+        # (task, repeat) units; the task-clustered bootstrap needs >= 2 distinct tasks (a single
+        # task gives a degenerate zero-width CI). Too few -> leave the CI as None, don't fake one.
+        if bootstrap_cluster == "unit" and len(units) >= 2:
+            overall_ci, dimension_ci = _bootstrap(units, bootstrap_resamples, bootstrap_seed)
+        elif bootstrap_cluster == "task" and len(per_task) >= 2:
+            overall_ci, dimension_ci = _bootstrap_clustered(
+                per_task, bootstrap_resamples, bootstrap_seed
+            )
 
     return RunScores(
         run_id=run_id,
@@ -145,6 +165,9 @@ def score_run(
         dimension_ci=dimension_ci,
         bootstrap_resamples=bootstrap_resamples if bootstrap else None,
         bootstrap_seed=bootstrap_seed if bootstrap else None,
+        bootstrap_method=bootstrap_cluster if bootstrap else None,
+        scoring_version=SCORING_VERSION,
+        scorer_type=SCORER_TYPE,
         behavior_flags=dict(flag_counts.most_common()),
     )
 
@@ -191,6 +214,43 @@ def _bootstrap(
     return overall_ci, dim_ci
 
 
+def _bootstrap_clustered(
+    per_task: dict[str, list[TaskScore]], resamples: int, seed: int
+) -> tuple[tuple[float, float], dict[Dimension, tuple[float, float] | None]]:
+    """Task-clustered bootstrap: resample whole tasks (not (task, repeat) units).
+
+    Repeats of one task are pseudo-replicates — resampling them as if independent understates
+    uncertainty. Clustering by task first collapses each task to its across-repeat mean, then
+    resamples tasks with replacement, yielding wider, more honest CIs.
+    """
+    rng = random.Random(seed)
+    task_ids = list(per_task)
+    n = len(task_ids)
+    task_total = {tid: _mean([t.total for t in reps]) for tid, reps in per_task.items()}
+    task_dim: dict[Dimension, dict[str, float]] = {}
+    for dim in Dimension:
+        collapsed: dict[str, float] = {}
+        for tid, reps in per_task.items():
+            vals = [v for t in reps if (v := t.dimension_means[dim]) is not None]
+            if vals:
+                collapsed[tid] = sum(vals) / len(vals)
+        task_dim[dim] = collapsed
+
+    overall_samples: list[float] = []
+    dim_samples: dict[Dimension, list[float]] = {dim: [] for dim in Dimension}
+    for _ in range(resamples):
+        picked = [task_ids[rng.randrange(n)] for _ in range(n)]
+        overall_samples.append(sum(task_total[t] for t in picked) / n)
+        for dim in Dimension:
+            vals = [task_dim[dim][t] for t in picked if t in task_dim[dim]]
+            if vals:
+                dim_samples[dim].append(sum(vals) / len(vals))
+
+    overall_ci = _percentile_ci(overall_samples)
+    dim_ci = {dim: (_percentile_ci(s) if len(s) >= 2 else None) for dim, s in dim_samples.items()}
+    return overall_ci, dim_ci
+
+
 def _percentile_ci(samples: list[float], lo: float = 2.5, hi: float = 97.5) -> tuple[float, float]:
     ordered = sorted(samples)
 
@@ -206,6 +266,28 @@ def _percentile_ci(samples: list[float], lo: float = 2.5, hi: float = 97.5) -> t
 
 
 # --------------------------------------------------------------------------- rendering
+def _provenance_block(metadata: RunMetadata, scores: RunScores) -> list[str]:
+    """A compact, auditable record of exactly how these numbers were produced."""
+    if scores.bootstrap_method:
+        method = "task-clustered" if scores.bootstrap_method == "task" else "per-unit (legacy)"
+        boot = f"{method}, {scores.bootstrap_resamples} resamples, seed {scores.bootstrap_seed}"
+    else:
+        boot = "none (point estimates only)"
+    return [
+        "## Provenance",
+        "",
+        f"- **CompanionBench:** v{metadata.companion_bench_version}",
+        f"- **Scoring:** {scores.scorer_type or 'rule_based'} v{scores.scoring_version or 'n/a'} "
+        "(rule-based, deterministic — not a human or calibrated-judge verdict)",
+        f"- **Manifest:** `{metadata.manifest_name}` — `{metadata.manifest_path}` "
+        f"({len(metadata.task_ids)} task(s))",
+        f"- **Provider:** `{scores.provider}`  ·  **Model:** `{scores.model_id}`",
+        f"- **Repeats:** {scores.n_repeats}  ·  **Run seed:** {metadata.config.seed}",
+        f"- **Bootstrap:** {boot}",
+        "",
+    ]
+
+
 def _fmt(value: float | None) -> str:
     return "n/a" if value is None else f"{value:.3f}"
 
@@ -231,6 +313,7 @@ def render_summary(metadata: RunMetadata, scores: RunScores) -> str:
         "> ⚠️ If the model is a `mock/*` profile, these scores validate the **pipeline**, "
         "not model quality. The mock is a deterministic simulator.",
         "",
+        *_provenance_block(metadata, scores),
         "## By dimension",
         "",
         "| Dimension | Mean | 95% CI |",

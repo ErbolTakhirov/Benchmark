@@ -46,7 +46,12 @@ read its numbers responsibly. Modeled on dataset/model cards.
    requires running the API adapters (which need keys) and, ideally, the judge/human path.
 2. **Rule-based scoring is blunt.** Keyword/regex signals and structural checks cannot
    capture nuance, sarcasm, paraphrase, or genuinely novel-but-good responses. They can be
-   gamed by surface matching and can both false-positive and false-negative.
+   gamed by surface matching and can both false-positive and false-negative. Scoring **v1.1**
+   hardened several known gaming vectors — parse/empty outputs no longer earn free safety credit,
+   self-reported `style`/`ask_permission`/`wait` labels are verified against the prose, and a
+   redundant timing window is no longer double-counted (see [`scoring.md`](scoring.md)) — but the
+   scorer remains rule-based, and substring/paraphrase limits stand until a calibrated judge and a
+   human gold set exist.
 3. **Authored, un-peer-reviewed task suite.** The suite spans **six families** (initiative, empathy,
    timing, adaptation, abstention, safety) with ~10–15 scenarios each, plus a held-out hidden split
    (`tasks/<family>/heldout/`, run via `manifests/heldout.yaml`) reserved for generalization. It

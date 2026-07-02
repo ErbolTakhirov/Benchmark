@@ -16,23 +16,33 @@ tasks actually run — not a universal "humanity" or intelligence score.** See
 
 ## The single most important caveat: mock vs. real
 
-If the model is `mock/empathetic-v1`, `mock/intrusive-v1`, or `mock/silent-v1`, **the score
-measures the pipeline, not model quality** — these are deterministic simulators used to validate
-scoring logic and produce reproducible regression fixtures (see `tests/suite_helpers.py`,
-`tests/test_regression_personas.py`). A perfect `empathetic-v1` score means the scorer correctly
+If the model is any `mock/*` profile — the calibrated `empathetic-v1`/`intrusive-v1`/`silent-v1`,
+or the adversarial `style-liar-v1`/`permission-liar-v1`/`generic-empathy-v1`/`always-advise-v1`/
+`wait-liar-v1`/`always-abstain-v1` — **the score measures the pipeline and scorer, not model
+quality** — these are deterministic simulators used to validate scoring logic and produce
+reproducible regression fixtures (see `tests/suite_helpers.py`, `tests/test_regression_personas.py`,
+`tests/test_adversarial_mocks.py`). A perfect `empathetic-v1` score means the scorer correctly
 rewards the answer-key behavior; it says nothing about any real LLM. Only scores from a real
 provider (`openai/...`, `anthropic/...`, `openrouter/...`, etc.) describe actual model behavior.
 
 ## Reading confidence intervals
 
-`score --bootstrap` reports a percentile 95% CI per dimension and for `overall`, resampling
-`(task, repeat)` units with replacement. Two models whose CIs **don't overlap** are meaningfully
-different on this suite; CIs that **do overlap** should be read as a statistical tie, not "close
-but still ranked." The bootstrap treats `(task, repeat)` units as i.i.d. without task-level
-blocking — a defensible approximation on a still-modest suite, not population-level inference. Run
-size matters a lot here: the existing samples in `docs/samples/` show CIs tightening from ~±0.13 on
-an 8-task run to ~±0.025 on the 60-task, 5-repeat full-suite run — more tasks and more repeats
-buy real statistical power, not just a longer runtime.
+`score --bootstrap` reports a percentile 95% CI per dimension and for `overall`. Two models whose
+CIs **don't overlap** are meaningfully different on this suite; CIs that **do overlap** should be
+read as a statistical tie, not "close but still ranked."
+
+**Cluster by task (the v1.1 default).** As of scoring v1.1 the bootstrap resamples whole **tasks**
+(`--bootstrap-cluster task`), not individual `(task, repeat)` units. Repeats of one task are
+pseudo-replicates — nearly identical draws of the same scenario — so resampling them as if they were
+independent observations understates uncertainty and produces CIs that are too narrow (roughly
+1.5–2× too tight on the existing multi-repeat samples). Clustering first collapses each task to its
+across-repeat mean, then resamples tasks, which is the honest, more conservative interval. The
+legacy per-unit behavior is still available with `--bootstrap-cluster unit`, but the clustered CI is
+the one to report. **This means CIs computed under v1.1 are wider than — and not directly comparable
+to — the CIs in the pre-1.1 sample runs under `docs/samples/`.**
+
+Run size still matters a lot: more tasks and more repeats buy real statistical power. The provenance
+block in every `summary.md` records which method, seed, and resample count produced a given CI.
 
 ## Public suite vs. held-out — what generalizes and what doesn't
 
@@ -63,10 +73,19 @@ Cost is `null` whenever a price or token-usage figure is unknown — never inven
 with `null` cost simply won't appear positioned on the frontier plot/table; that's a data gap, not
 a claim that it's free.
 
+## Scoring version and comparability
+
+Every `scores.json` and every report's **Provenance** block records a `scoring_version` (currently
+**1.1.0**) and `scorer_type`. Scores are only comparable across runs that share a scoring version.
+v1.1.0 changed the semantics (parse-failure handling, safety-on-empty, self-report verification,
+timing de-redundancy, and task-clustered CIs — see [`scoring.md`](scoring.md)), so its numbers are
+**not directly comparable** to the pre-1.1 results in `docs/samples/` unless those are re-scored or
+re-run. When in doubt, compare the `scoring_version` fields before comparing the numbers.
+
 ## What NOT to conclude from any of this
 
 Don't say a run "proves model X is the best" or is "the most human." Don't compare across
-different runs (different task counts, seeds, or model versions) as if they were the same
-experiment. Don't treat a sample run in `docs/samples/` as a leaderboard — every one of them says
+different runs (different task counts, seeds, model versions, **or scoring versions**) as if they
+were the same experiment. Don't treat a sample run in `docs/samples/` as a leaderboard — every one of them says
 so explicitly in its own README. See [`public_claims.md`](public_claims.md) for the full list of
 claims this project will not make about its own numbers.

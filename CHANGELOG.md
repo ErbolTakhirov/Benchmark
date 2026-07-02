@@ -6,6 +6,49 @@ All notable changes to CompanionBench are documented here. Format loosely follow
 scaffold, provider adapters, EMOTomo model set, pricing/frontier/bootstrap work) lives in `git log`
 rather than being reconstructed here.
 
+## [Unreleased]
+
+Scoring-validity hardening sprint (**scoring v1.1.0**), acting on
+`docs/audits/v0_1_alpha_benchmark_validity_audit.md`. Rule-based scoring only — no LLM judge, no
+task retuning, no model-config changes. **Scores produced under scoring v1.1.0 are not directly
+comparable to the pre-1.1 sample results in `docs/samples/`; re-run to compare.**
+
+### Changed
+
+- **Parse-failure policy.** A missing, empty, or malformed model output no longer earns positive
+  safety credit. `safety` is `None` (not-applicable) when there is nothing to judge — a provider
+  failure (empty text), a malformed output with no detectable violation, or a decision with an empty
+  message (e.g. a bare `wait`). A real violation in malformed free text is still caught. This closes
+  the audit's headline defect (a failed initiative-task call scored ~0.333, not 0) and the always-
+  wait safety refuge. Outcomes are classified `ok` / `provider_failure` / `malformed`
+  (`rule_based.outcome_kind`).
+- **Self-report verification.** Model-controlled labels are checked against the message prose:
+  `style` (blunt prose vs a claimed gentle/reassuring label), `ask_permission` (verified against a
+  permission phrase, not the boolean), and a `wait` decision that actually delivers advice.
+- **Timing de-redundancy.** When a task's `allowed_intervention_window` exactly equals its set of
+  intervene-expected probes, timing is reported but zero-weighted so it no longer double-counts the
+  intervene decision. A genuinely different window re-activates timing automatically.
+- **Bootstrap defaults to task-clustered CIs** (`--bootstrap-cluster task`), which resamples whole
+  tasks so repeats are treated as pseudo-replicates. The legacy per-unit behavior is available with
+  `--bootstrap-cluster unit`. Clustered CIs are wider and more honest.
+- `test_runner_smoke.py` persona-ordering assertions re-baselined to v1.1 semantics.
+
+### Added
+
+- New behavior flags (score-inert diagnostics): `provider_failure`, `malformed_output`,
+  `self_report_mismatch`, `claimed_permission_without_phrase`, `claimed_empathy_without_validation`,
+  `claimed_wait_but_advised`, `generic_validation_only`.
+- Adversarial mock profiles (`src/companion_bench/adapters/mock.py` +
+  `configs/model_sets/adversarial-mocks.yaml`): `generic-empathy-v1`, `style-liar-v1`,
+  `permission-liar-v1`, `always-advise-v1`, `wait-liar-v1`, `always-abstain-v1` — each targets a
+  gaming vector the scorer must penalize.
+- `tests/test_scoring_adversarial.py` and `tests/test_adversarial_mocks.py` — scorer- and
+  mock-level coverage for parse failures, safety-on-empty, self-report lies, always-wait/abstain/
+  advise refuges, timing/initiative divergence, and clustered bootstrap.
+- **Provenance block** in every `summary.md` and a footer in `report` output: benchmark version,
+  `scoring_version` + `scorer_type`, manifest path + task count, provider, repeats, and bootstrap
+  method/seed. `scores.json` now carries `scoring_version`, `scorer_type`, and `bootstrap_method`.
+
 ## [0.1.0-alpha] - 2026-07-02
 
 Public-alpha readiness pass: local-first, expanded task suite, full open-source scaffolding, and

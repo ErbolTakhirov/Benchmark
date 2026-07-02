@@ -11,7 +11,7 @@ import asyncio
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, NoReturn, cast
+from typing import Any, Literal, NoReturn, cast
 
 import typer
 import yaml
@@ -300,10 +300,17 @@ def score(
         2000, "--bootstrap-resamples", min=100, help="Bootstrap resamples."
     ),
     bootstrap_seed: int = typer.Option(42, "--bootstrap-seed", help="Bootstrap RNG seed."),
+    bootstrap_cluster: str = typer.Option(
+        "task",
+        "--bootstrap-cluster",
+        help="Resampling unit: 'task' (cluster by task; recommended) or 'unit' (legacy).",
+    ),
 ) -> None:
     """Score a run (or every sub-run of a model-set run) -> scores.json + summary.md."""
+    if bootstrap_cluster not in ("task", "unit"):
+        _fail(f"--bootstrap-cluster must be 'task' or 'unit', got {bootstrap_cluster!r}.")
     run_dir = run
-    boot = (bootstrap, bootstrap_resamples, bootstrap_seed)
+    boot = (bootstrap, bootstrap_resamples, bootstrap_seed, bootstrap_cluster)
     if (run_dir / "run.json").is_file():
         scores = _score_one(run_dir, boot)
         _print_scores(scores)
@@ -627,6 +634,15 @@ def _print_scores(scores: RunScores) -> None:
     if scores.behavior_flags:
         top = ", ".join(f"{k} ({v})" for k, v in list(scores.behavior_flags.items())[:5])
         console.print(f"Top behavior flags: {top}")
+    if scores.bootstrap_method:
+        method = "task-clustered" if scores.bootstrap_method == "task" else "per-unit"
+        boot = f" · bootstrap: {method}"
+    else:
+        boot = ""
+    console.print(
+        f"[dim]scoring: {scores.scorer_type or 'rule_based'} "
+        f"v{scores.scoring_version or 'n/a'}{boot}[/]"
+    )
 
 
 @dataclass(frozen=True)
@@ -709,7 +725,9 @@ def _print_run_result(label: str, result: RunResult, is_multi: bool) -> None:
     )
 
 
-def _score_one(run_dir: Path, boot: tuple[bool, int, int] = (False, 2000, 42)) -> RunScores:
+def _score_one(
+    run_dir: Path, boot: tuple[bool, int, int, str] = (False, 2000, 42, "task")
+) -> RunScores:
     """Score a single run directory and write its scores.json + summary.md."""
     meta_path = run_dir / "run.json"
     events_path = run_dir / "events.jsonl"
@@ -726,7 +744,7 @@ def _score_one(run_dir: Path, boot: tuple[bool, int, int] = (False, 2000, 42)) -
     if missing:
         _fail(f"tasks referenced by the run are no longer in the manifest: {missing}")
     tasks = [by_id[tid] for tid in meta.task_ids]
-    bootstrap, resamples, seed = boot
+    bootstrap, resamples, seed, cluster = boot
     scores = score_run(
         tasks,
         events,
@@ -737,6 +755,7 @@ def _score_one(run_dir: Path, boot: tuple[bool, int, int] = (False, 2000, 42)) -
         bootstrap=bootstrap,
         bootstrap_resamples=resamples,
         bootstrap_seed=seed,
+        bootstrap_cluster=cast("Literal['task', 'unit']", cluster),
     )
     (run_dir / "scores.json").write_text(scores.model_dump_json(indent=2) + "\n", encoding="utf-8")
     (run_dir / "summary.md").write_text(render_summary(meta, scores), encoding="utf-8")

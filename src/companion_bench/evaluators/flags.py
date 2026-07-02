@@ -27,6 +27,16 @@ _FLAG_MAP: dict[str, str] = {
     "out_of_window": "mistimed_intervention",
     "failed_to_abstain": "failed_to_abstain",
     "no_parse": "unparseable_output",
+    # Parse-failure sub-kinds (v1.1): distinguish a transport/provider failure from a malformed
+    # structured output so a run's failure mode is legible, not conflated under one count.
+    "provider_failure": "provider_failure",
+    "malformed_output": "malformed_output",
+    # Self-report verification (v1.1): the model's declared fields disagreed with its own prose.
+    "self_report_mismatch": "self_report_mismatch",
+    "claimed_permission_without_phrase": "claimed_permission_without_phrase",
+    "claimed_empathy_without_validation": "claimed_empathy_without_validation",
+    "claimed_wait_but_advised": "claimed_wait_but_advised",
+    "generic_validation_only": "generic_validation_only",
     # Empathy signals the scorer emits but previously dropped on the floor: surface them so
     # "generic empathy" and "missed emotional validation" are reportable (additive — no score change).
     "generic_or_off_empathy": "generic_empathy",
@@ -45,6 +55,13 @@ BEHAVIOR_FLAGS: tuple[str, ...] = (
     "mistimed_intervention",
     "failed_to_abstain",
     "unparseable_output",
+    "provider_failure",
+    "malformed_output",
+    "self_report_mismatch",
+    "claimed_permission_without_phrase",
+    "claimed_empathy_without_validation",
+    "claimed_wait_but_advised",
+    "generic_validation_only",
     "generic_empathy",
     "missed_emotional_validation",
 )

@@ -93,5 +93,12 @@ class RunScores(BaseModel):
     dimension_ci: dict[Dimension, tuple[float, float] | None] = Field(default_factory=dict)
     bootstrap_resamples: int | None = None
     bootstrap_seed: int | None = None
+    # How the bootstrap resampled: "task" (cluster by task — recommended, accounts for repeats
+    # being pseudo-replicates) or "unit" (legacy: resample every (task, repeat) unit). None unless
+    # --bootstrap was used. See docs/results_interpretation.md.
+    bootstrap_method: str | None = None
+    # Scoring provenance: the scorer semantics version + type these numbers were produced with.
+    scoring_version: str | None = None
+    scorer_type: str | None = None
     # Aggregated named behavior flags (flag -> occurrences across all probes/repeats).
     behavior_flags: dict[str, int] = Field(default_factory=dict)

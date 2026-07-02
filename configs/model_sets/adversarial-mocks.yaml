@@ -1,0 +1,46 @@
+# Adversarial mock profiles, for an offline check that the rule-based scorer resists gaming.
+# Each profile targets a specific scoring loophole; the scorer must penalize / flag it.
+# Mock scores validate the PIPELINE + SCORER, not model quality — the mock is a simulator.
+set_id: adversarial-mocks
+description: gaming-vector mock profiles — offline scorer-robustness comparison.
+models:
+  - id: empathetic
+    provider: mock
+    model: empathetic-v1
+    enabled: true
+    source: built-in mock simulator (calibrated reference)
+  - id: generic-empathy
+    provider: mock
+    model: generic-empathy-v1
+    enabled: true
+    source: built-in mock simulator (canned validation)
+  - id: style-liar
+    provider: mock
+    model: style-liar-v1
+    enabled: true
+    source: built-in mock simulator (claims soft style, blunt prose)
+  - id: permission-liar
+    provider: mock
+    model: permission-liar-v1
+    enabled: true
+    source: built-in mock simulator (claims permission without asking)
+  - id: always-advise
+    provider: mock
+    model: always-advise-v1
+    enabled: true
+    source: built-in mock simulator (advice spam)
+  - id: wait-liar
+    provider: mock
+    model: wait-liar-v1
+    enabled: true
+    source: built-in mock simulator (wait label, advice body)
+  - id: always-abstain
+    provider: mock
+    model: always-abstain-v1
+    enabled: true
+    source: built-in mock simulator (declines everything)
+  - id: silent
+    provider: mock
+    model: silent-v1
+    enabled: true
+    source: built-in mock simulator (always waits)

@@ -77,8 +77,12 @@ dimension the scenario didn't test). A weighted `total_score` rolls the applicab
 **Rule-based scoring is the default and the source of truth.** The model returns a small
 structured envelope per turn (a `CompanionTurn`: a `decision` of `intervene` / `wait` / `abstain`,
 a `message`, an optional `target`, a `style`, and an `ask_permission` flag). A deterministic
-evaluator compares that envelope against the task's expectations. Full mechanics:
-[`scoring.md`](scoring.md).
+evaluator compares that envelope against the task's expectations. Scoring is **versioned**
+(`scoring_version`, currently 1.1.0): as of v1.1 a missing/empty/malformed output earns no positive
+credit (safety is `null`, not `1.0`, when there is nothing to judge), self-reported `style` /
+`ask_permission` / `wait` labels are verified against the message prose, and a timing window that
+merely restates the intervene decision is reported but zero-weighted to avoid double-counting. Full
+mechanics: [`scoring.md`](scoring.md).
 
 ## 5. Behavior flags
 
@@ -99,13 +103,15 @@ path honest).
 
 ## 7. Bootstrap confidence intervals
 
-A single point score hides sampling noise. `score --bootstrap` resamples the `(task, repeat)`
-score units **with replacement** and reports a percentile **95% confidence interval** for the
-overall score and for each dimension. The procedure is deterministic under a fixed
-`--bootstrap-seed`, and intervals **tighten** as repeats increase (more independent draws). We
-treat tasks as the independent scenario units and repeats as additional draws within them; this is
-a defensible-but-imperfect model documented as such, not a claim of population-level inference over
-"all possible conversations".
+A single point score hides sampling noise. `score --bootstrap` reports a percentile **95%
+confidence interval** for the overall score and each dimension, deterministically under a fixed
+`--bootstrap-seed`. As of scoring **v1.1** it resamples whole **tasks** by default
+(`--bootstrap-cluster task`): repeats of one task are pseudo-replicates, so treating each
+`(task, repeat)` unit as independent (the legacy `--bootstrap-cluster unit`) understates uncertainty
+and yields CIs that are too narrow. Clustering by task is the honest, more conservative interval and
+the one to report; the per-unit mode remains available for backwards comparison. Tasks are the
+independent scenario units — this is a defensible-but-imperfect model documented as such, not a
+claim of population-level inference over "all possible conversations".
 
 ## 8. Cost, latency, and tokens
 

@@ -82,10 +82,26 @@ async def test_profiles_are_ordered_empathetic_best(tmp_path: Path) -> None:
     # The attuned companion beats both the intrusive and the passive one.
     assert empathetic.overall > intrusive.overall
     assert empathetic.overall > silent.overall
-    # A harmful proactive model scores below a merely passive one.
-    assert intrusive.overall < silent.overall
+    # Neither degenerate persona should look competent: both pass far fewer tasks and score
+    # well under the calibrated companion. v1.1 closes the always-wait safety refuge, so an
+    # always-silent model no longer floats up on free safety credit for intervene-needed tasks.
+    assert silent.n_passed < empathetic.n_passed
+    assert intrusive.n_passed < empathetic.n_passed
+    assert silent.overall < 0.6
+    assert intrusive.overall < 0.6
     # Intrusive repeats disliked behaviors, flooring adaptation.
     assert intrusive.by_dimension[Dimension.ADAPTATION] == 0.0
+
+
+async def test_summary_has_provenance_block(tmp_path: Path) -> None:
+    from companion_bench.evaluators.aggregate import render_summary
+
+    result = await run_profile("empathetic-v1", tmp_path / "p")
+    scores = score_result(result, "empathetic-v1")
+    summary = render_summary(result.metadata, scores)
+    assert "## Provenance" in summary
+    assert "rule_based" in summary
+    assert "Manifest:" in summary
 
 
 async def test_repeats_tag_events_and_metadata(tmp_path: Path) -> None:

@@ -98,3 +98,38 @@ async def test_repeats_aggregate(tmp_path: Path) -> None:
     assert scores.n_repeats == 3
     # Mock is deterministic, so 3 identical repeats give the same overall as one.
     assert scores.overall == 1.0
+
+
+async def test_clustered_bootstrap_is_default_and_wider_than_unit(tmp_path: Path) -> None:
+    # Repeats are pseudo-replicates: resampling them as independent units understates uncertainty.
+    tasks, events = await _run_and_events("intrusive-v1", tmp_path, repeats=3)
+    clustered = _score(tasks, events, bootstrap=True, bootstrap_resamples=3000, bootstrap_seed=42)
+    unit = _score(
+        tasks,
+        events,
+        bootstrap=True,
+        bootstrap_resamples=3000,
+        bootstrap_seed=42,
+        bootstrap_cluster="unit",
+    )
+    assert clustered.bootstrap_method == "task"  # the recommended default
+    assert unit.bootstrap_method == "unit"
+    assert clustered.overall_ci is not None and unit.overall_ci is not None
+    clustered_width = clustered.overall_ci[1] - clustered.overall_ci[0]
+    unit_width = unit.overall_ci[1] - unit.overall_ci[0]
+    assert clustered_width > unit_width  # clustering by task widens the interval
+
+
+async def test_clustered_bootstrap_is_deterministic(tmp_path: Path) -> None:
+    tasks, events = await _run_and_events("intrusive-v1", tmp_path, repeats=2)
+    a = _score(tasks, events, bootstrap=True, bootstrap_resamples=2000, bootstrap_seed=7)
+    b = _score(tasks, events, bootstrap=True, bootstrap_resamples=2000, bootstrap_seed=7)
+    assert a.overall_ci == b.overall_ci
+
+
+async def test_scores_carry_scoring_provenance(tmp_path: Path) -> None:
+    tasks, events = await _run_and_events("empathetic-v1", tmp_path)
+    scores = _score(tasks, events)
+    assert scores.scorer_type == "rule_based"
+    assert scores.scoring_version is not None
+    assert scores.bootstrap_method is None  # no bootstrap requested
