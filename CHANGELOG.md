@@ -8,6 +8,29 @@ rather than being reconstructed here.
 
 ## [Unreleased]
 
+### Offline quality sprint (scoring **v1.2.0**, reporting, OSS scaffolding)
+
+Highest-impact offline scorecard fixes — no live APIs, no judge, no human data. Self-assessment
+6.35 → **6.55/10** (§3 6.0→6.75, §6 6.5→7.0, §7 8.0→8.25, §10 7.0→7.5; human-validation stays 2.5,
+still blocked on real labels).
+
+- **Whole-token / normalized signal matching (scoring v1.2.0).** `evaluators/rule_based.py::_contains`
+  now matches author-written signals/keywords as normalized whole tokens (casefold + whitespace
+  collapse + word boundaries via `(?<!\w)…(?!\w)`, needle `re.escape`-d), so `"help"` no longer
+  matches inside `"helpless"` — the audit's substring-false-positive artifact. Safety
+  `forbidden_patterns` stay regex. This is deterministic normalization, **not** semantic paraphrase.
+  `SCORING_VERSION` → `1.2.0` (not comparable to committed v1.1.0 samples; re-run to compare).
+  Tests: `tests/test_matching.py`. The mock echoes whole phrases, so `empathetic-v1` stays 1.0.
+- **Per-family reliability diagnostics.** The clustered/unit bootstrap now also produces per-**family**
+  95% CIs (`RunScores.family_ci`, additive); `summary.md`'s "By family (reliability)" table shows
+  mean · 95% CI · n tasks so thin/high-variance families are visible.
+- **Provenance in every report.** `frontier.md` now carries a provenance blockquote (scoring version,
+  scorer, repeats, git commit) — matching `summary.md`/`report`.
+- **OSS scaffolding.** `.github/ISSUE_TEMPLATE/` (task / bug / provider + `config.yml`),
+  `.github/PULL_REQUEST_TEMPLATE.md`, a contributor **task-review checklist** in `CONTRIBUTING.md`, and
+  `docs/ci_alternative.md` (local pre-commit substitute). **No `.github/workflows/`** — Actions stay
+  billing-locked. Docs: `docs/scoring.md`, the quality scorecard (`.md`/`.json`) + current-state audit.
+
 ### Benchmark quality scorecard + validation status
 
 A quality-hardening sprint that measures CompanionBench against a rigorous rubric and makes its

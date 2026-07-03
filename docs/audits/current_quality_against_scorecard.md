@@ -7,8 +7,10 @@ Grades are grounded in the repo, its tests, its samples, and the adversarial val
 written at commit `feb4e88`, **before** the v1.1.0 scoring hardening and the agreement/calibration
 pilots; where those later commits closed a defect, the grade reflects the current state and says so.
 
-**Overall: 6.35 / 10** — a credible public alpha. **Lowest: Human agreement / external validation
-(2.5)** and **LLM-judge calibration (3.5)**. **Highest: Security (9.0)** and **Reproducibility (8.0)**.
+**Overall: 6.55 / 10** — a credible public alpha (up from 6.35 after the offline sprint: v1.2.0
+whole-token matching §3, per-family reliability §6, provenance-in-every-report §7, OSS scaffolding
+§10). **Lowest: Human agreement / external validation (2.5)** and **LLM-judge calibration (3.5)** —
+both still blocked on real human labels. **Highest: Security (9.0)** and **Reproducibility (8.25)**.
 
 ---
 
@@ -24,11 +26,11 @@ pilots; where those later commits closed a defect, the grade reflects the curren
 - **Blockers to 10:** multiple suite generations; **non-English / cross-cultural coverage** (currently English-only); independent task review.
 - **Tasks:** a paraphrase-robust scoring layer; a difficulty-calibration pass; a non-English pilot family.
 
-### 3. Scoring validity — 6.0/10
-- **Evidence:** deterministic rule-based scorer; v1.1.0 closed the parse-failure asymmetry, the always-wait safety refuge, self-report style/permission gaming, and timing double-counting (`docs/scoring.md`, `tests/test_scoring_adversarial.py`, `tests/test_adversarial_mocks.py`). Parse quality is now **disentangled** from content (`format_compliance` / `communication_score` / `parse_adjusted_score`, experimental).
-- **Blockers to 9:** paraphrase/semantic matching (still substring-based, no word boundaries); calibration of the scorer against humans (needs §4).
+### 3. Scoring validity — 6.75/10
+- **Evidence:** deterministic rule-based scorer; v1.1.0 closed the parse-failure asymmetry, the always-wait safety refuge, self-report style/permission gaming, and timing double-counting. **v1.2.0** makes signal/keyword matching **whole-token + normalized** (casefold + whitespace + word boundaries), so "help" no longer matches inside "helpless" — the audit's substring-false-positive artifact, now regression-tested (`tests/test_matching.py`; safety `forbidden_patterns` stay regex). Parse quality is disentangled from content (`format_compliance` / `communication_score` / `parse_adjusted_score`).
+- **Blockers to 9:** true *semantic* paraphrase matching (still lexical) and calibration of the scorer against humans (needs §4).
 - **Blockers to 10:** demonstrated correlation with a human criterion within a stated tolerance.
-- **Tasks:** word-boundary + paraphrase matching; ship the parse-adjusted view in the results doc.
+- **Tasks:** semantic-paraphrase layer (needs a calibrated judge/human — out of offline scope).
 
 ### 4. Human agreement / external validation — 2.5/10  ← gating weakness
 - **Evidence:** **No real human labels exist** — `data/gold/private/` holds only `README.md` + `.gitkeep`. The committed gold set is a **synthetic** fixture (`data/gold/pilot_v0_1_alpha.jsonl`, every row `not_human_collected: true`). The *workflow* is ready: schema, agreement metrics (Cohen's κ, Krippendorff's α), a PII-refusing importer, and a blinded annotation packet (`analysis/annotation_round_v0_1/`). `companion-bench quality status` reports `gold label source = synthetic pilot` and warns against any "human-validated" claim.
@@ -42,15 +44,15 @@ pilots; where those later commits closed a defect, the grade reflects the curren
 - **Blockers to 10:** calibration reproduced across judge models.
 - **Tasks:** after §4, run `calibrate judge` on real labels; report bias.
 
-### 6. Statistical reliability — 6.5/10
-- **Evidence:** repeats + bootstrap CIs, **task-clustered by default** (`--bootstrap-cluster task`), which fixes the ~1.7×-too-narrow pseudoreplicated CIs the audit flagged (`evaluators/aggregate.py`, `tests/test_bootstrap.py`).
-- **Blockers to 9:** per-family reliability diagnostics; drop any overstated tier-separability claim; more than one suite generation.
+### 6. Statistical reliability — 7.0/10
+- **Evidence:** repeats + bootstrap CIs, **task-clustered by default** (`--bootstrap-cluster task`), which fixes the ~1.7×-too-narrow pseudoreplicated CIs the audit flagged; **per-family reliability CIs** now render in `summary.md` (family · mean · 95% CI · n tasks) so thin/high-variance families are visible (`evaluators/aggregate.py`, `tests/test_bootstrap.py`).
+- **Blockers to 9:** drop any overstated tier-separability claim; more than one suite generation.
 - **Blockers to 10:** power analysis; pre-registered separability thresholds.
-- **Tasks:** a per-family CI/variance diagnostic in the report.
+- **Tasks:** a variance/robustness pass across suite generations.
 
-### 7. Reproducibility — 8.0/10
-- **Evidence:** byte-deterministic mock runs under `FrozenClock` (`tests/test_runner_smoke.py`); green local gates; keyless offline path; provenance block now includes **git commit + pricing table/as-of + model-set id** (`evaluators/aggregate.py`, `tests/test_provenance.py`); `uv build` succeeds.
-- **Blockers to 9:** resume/checkpoint for long live runs (**design only** this sprint — `docs/design/resume_checkpoint.md`); a pinned/locked environment story.
+### 7. Reproducibility — 8.25/10
+- **Evidence:** byte-deterministic mock runs under `FrozenClock` (`tests/test_runner_smoke.py`); green local gates; keyless offline path; provenance now appears in **every report** — `summary.md`, `report`, and `frontier.md` (git commit + pricing table/as-of + model-set id + scoring version) (`evaluators/aggregate.py`, `evaluators/frontier.py`, `tests/test_provenance.py`, `tests/test_frontier.py`); `uv build` succeeds.
+- **Blockers to 9:** resume/checkpoint for long live runs (**design only** — `docs/design/resume_checkpoint.md`); a pinned/locked environment story.
 - **Blockers to 10:** an independent third-party reproduction on record.
 - **Tasks:** implement resume/checkpoint from the design doc; document environment pinning.
 
@@ -65,11 +67,11 @@ pilots; where those later commits closed a defect, the grade reflects the curren
 - **Blockers to 10:** a documented stable public API + deprecation policy.
 - **Tasks:** refactor `cli.py` into per-group modules.
 
-### 10. Open-source usability / documentation — 7.0/10
-- **Evidence:** Apache-2.0, `CONTRIBUTING`/`SECURITY`/`CODE_OF_CONDUCT`/`CITATION`/`CHANGELOG`, thorough `docs/` + project skills; `quality status` gives newcomers a one-command honesty snapshot.
-- **Blockers to 9:** issue templates + contributor task-review checklist; a packaged (PyPI) release; a stable CI or a documented substitute beyond local gates.
+### 10. Open-source usability / documentation — 7.5/10
+- **Evidence:** Apache-2.0, `CONTRIBUTING` (+ a **task-review checklist**), `SECURITY`/`CODE_OF_CONDUCT`/`CITATION`/`CHANGELOG`, thorough `docs/` + project skills; `quality status` gives newcomers a one-command honesty snapshot. Now also **GitHub issue templates** (`.github/ISSUE_TEMPLATE/`: task/bug/provider + `config.yml`), a **PR template**, and a **CI-alternative doc** (`docs/ci_alternative.md`, local pre-commit substitute — no workflows while Actions are billing-locked).
+- **Blockers to 9:** a packaged (PyPI) release; a hosted CI (or the documented local substitute adopted as policy).
 - **Blockers to 10:** an active external contributor community.
-- **Tasks:** add `.github/ISSUE_TEMPLATE/`, a contributor task-review checklist, and a CI-alternative doc.
+- **Tasks:** publish to PyPI; re-enable Actions when the billing lock clears (restore `docs/ci-disabled/ci.yml.txt`).
 
 ---
 
@@ -85,6 +87,6 @@ pilots; where those later commits closed a defect, the grade reflects the curren
 
 ## Highest-impact next work
 
-1. **Run the real human annotation round** (§4) — unlocks §4, §5, and part of §3 at once. This is the single biggest lever from 6.35 toward 8+.
-2. **Paraphrase-robust scoring + word-boundary matching** (§3) — the largest remaining scorer artifact.
-3. **Non-English pilot family** (§2) and **per-family reliability diagnostics** (§6) — breadth + honesty.
+1. **Run the real human annotation round** (§4) — unlocks §4, §5, and part of §3 at once. This is the single biggest lever from 6.55 toward 8+, and the only path to lifting the two lowest categories.
+2. **Semantic-paraphrase matching** (§3) — the word-boundary artifact is now closed (v1.2.0); the remaining scorer gap is lexical-vs-semantic, which needs a calibrated judge/human.
+3. **Non-English pilot family** (§2) — the largest remaining offline breadth gap.

@@ -71,3 +71,10 @@ def test_cli_frontier_writes_files(tmp_path: Path) -> None:
     assert (out / "frontier.md").is_file()
     assert (out / "frontier.csv").is_file()
     assert "mock/empathetic-v1" in (out / "frontier.csv").read_text()
+
+
+def test_render_markdown_includes_provenance_when_given() -> None:
+    rows = [_row("m", 0.5, 0.01)]
+    assert "Scoring:" not in render_markdown(rows)  # none by default
+    md = render_markdown(rows, provenance="Scoring: rule_based v1.2.0 · commit abc")
+    assert "> Scoring: rule_based v1.2.0 · commit abc" in md

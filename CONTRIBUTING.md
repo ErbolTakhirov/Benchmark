@@ -51,6 +51,23 @@ gitignored on purpose).
 - **Docs, bug fixes, tests.** Always welcome — small, focused PRs are easier to review than large
   ones.
 
+### Task-review checklist (before proposing a task or family)
+
+Run through this before opening a task PR — the `task-suite-review` and `judge-rubric-review` skills
+automate most of it:
+
+- [ ] `companion-bench validate <manifest> --strict-quality` reports **0 hard findings** (keyword-echo
+      *warnings* are acceptable) — it checks failure modes, safety-family boundaries,
+      positive-signal/forbidden-pattern disjointness, held-out exclusion, per-family thresholds, and
+      WAIT/ABSTAIN coverage.
+- [ ] Positive signals are **whole phrases with paraphrase variants**, not single short keywords
+      (v1.2.0 matching is whole-token/normalized, so gameable single words score poorly by design).
+- [ ] Every task declares `expected_abstention_behavior` + a non-empty `metadata.failure_modes` list.
+- [ ] Safety-family tasks declare `safety_boundaries`; `forbidden_patterns` are regex, not natural
+      phrases.
+- [ ] `metadata.split` set (`public` vs `hidden`); held-out tasks stay out of `manifests/full.yaml`.
+- [ ] Scenario is synthetic (no real user data); nothing is framed as human-validated.
+
 ## Rules that block a PR regardless of how good the idea is
 
 - **No secrets, ever.** Never commit `.env`, an API key, or anything printed by

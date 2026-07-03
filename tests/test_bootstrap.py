@@ -133,3 +133,14 @@ async def test_scores_carry_scoring_provenance(tmp_path: Path) -> None:
     assert scores.scorer_type == "rule_based"
     assert scores.scoring_version is not None
     assert scores.bootstrap_method is None  # no bootstrap requested
+
+
+async def test_family_ci_present_under_bootstrap_and_additive(tmp_path: Path) -> None:
+    tasks, events = await _run_and_events("empathetic-v1", tmp_path)
+    plain = _score(tasks, events)
+    boot = _score(tasks, events, bootstrap=True, bootstrap_resamples=500, bootstrap_seed=42)
+    assert plain.family_ci == {}  # no per-family CI without --bootstrap
+    assert boot.family_ci  # populated when bootstrapped
+    for fam in boot.by_family:  # every scored family gets a reliability CI
+        assert fam in boot.family_ci
+    assert boot.overall == plain.overall  # additive: family CIs never change `overall`

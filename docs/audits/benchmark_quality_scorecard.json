@@ -2,7 +2,7 @@
   "scorecard_version": "1",
   "generated_at": "2026-07-03",
   "companion_bench_version": "0.1.0",
-  "scoring_version": "1.1.0",
+  "scoring_version": "1.2.0",
   "parse_metrics_version": "0.1-experimental",
   "kind": "self-assessment roadmap (NOT an external grade or marketing)",
   "bands": {
@@ -30,9 +30,9 @@
     {
       "key": "scoring_validity",
       "name": "Scoring validity",
-      "score": 6.0,
-      "band": "usable MVP",
-      "justification": "v1.1.0 closed the parse-failure asymmetry, always-wait safety refuge, and self-report gaming; still substring/decision matching with zero human grounding, so scores are scorer-relative."
+      "score": 6.75,
+      "band": "usable MVP -> approaching credible",
+      "justification": "v1.1.0 closed parse-failure asymmetry, the always-wait safety refuge, and self-report gaming; v1.2.0 makes signal matching whole-token + normalized (no 'help' in 'helpless'), regression-tested. Still lexical (not semantic) matching with zero human grounding, so scores remain scorer-relative."
     },
     {
       "key": "human_external_validation",
@@ -51,16 +51,16 @@
     {
       "key": "statistical_reliability",
       "name": "Statistical reliability",
-      "score": 6.5,
-      "band": "usable MVP -> approaching credible",
-      "justification": "Task-clustered bootstrap is now the default (fixes the ~1.7x-too-narrow CIs); headline correlations reproduce. Docked for prior over-claimed tier separability and a single suite generation."
+      "score": 7.0,
+      "band": "public-alpha / credible",
+      "justification": "Task-clustered bootstrap is the default (fixes the ~1.7x-too-narrow CIs); headline correlations reproduce; per-family reliability CIs now surface under-powered families. Docked for prior over-claimed tier separability and a single suite generation."
     },
     {
       "key": "reproducibility",
       "name": "Reproducibility",
-      "score": 8.0,
+      "score": 8.25,
       "band": "public-alpha / credible",
-      "justification": "Byte-deterministic mock runs, green local gates, keyless offline path, provenance block (now incl. git commit + pricing). Docked for no resume/checkpoint and no hosted CI."
+      "justification": "Byte-deterministic mock runs, green local gates, keyless offline path, provenance in EVERY report (summary + report + now frontier.md: version, scorer, git commit, pricing). Docked for no resume/checkpoint and no hosted CI."
     },
     {
       "key": "security_artifact_hygiene",
@@ -79,12 +79,12 @@
     {
       "key": "open_source_usability_docs",
       "name": "Open-source usability / documentation",
-      "score": 7.0,
+      "score": 7.5,
       "band": "public-alpha / credible",
-      "justification": "Apache-2.0, CONTRIBUTING/SECURITY/CODE_OF_CONDUCT/CITATION/CHANGELOG, thorough docs + skills. Docked for no PyPI release, no hosted CI, and occasional doc drift."
+      "justification": "Apache-2.0, CONTRIBUTING (+ task-review checklist), SECURITY/CODE_OF_CONDUCT/CITATION/CHANGELOG, GitHub issue + PR templates, a CI-alternative doc, thorough docs + skills. Docked for no PyPI release and no hosted CI."
     }
   ],
-  "overall_average": 6.35,
+  "overall_average": 6.55,
   "lowest_categories": ["human_external_validation", "llm_judge_calibration"],
   "highest_categories": ["security_artifact_hygiene", "reproducibility"],
   "claims_supported": [

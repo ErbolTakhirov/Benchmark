@@ -78,6 +78,7 @@ from companion_bench.schemas.task import Dimension, Task
 from companion_bench.storage.export import ExportFormat, export_run
 from companion_bench.storage.jsonl import read_events, read_model_json
 from companion_bench.utils.errors import CompanionBenchError
+from companion_bench.utils.gitmeta import git_commit
 from companion_bench.utils.ids import slugify
 from companion_bench.utils.timing import RealClock
 
@@ -514,7 +515,9 @@ def frontier(
         pareto = "n/a" if r.pareto_optimal is None else ("✅" if r.pareto_optimal else "—")
         table.add_row(r.model_id, f"{r.overall:.3f}", ci, cost, cps, lat, pareto)
     console.print(table)
-    (run / "frontier.md").write_text(render_markdown(rows), encoding="utf-8")
+    (run / "frontier.md").write_text(
+        render_markdown(rows, provenance=_frontier_provenance(run)), encoding="utf-8"
+    )
     (run / "frontier.csv").write_text(render_csv(rows), encoding="utf-8")
     console.print(f"  wrote {run / 'frontier.md'} and {run / 'frontier.csv'}")
 
@@ -1131,6 +1134,32 @@ def _gather_frontier_rows(run_dir: Path) -> list[FrontierRow]:
     if not dirs:
         _fail(f"no scored runs in {run_dir}; run `companion-bench score --run {run_dir}` first.")
     return [_frontier_row(d) for d in dirs]
+
+
+def _frontier_provenance(run_dir: Path) -> str | None:
+    """A self-describing provenance line for frontier.md (scoring version, scorer, repeats, commit)."""
+    scores_path = run_dir / "scores.json"
+    if not scores_path.is_file() and (run_dir / "modelset.json").is_file():
+        index = _load_modelset_index(run_dir)
+        scores_path = next(
+            (
+                run_dir / m.slug / "scores.json"
+                for m in index.models
+                if (run_dir / m.slug / "scores.json").is_file()
+            ),
+            scores_path,
+        )
+    if not scores_path.is_file():
+        return None
+    try:
+        scores = RunScores.model_validate_json(scores_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    return (
+        f"Scoring: {scores.scorer_type or 'rule_based'} v{scores.scoring_version or 'n/a'} · "
+        f"repeats {scores.n_repeats} · commit {git_commit() or 'n/a'} · "
+        "rule-based, deterministic — not a human or calibrated-judge verdict."
+    )
 
 
 def _frontier_row(run_dir: Path) -> FrontierRow:

@@ -59,12 +59,17 @@ def _pareto(flag: bool | None) -> str:
     return "n/a" if flag is None else ("yes" if flag else "no")
 
 
-def render_markdown(rows: list[FrontierRow]) -> str:
-    """Render the frontier as a Markdown table (sorted by overall desc)."""
+def render_markdown(rows: list[FrontierRow], *, provenance: str | None = None) -> str:
+    """Render the frontier as a Markdown table (sorted by overall desc).
+
+    ``provenance`` (optional) is emitted as a blockquote under the title so a frontier report is
+    self-describing (scoring version, scorer, commit, repeats) like ``summary.md``.
+    """
     ordered = sorted(rows, key=lambda r: r.overall, reverse=True)
-    lines = [
-        "# Cost-quality frontier",
-        "",
+    lines = ["# Cost-quality frontier", ""]
+    if provenance:
+        lines += [f"> {provenance}", ""]
+    lines += [
         "| model | overall | 95% CI | total cost USD | cost/probe | tokens | latency ms | "
         "successful probes | Pareto | notes |",
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",

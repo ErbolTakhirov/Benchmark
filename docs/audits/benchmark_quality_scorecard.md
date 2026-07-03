@@ -119,15 +119,15 @@ Can a newcomer install, run, contribute, and cite it?
 | --- | --- | --- |
 | 1 | Methodology validity | 7.0 |
 | 2 | Task suite quality | 6.5 |
-| 3 | Scoring validity | 6.0 |
+| 3 | Scoring validity | 6.75 |
 | 4 | Human agreement / external validation | **2.5** |
 | 5 | LLM-judge calibration quality | **3.5** |
-| 6 | Statistical reliability | 6.5 |
-| 7 | Reproducibility | 8.0 |
+| 6 | Statistical reliability | 7.0 |
+| 7 | Reproducibility | 8.25 |
 | 8 | Security / artifact hygiene | 9.0 |
 | 9 | Architecture / maintainability | 7.5 |
-| 10 | Open-source usability / documentation | 7.0 |
-| | **Overall average** | **6.35 / 10** |
+| 10 | Open-source usability / documentation | 7.5 |
+| | **Overall average** | **6.55 / 10** |
 
 **Headline:** a credible public alpha whose instrument, reproducibility, and hygiene are strong,
 but whose **external validity is the gating weakness** — there are no real human labels yet, and

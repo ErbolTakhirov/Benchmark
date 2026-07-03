@@ -43,7 +43,7 @@ def test_status_reports_synthetic_gold_and_warns() -> None:
     # Structural facts.
     assert status.manifest_ok is True
     assert status.heldout_disjoint is True
-    assert status.scoring_version == "1.1.0"
+    assert status.scoring_version == "1.2.0"
     assert all(count >= 25 for count in status.families.values())
     # The pilot fixture has multiple annotators per item, so agreement is computable.
     assert status.agreement_available is True

@@ -152,14 +152,17 @@ def score_run(
 
     overall_ci: tuple[float, float] | None = None
     dimension_ci: dict[Dimension, tuple[float, float] | None] = {}
+    family_ci: dict[Family, tuple[float, float] | None] = {}
     if bootstrap:
         # Each method needs >= 2 of its own resampling units: the unit bootstrap needs >= 2
         # (task, repeat) units; the task-clustered bootstrap needs >= 2 distinct tasks (a single
         # task gives a degenerate zero-width CI). Too few -> leave the CI as None, don't fake one.
         if bootstrap_cluster == "unit" and len(units) >= 2:
-            overall_ci, dimension_ci = _bootstrap(units, bootstrap_resamples, bootstrap_seed)
+            overall_ci, dimension_ci, family_ci = _bootstrap(
+                units, bootstrap_resamples, bootstrap_seed
+            )
         elif bootstrap_cluster == "task" and len(per_task) >= 2:
-            overall_ci, dimension_ci = _bootstrap_clustered(
+            overall_ci, dimension_ci, family_ci = _bootstrap_clustered(
                 per_task, bootstrap_resamples, bootstrap_seed
             )
 
@@ -179,6 +182,7 @@ def score_run(
         n_repeats=len(repeats),
         overall_ci=overall_ci,
         dimension_ci=dimension_ci,
+        family_ci=family_ci,
         bootstrap_resamples=bootstrap_resamples if bootstrap else None,
         bootstrap_seed=bootstrap_seed if bootstrap else None,
         bootstrap_method=bootstrap_cluster if bootstrap else None,
@@ -211,15 +215,21 @@ def _cost_rollup(events: list[Event]) -> tuple[dict[str, float], float, int, boo
 
 def _bootstrap(
     units: list[TaskScore], resamples: int, seed: int
-) -> tuple[tuple[float, float], dict[Dimension, tuple[float, float] | None]]:
+) -> tuple[
+    tuple[float, float],
+    dict[Dimension, tuple[float, float] | None],
+    dict[Family, tuple[float, float] | None],
+]:
     """Bootstrap 95% CIs by resampling the (task, repeat) task-score units with replacement."""
     rng = random.Random(seed)
     n = len(units)
     totals = [u.total for u in units]
+    families = [u.family for u in units]
     dim_vals = {dim: [u.dimension_means[dim] for u in units] for dim in Dimension}
 
     overall_samples: list[float] = []
     dim_samples: dict[Dimension, list[float]] = {dim: [] for dim in Dimension}
+    fam_samples: dict[Family, list[float]] = defaultdict(list)
     for _ in range(resamples):
         idx = [rng.randrange(n) for _ in range(n)]
         overall_samples.append(sum(totals[i] for i in idx) / n)
@@ -227,15 +237,25 @@ def _bootstrap(
             picked = [v for i in idx if (v := dim_vals[dim][i]) is not None]
             if picked:
                 dim_samples[dim].append(sum(picked) / len(picked))
+        fam_totals: dict[Family, list[float]] = defaultdict(list)
+        for i in idx:
+            fam_totals[families[i]].append(totals[i])
+        for fam, vals in fam_totals.items():
+            fam_samples[fam].append(sum(vals) / len(vals))
 
     overall_ci = _percentile_ci(overall_samples)
     dim_ci = {dim: (_percentile_ci(s) if len(s) >= 2 else None) for dim, s in dim_samples.items()}
-    return overall_ci, dim_ci
+    fam_ci = {fam: (_percentile_ci(s) if len(s) >= 2 else None) for fam, s in fam_samples.items()}
+    return overall_ci, dim_ci, fam_ci
 
 
 def _bootstrap_clustered(
     per_task: dict[str, list[TaskScore]], resamples: int, seed: int
-) -> tuple[tuple[float, float], dict[Dimension, tuple[float, float] | None]]:
+) -> tuple[
+    tuple[float, float],
+    dict[Dimension, tuple[float, float] | None],
+    dict[Family, tuple[float, float] | None],
+]:
     """Task-clustered bootstrap: resample whole tasks (not (task, repeat) units).
 
     Repeats of one task are pseudo-replicates — resampling them as if independent understates
@@ -246,6 +266,7 @@ def _bootstrap_clustered(
     task_ids = list(per_task)
     n = len(task_ids)
     task_total = {tid: _mean([t.total for t in reps]) for tid, reps in per_task.items()}
+    task_family = {tid: reps[0].family for tid, reps in per_task.items()}
     task_dim: dict[Dimension, dict[str, float]] = {}
     for dim in Dimension:
         collapsed: dict[str, float] = {}
@@ -257,6 +278,7 @@ def _bootstrap_clustered(
 
     overall_samples: list[float] = []
     dim_samples: dict[Dimension, list[float]] = {dim: [] for dim in Dimension}
+    fam_samples: dict[Family, list[float]] = defaultdict(list)
     for _ in range(resamples):
         picked = [task_ids[rng.randrange(n)] for _ in range(n)]
         overall_samples.append(sum(task_total[t] for t in picked) / n)
@@ -264,10 +286,16 @@ def _bootstrap_clustered(
             vals = [task_dim[dim][t] for t in picked if t in task_dim[dim]]
             if vals:
                 dim_samples[dim].append(sum(vals) / len(vals))
+        fam_totals: dict[Family, list[float]] = defaultdict(list)
+        for t in picked:
+            fam_totals[task_family[t]].append(task_total[t])
+        for fam, vals in fam_totals.items():
+            fam_samples[fam].append(sum(vals) / len(vals))
 
     overall_ci = _percentile_ci(overall_samples)
     dim_ci = {dim: (_percentile_ci(s) if len(s) >= 2 else None) for dim, s in dim_samples.items()}
-    return overall_ci, dim_ci
+    fam_ci = {fam: (_percentile_ci(s) if len(s) >= 2 else None) for fam, s in fam_samples.items()}
+    return overall_ci, dim_ci, fam_ci
 
 
 def _percentile_ci(samples: list[float], lo: float = 2.5, hi: float = 97.5) -> tuple[float, float]:
@@ -379,17 +407,23 @@ def render_summary(
             f"{'—' if ci is None else f'[{ci[0]:.3f}, {ci[1]:.3f}]'} |"
         )
 
+    fam_counts = Counter(ts.family for ts in scores.task_scores)
     lines += [
         "",
         *_parse_quality_block(scores),
-        "## By family",
+        "## By family (reliability)",
         "",
-        "| Family | Mean |",
-        "| --- | --- |",
+        "| Family | Mean | 95% CI | n tasks |",
+        "| --- | --- | --- | --- |",
     ]
     for family in Family:
         if family in scores.by_family:
-            lines.append(f"| {family.value} | {scores.by_family[family]:.3f} |")
+            fam_ci = scores.family_ci.get(family)
+            ci_str = "—" if fam_ci is None else f"[{fam_ci[0]:.3f}, {fam_ci[1]:.3f}]"
+            lines.append(
+                f"| {family.value} | {scores.by_family[family]:.3f} | {ci_str} | "
+                f"{fam_counts[family]} |"
+            )
 
     if scores.behavior_flags:
         lines += [

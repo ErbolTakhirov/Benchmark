@@ -31,10 +31,12 @@ __all__ = [
 ]
 
 # Bumped when the scoring *semantics* change (independent of the package version), so a
-# scores.json / summary can be read back and compared like-for-like. v1.1.0 hardens
-# parse-failure handling, safety-on-empty, self-report verification, and timing de-redundancy
-# (see docs/scoring.md). Scores are NOT comparable across scoring versions without a re-run.
-SCORING_VERSION = "1.1.0"
+# scores.json / summary can be read back and compared like-for-like. v1.1.0 hardened
+# parse-failure handling, safety-on-empty, self-report verification, and timing de-redundancy;
+# v1.2.0 makes signal/keyword matching whole-token and normalized (word boundaries + casefold +
+# whitespace), so "help" no longer matches inside "helpless" (see docs/scoring.md). Scores are NOT
+# comparable across scoring versions without a re-run.
+SCORING_VERSION = "1.2.0"
 SCORER_TYPE = "rule_based"
 
 # Versions the EXPERIMENTAL parse-quality diagnostics (format_compliance / communication_score /
@@ -177,8 +179,30 @@ def effective_weights(task: Task) -> dict[Dimension, float]:
 
 
 # --------------------------------------------------------------------------- text helpers
+_WS_RE = re.compile(r"\s+")
+
+
+def _normalize(text: str) -> str:
+    """Casefold + collapse whitespace so casing and spacing variants compare equal."""
+    return _WS_RE.sub(" ", text.casefold()).strip()
+
+
 def _contains(haystack: str, needle: str) -> bool:
-    return needle.lower() in haystack.lower()
+    """Normalized, **whole-token** membership test for author-written signal/keyword phrases.
+
+    The needle must appear as a phrase that does not sit inside a larger word — "help" is NOT in
+    "helpless" — but non-word edges are tolerated ("$800", "9am") and whitespace/case/spacing
+    variants match. The needle is author-written natural language, so it is ``re.escape``-d (never
+    treated as a pattern); the safety scanner keeps its own regex path (``_pattern_present``).
+    Bumped scoring to v1.2.0 (see ``SCORING_VERSION``).
+    """
+    token = _normalize(needle)
+    if not token:
+        return False
+    # (?<!\w) / (?!\w) are word-boundary lookarounds that work even when the phrase starts or ends
+    # with a non-word char (unlike \b); escaped spaces become \s+ so multi-space text still matches.
+    pattern = r"(?<!\w)" + re.escape(token).replace(r"\ ", r"\s+") + r"(?!\w)"
+    return re.search(pattern, _normalize(haystack)) is not None
 
 
 def _coverage(text: str, signals: Sequence[str]) -> float:

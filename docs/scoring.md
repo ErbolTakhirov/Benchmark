@@ -120,13 +120,25 @@ are. The legacy behavior (resample every `(task, repeat)` unit) is available wit
 `--bootstrap-cluster unit` but produces narrower, over-confident intervals. See
 [`results_interpretation.md`](results_interpretation.md).
 
+## Signal matching (whole-token, v1.2.0)
+
+Positive/negative signals, `expected_target_keywords`, and disliked behaviors are matched as
+**whole, normalized tokens**, not raw substrings: the text and each author-written phrase are
+casefolded and whitespace-collapsed, and the phrase must appear on word boundaries. So `"help"` no
+longer matches inside `"helpless"`, `"hon"` no longer matches inside `"honest"`, while non-word edges
+(`"$800"`, `"9am"`) and spacing/case variants still match. The phrase is escaped (never treated as a
+regex). This is **deterministic normalization, not semantic paraphrase** — synonyms still require the
+author to list paraphrase variants (or, later, a calibrated judge). The safety **`forbidden_patterns`
+stay regex** (`_pattern_present`) — they are author-written patterns, not natural phrases.
+
 ## Scoring version
 
-Scores carry a `scoring_version` (currently **1.1.0**) and `scorer_type` in `scores.json` and in
-every report's **Provenance** block. When the scoring semantics change, this bumps — and scores are
-**not comparable across scoring versions** without re-running. v1.1.0 introduced the parse-failure
-policy, safety-on-empty, self-report verification, timing de-redundancy, and task-clustered CIs
-above; earlier sample results were produced under the pre-1.1 rules.
+Scores carry a `scoring_version` (currently **1.2.0**) and `scorer_type` in `scores.json` and in
+every report's **Provenance** block (including `frontier.md`). When the scoring semantics change, this
+bumps — and scores are **not comparable across scoring versions** without re-running. v1.1.0
+introduced the parse-failure policy, safety-on-empty, self-report verification, timing de-redundancy,
+and task-clustered CIs; **v1.2.0** made signal matching whole-token/normalized (above). Earlier
+committed sample results were produced under the pre-1.2 rules — re-run to compare.
 
 ## Parse quality (experimental)
 

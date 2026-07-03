@@ -91,6 +91,9 @@ class RunScores(BaseModel):
     n_repeats: int = 1
     overall_ci: tuple[float, float] | None = None
     dimension_ci: dict[Dimension, tuple[float, float] | None] = Field(default_factory=dict)
+    # Per-family bootstrap 95% CIs (reliability diagnostic — wide CIs / thin families flag where a
+    # family's score is under-powered). Empty unless --bootstrap was used; back-compatible default.
+    family_ci: dict[Family, tuple[float, float] | None] = Field(default_factory=dict)
     bootstrap_resamples: int | None = None
     bootstrap_seed: int | None = None
     # How the bootstrap resampled: "task" (cluster by task — recommended, accounts for repeats
