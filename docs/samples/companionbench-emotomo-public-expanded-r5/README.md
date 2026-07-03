@@ -2,7 +2,7 @@
 # Sample: CompanionBench expanded public-suite run (EMOTomo model set via OpenRouter, 150 tasks, 5 repeats)
 
 This is a sanitized public-suite sample for a CompanionBench evaluation using the EMOTomo model
-set via OpenRouter. It is not a final leaderboard.
+set via OpenRouter. It is a scoped benchmark run.
 
 This is the **expanded public suite** (`manifests/full.yaml`, 25 tasks per family across all six
 families, 150 total — grown from the earlier 60-task suite), re-run live to give the **expanded
@@ -11,7 +11,7 @@ like-for-like baseline: the previous public sample
 (`docs/samples/companionbench-emotomo-fullsuite-r5/`) predates this session's suite expansion and
 was no longer a fair comparison point. CompanionBench evaluates targeted human-like
 companion-communication behaviors; EMOTomo is one example **model set**, OpenRouter one example
-**provider adapter** — a model set or provider is never the benchmark's identity here. `overall`
+**provider adapter** — the model set and provider are recorded as run metadata. `overall`
 is a **companion-communication score**, not a universal "humanity" score, scoped to these 150
 tasks and these model versions (2026-07-01/02). See
 [`../../public_claims.md`](../../public_claims.md).
@@ -79,5 +79,5 @@ into a separate `--out`, then merge the resulting subdirectories and `modelset.j
 was necessary for this sample. A first-class `--resume` flag is on the roadmap; see `summary.md`.
 
 A 150-task suite is still fully synthetic, AI-authored, and rule-scored — read this as a
-generalization and cost/latency reference, not a fine-grained ranking. Remains a **sample run, not
-a final leaderboard**.
+generalization and cost/latency reference, not a fine-grained ranking. Remains a **scoped run**, not
+a universal ranking.

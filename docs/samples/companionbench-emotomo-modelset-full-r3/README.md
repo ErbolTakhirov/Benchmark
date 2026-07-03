@@ -2,7 +2,7 @@
 # Sample: CompanionBench evaluation using the EMOTomo model set via OpenRouter — full run (10 models, 3 repeats)
 
 **This is a sanitized sample run for a CompanionBench evaluation using the EMOTomo model set via
-OpenRouter. It is not a final leaderboard.**
+OpenRouter. It is a scoped benchmark run.**
 
 CompanionBench evaluates **targeted human-like companion-communication behaviors in defined
 multi-turn scenarios**: emotional attunement, appropriate initiative, timing and pacing,
@@ -52,4 +52,4 @@ companion-bench frontier --run runs/companionbench-emotomo-modelset-full-r3
 ```
 
 Live results vary across calls, providers, model versions, and time; pin versions and expand the
-task suite before drawing conclusions. This remains a **sample run, not a final leaderboard**.
+task suite before drawing conclusions. This remains a **scoped benchmark run**.

@@ -90,10 +90,11 @@ untouched; judge output lives in a separate `judge_scores.json`). The judge is b
 live-gated; the committed gold set is a **synthetic pilot fixture**, not real human data. A **real**
 human round is now runnable (packet + de-identifying importer — see
 [`human_gold_set.md`](human_gold_set.md)), but even a completed round is a **small pilot**:
-**check inter-rater agreement first** (low agreement = the rubric is ambiguous, not the models),
-and never read one round as validation. So: don't read a calibration number as a benchmark result,
-don't call the benchmark "human-validated", and don't treat the judge as a leaderboard. See
-[`human_gold_set.md`](human_gold_set.md) and [`judge_calibration.md`](judge_calibration.md).
+**check inter-rater agreement first** (low agreement = the rubric is ambiguous, not the models), and
+treat one round as a calibration signal. So: report calibration numbers as calibration (scoped to
+the fixture), keep human validation as a future milestone, and read the judge as one signal reported
+alongside the rule-based baseline. See [`human_gold_set.md`](human_gold_set.md) and
+[`judge_calibration.md`](judge_calibration.md).
 
 ## Parse quality: is a low score a format problem?
 
@@ -112,10 +113,10 @@ and warnings for claims the evidence doesn't support. Run it before writing anyt
 result — it is the fastest way to avoid over-claiming, and it is the machine-checkable companion to
 [`public_claims.md`](public_claims.md) and the [quality scorecard](audits/benchmark_quality_scorecard.md).
 
-## What NOT to conclude from any of this
+## Reading results precisely
 
-Don't say a run "proves model X is the best" or is "the most human." Don't compare across
-different runs (different task counts, seeds, model versions, **or scoring versions**) as if they
-were the same experiment. Don't treat a sample run in `docs/samples/` as a leaderboard — every one of them says
-so explicitly in its own README. See [`public_claims.md`](public_claims.md) for the full list of
-claims this project will not make about its own numbers.
+Report a run as a **scoped result** on its tasks, settings, and model versions — a strong score is
+evidence on this suite, not proof a model is universally best. Compare only *within* the same run
+setup (matching task counts, seeds, model versions, **and scoring version**); a sample run in
+`docs/samples/` is a scoped run, described as such in its own README. See
+[`public_claims.md`](public_claims.md) for the scoped-reporting policy and good wording.

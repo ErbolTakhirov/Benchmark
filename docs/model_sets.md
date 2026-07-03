@@ -7,9 +7,9 @@ important separation in CompanionBench:
 > The **benchmark** is the tasks, scoring, and methodology. A **model set** is just a roster of
 > models you point the benchmark at. A **provider** is just the API the calls go through.
 
-Keeping these apart is what lets CompanionBench compare *any* LLM or API model without changing the
-benchmark, and it is why there is no such thing as an "EMOTomo benchmark" or an "OpenRouter
-benchmark" here — only "CompanionBench run with model set X via provider Y".
+Keeping these apart lets CompanionBench compare *any* LLM or API model without changing the
+benchmark: a run is described as *"a CompanionBench run with model set X via provider Y"*, with the
+model set and provider recorded as **run metadata**.
 
 ## What a model set is (and isn't)
 

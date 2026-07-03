@@ -2,14 +2,14 @@
 # Sample: CompanionBench expanded held-out validation run (EMOTomo model set via OpenRouter, 36 hidden tasks, 5 repeats)
 
 This is a sanitized held-out validation sample for a CompanionBench evaluation using the EMOTomo
-model set via OpenRouter. It is not a final leaderboard.
+model set via OpenRouter. It is a scoped benchmark run.
 
 This is the **expanded held-out / hidden split** (`manifests/heldout.yaml`, 6 tasks per family
 across all six families, 36 total — grown from the earlier 12-task split, deliberately excluded
 from the public suite and never tuned against). It was run **only to check generalization**: does
 the public-suite ranking hold up on tasks the suite was not built around? CompanionBench evaluates
 targeted human-like companion-communication behaviors; EMOTomo is one example **model set**,
-OpenRouter one **provider adapter** — a model set or provider is never the benchmark's identity
+OpenRouter one **provider adapter** — the model set and provider are recorded as run metadata
 here. `overall` is a **companion-communication score**, not a universal "humanity" score, scoped to
 these 36 tasks and these model versions (2026-07-01). See
 [`../../public_claims.md`](../../public_claims.md).
@@ -71,4 +71,4 @@ companion-bench frontier --run runs/companionbench-emotomo-heldout-expanded-r5
 ```
 
 A 36-task split is still modest — read it as a generalization check on tiers, not a fine-grained
-ranking. Remains a **sample run, not a final leaderboard**.
+ranking. Remains a **scoped benchmark run**.

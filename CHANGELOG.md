@@ -8,6 +8,21 @@ rather than being reconstructed here.
 
 ## [Unreleased]
 
+### Public docs — positive scoped framing
+
+Rewrote visitor-facing Markdown to read positively and professionally while keeping the same
+honesty. Replaced repeated defensive branding ("not the EMOTomo/OpenRouter benchmark", "never call
+it…", "not most human / not a final leaderboard", long "what must NOT be claimed" lists) with concise
+**scoped** wording: a run's model set and provider are **run metadata**; results are **scoped
+benchmark runs** over defined tasks, settings, and model versions; human validation is a **future
+milestone** (current labels are calibration signals). `docs/public_claims.md` restructured from a
+"forbidden claims" catalog into a professional **scoped-reporting policy** (project framing → allowed
+claims → claims requiring more evidence → good wording → overclaims to avoid). `tests/test_public_claims.py`
+refactored: it no longer requires the defensive phrases — it now enforces that public docs *avoid*
+branding + overclaims (unless clearly hedged) and that the policy doc + README state the positive
+scoped framing; scan widened to README + CONTRIBUTING + docs + `.github` (dated `docs/audits/*`
+artifacts exempt). No change to code, scores, or the scorecard numbers.
+
 ### Offline quality sprint (scoring **v1.2.0**, reporting, OSS scaffolding)
 
 Highest-impact offline scorecard fixes — no live APIs, no judge, no human data. Self-assessment

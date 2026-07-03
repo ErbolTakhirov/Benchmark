@@ -2,8 +2,8 @@
 
 This directory is the home for a **full-family** CompanionBench evaluation of the **EMOTomo model
 set** served via the **OpenRouter provider**, with repeats, bootstrap CIs, and a cost-quality
-frontier. It is a **sample run, not a final leaderboard**: EMOTomo is one example model set and
-OpenRouter is one provider adapter, not the benchmark itself (see
+frontier. It is a **scoped benchmark run**: EMOTomo is one example model set and
+OpenRouter is one provider adapter, each recorded as run metadata (see
 [`../../model_sets.md`](../../model_sets.md)). Producing it makes **live, paid API calls**, so it is
 gated behind a key + `COMPANIONBENCH_LIVE=1` and is **not run in CI**. Until someone runs it with a
 key, this README is the placeholder.

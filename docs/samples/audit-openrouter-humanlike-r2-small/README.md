@@ -1,12 +1,12 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # Sample: CompanionBench evaluation using the EMOTomo model set via OpenRouter — capped audit run (4 models, 2 repeats)
 
-**This is a sanitized sample run for benchmark-quality verification. It is not a final leaderboard.**
+**This is a sanitized sample run for benchmark-quality verification. It is a scoped benchmark run.**
 
 CompanionBench evaluates **targeted human-like companion-communication behaviors in defined
 multi-turn scenarios**: emotional attunement, appropriate initiative, timing, non-intrusion,
 preference adaptation, abstention behavior, and safety boundaries. **EMOTomo is one example model
-set; OpenRouter is one provider adapter** — a model set or provider is never the benchmark's identity
+set; OpenRouter is one provider adapter** — the model set and provider are recorded as run metadata
 here. Scores are **scoped to these 8 tasks, these settings, and these model versions** (2026-06-30),
 produced by rule-based deterministic scoring, and are **not statistically separable** (the 95% CIs
 overlap). See [`../../public_claims.md`](../../public_claims.md).
@@ -60,4 +60,4 @@ companion-bench frontier --run runs/audit-openrouter-humanlike-r2-small
 ```
 
 Live results vary across calls, providers, model versions, and time; pin versions and re-run with
-more repeats before drawing any conclusion. This remains a **sample run, not a final leaderboard**.
+more repeats before drawing any conclusion. This remains a **scoped benchmark run**.

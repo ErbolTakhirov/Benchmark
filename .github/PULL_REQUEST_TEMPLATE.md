@@ -14,6 +14,6 @@
 
 ## Safety / hygiene
 - [ ] No secrets, `.env`, raw `runs/`, `*.parquet`, or private annotation files staged
-- [ ] No new "human-validated" / "most human" / leaderboard / "EMOTomo benchmark" claims (see `docs/public_claims.md`)
+- [ ] Result wording stays scoped to the evaluated tasks / settings / model versions, with model set + provider as run metadata (see `docs/public_claims.md`)
 - [ ] `CHANGELOG.md` updated under `[Unreleased]`
 - [ ] Scoring semantics changed? bumped `SCORING_VERSION` and noted cross-version comparability

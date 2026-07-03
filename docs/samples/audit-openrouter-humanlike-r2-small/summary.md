@@ -1,11 +1,11 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # Summary — CompanionBench evaluation using the EMOTomo model set via OpenRouter (capped audit run)
 
-**This is a sanitized sample run for benchmark-quality verification. It is not a final leaderboard.**
+**This is a sanitized sample run for benchmark-quality verification. It is a scoped benchmark run.**
 Scores are scoped to **these 8 tasks, these settings, and these model versions** (run 2026-06-30),
 produced by **rule-based, deterministic** scoring. Differences below are **not statistically
 separable** — the 95% bootstrap CIs overlap heavily. EMOTomo is one example **model set**; OpenRouter
-is one **provider adapter** — this is **not** "the EMOTomo/OpenRouter benchmark".
+is one **provider adapter**, each recorded as run metadata.
 
 ## Run configuration
 

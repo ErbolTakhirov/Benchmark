@@ -2,7 +2,7 @@
 # Summary — CompanionBench expanded held-out validation (EMOTomo model set via OpenRouter, 36 hidden tasks, r5)
 
 **This is a sanitized held-out validation sample for a CompanionBench evaluation using the EMOTomo
-model set via OpenRouter. It is not a final leaderboard.** This is the **expanded held-out / hidden
+model set via OpenRouter. It is a scoped benchmark run.** This is the **expanded held-out / hidden
 split** (`manifests/heldout.yaml`, 6 tasks/family, 36 total, never tuned against), run to check
 whether the public-suite ranking **generalizes** — and whether growing the held-out split from 12
 to 36 tasks stabilizes the fine ranking the way more public tasks stabilized the public ranking.

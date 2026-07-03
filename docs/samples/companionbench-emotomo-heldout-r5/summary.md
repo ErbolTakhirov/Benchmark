@@ -1,12 +1,12 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # Summary — CompanionBench held-out validation run (EMOTomo model set via OpenRouter, 12 hidden tasks, r5)
 
-**This is a sanitized sample run for benchmark-quality verification. It is not a final leaderboard.**
+**This is a sanitized sample run for benchmark-quality verification. It is a scoped benchmark run.**
 This is the **held-out / hidden split** (`manifests/heldout.yaml`, 2 tasks/family, never tuned
 against), run to check whether the public-suite ranking **generalizes**. `overall` is a
 **companion-communication score** scoped to **these 12 tasks, these settings, and these model
 versions** (2026-06-30), rule-based and deterministic. EMOTomo is one example **model set**;
-OpenRouter is one **provider adapter** — a model set or provider is never the benchmark's identity
+OpenRouter is one **provider adapter** — the model set and provider are recorded as run metadata
 here. The split is small (12 tasks), so CIs are **wider** than the 60-task public run.
 
 ## Run configuration

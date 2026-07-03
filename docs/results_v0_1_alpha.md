@@ -3,14 +3,14 @@
 
 This is the results writeup for the **v0.1.0-alpha** release: a CompanionBench evaluation using
 the EMOTomo model set via OpenRouter, across the full public task suite and the held-out
-validation split. It is **not a final leaderboard** — read [`results_interpretation.md`](results_interpretation.md)
-and [`public_claims.md`](public_claims.md) alongside this page, and see [Conservative
-interpretation](#conservative-interpretation) below before drawing conclusions from any single
-number here.
+validation split. Read it as a **scoped benchmark run** — read
+[`results_interpretation.md`](results_interpretation.md) and [`public_claims.md`](public_claims.md)
+alongside this page, and see [Conservative interpretation](#conservative-interpretation) below
+before drawing conclusions from any single number here.
 
 `overall` is a **companion-communication score** scoped to these tasks, these settings, and these
-model versions (2026-07-01/02) — not a general capability score. EMOTomo is one example **model
-set**; OpenRouter is one example **provider adapter**. Neither is the benchmark's identity.
+model versions (2026-07-01/02). EMOTomo is one example **model set** and OpenRouter one example
+**provider adapter**, each recorded as run metadata.
 
 ## Run configuration
 
@@ -127,9 +127,9 @@ and
 
 **What this does NOT show:**
 
-- That any model is "the most human," "best at emotional intelligence" in general, or ready for
-  production companion use — these are companion-*communication* scores on 186 authored,
-  synthetic, English-language tasks, not a general capability or safety certification.
+- A universal "best companion", generally "emotionally intelligent", or production-ready verdict —
+  these are companion-*communication* scores on 186 authored, synthetic, English-language tasks,
+  scoped to this suite, not a general-capability or safety certification.
 - A precise ranking between adjacent models whose CIs overlap (e.g. within the top-4, or within
   the bottom-4) — treat those as statistical ties, not fine-grained orderings.
 - That these results transfer to a different task suite, a different scoring method (rule-based

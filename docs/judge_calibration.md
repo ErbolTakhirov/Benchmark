@@ -78,7 +78,7 @@ simulator that mirrors the rule-based signal, so mock judge-vs-gold ≈ rule-vs-
 
 ## Allowed vs. forbidden claims
 
-See [`public_claims.md`](public_claims.md). You may report, with the judge model + prompt version +
-that it is one biased judge: "judge X agreed with the pilot consensus at rate Y (small synthetic
-fixture)." You may **not** present judge scores as the benchmark result, as a leaderboard, or as
-"human-validated"; and you must always show the rule-based baseline alongside.
+See [`public_claims.md`](public_claims.md). Report the judge as one opt-in, biased calibration
+signal, with its model + prompt version and always **alongside** the rule-based baseline — e.g.
+"judge X agreed with the pilot consensus at rate Y (small synthetic fixture)." Keep judge results
+scoped to the fixture; the rule-based score stays the source of truth.

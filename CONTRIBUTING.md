@@ -66,7 +66,8 @@ automate most of it:
 - [ ] Safety-family tasks declare `safety_boundaries`; `forbidden_patterns` are regex, not natural
       phrases.
 - [ ] `metadata.split` set (`public` vs `hidden`); held-out tasks stay out of `manifests/full.yaml`.
-- [ ] Scenario is synthetic (no real user data); nothing is framed as human-validated.
+- [ ] Scenario is synthetic (no real user data); results stay scoped to the task suite (human
+      validation is a future milestone).
 
 ## Rules that block a PR regardless of how good the idea is
 
@@ -80,10 +81,11 @@ automate most of it:
   must be gated behind `COMPANIONBENCH_LIVE=1` (and, for `run`, also `--live` + `--yes`/confirm).
   Tests that need this are marked `@pytest.mark.live` and must be skippable offline.
 - **Don't invent costs.** If a price or usage figure is unknown, it stays `null` — never a guess.
-- **Keep the benchmark's framing honest.** CompanionBench is not "the EMOTomo benchmark" or "the
-  OpenRouter benchmark" — a model set or provider is never the benchmark's identity. See
-  [`docs/public_claims.md`](docs/public_claims.md); `tests/test_public_claims.py` enforces this
-  mechanically on every doc.
+- **Keep result wording scoped.** Attribute a run to its model set and provider as **run metadata**
+  (e.g. *"a CompanionBench evaluation using the EMOTomo model set via OpenRouter"*), and keep claims
+  scoped to the evaluated tasks, settings, and model versions. See
+  [`docs/public_claims.md`](docs/public_claims.md); `tests/test_public_claims.py` enforces the scoped
+  framing mechanically on every doc.
 
 ## Commit style
 

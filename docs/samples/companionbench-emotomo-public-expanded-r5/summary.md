@@ -2,7 +2,7 @@
 # Summary — CompanionBench expanded public-suite baseline (EMOTomo model set via OpenRouter, 150 tasks, r5)
 
 **This is a sanitized public-suite sample for a CompanionBench evaluation using the EMOTomo
-model set via OpenRouter. It is not a final leaderboard.** This is the **expanded public suite**
+model set via OpenRouter. It is a scoped benchmark run.** This is the **expanded public suite**
 (`manifests/full.yaml`, 25 tasks/family, 150 total), re-run live specifically to give the
 **expanded held-out split** (`docs/samples/companionbench-emotomo-heldout-expanded-r5/`, 36
 tasks) a like-for-like baseline — the previous public baseline

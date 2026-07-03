@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # Summary — CompanionBench evaluation using the EMOTomo model set via OpenRouter (full run, 10 models, r3)
 
-**This is a sanitized sample run for benchmark-quality verification. It is not a final leaderboard.**
+**This is a sanitized sample run for benchmark-quality verification. It is a scoped benchmark run.**
 Scores are scoped to **these 8 tasks, these settings, and these model versions** (2026-06-30), from
 **rule-based, deterministic** scoring. `overall` is a **companion-communication score**, not a
 universal "humanity" score. EMOTomo is one example **model set**; OpenRouter is one **provider

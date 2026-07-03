@@ -75,7 +75,7 @@ both still blocked on real human labels. **Highest: Security (9.0)** and **Repro
 
 ---
 
-## What must NOT be claimed yet
+## Claim boundaries
 
 - **Not** "human-validated / human-aligned / human-approved" — no real labels exist (§4).
 - **Not** "most human-like / best companion" or any fine, statistically distinguishable rank order.

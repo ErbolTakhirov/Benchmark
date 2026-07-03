@@ -33,25 +33,25 @@ quality roadmap see [`audits/benchmark_quality_scorecard.md`](audits/benchmark_q
   signal. A high score does not make a system safe for vulnerable users.
 - **Not** a single "companion IQ" ranking. The dimensions are partly independent by design;
   collapsing them hides the trade-offs that matter.
-- **Not** an "EMOTomo benchmark" or an "OpenRouter benchmark". EMOTomo is one example **model set**
-  and OpenRouter is one **provider adapter**; a result is "CompanionBench run with model set X via
-  provider Y", never the benchmark's identity. See the [public-claims policy](public_claims.md).
-- **Not** evidence that a model is "the most human-like" or "best companion" in general. Scores
-  describe targeted behaviors on authored scenarios, for the model set and settings actually run.
+- **Attributed to model set + provider as metadata.** A result is *"a CompanionBench evaluation
+  using the EMOTomo model set via OpenRouter"* — EMOTomo is one example model set, OpenRouter one
+  provider adapter, each recorded as run metadata. See the [scoped-reporting policy](public_claims.md).
+- **Scoped to the evaluated scenarios.** Scores describe targeted behaviors on authored scenarios for
+  the model set and settings actually run — a scoped result on this task suite.
 - **Not** defined by its default model: the offline default is a deterministic **mock simulator**,
   and mock scores validate the **pipeline**, not model quality. Live provider runs *have* been
-  performed (see [`results_v0_1_alpha.md`](results_v0_1_alpha.md)), but those are scoped snapshots
-  for a specific model set / provider / settings, never a leaderboard.
+  performed (see [`results_v0_1_alpha.md`](results_v0_1_alpha.md)) and are reported as scoped runs
+  for a specific model set / provider / settings.
 - **Not** a substitute for human judgment about emotionally loaded interactions.
 - **Not** a source of medical, legal, financial, or mental-health guidance.
 
 ## Known limitations
 
-1. **No real human validation yet.** The committed gold labels are a **synthetic** pilot fixture
-   (`data/gold/`, `not_human_collected`); no real annotation round has been run, so nothing here is
-   "human-validated". The offline default model is also a deterministic simulator (mock scores
-   validate the pipeline, not model quality); live runs exist but are scoped snapshots. Run
-   `companion-bench quality status` for the current state.
+1. **Human validation is a future milestone.** The committed gold labels are a **synthetic** pilot
+   fixture (`data/gold/`, `not_human_collected`); a real annotation round has not been run yet, so
+   results are reported as scoped runs with calibration signals. The offline default model is also a
+   deterministic simulator (mock scores validate the pipeline, not model quality); live runs exist
+   and are reported as scoped snapshots. Run `companion-bench quality status` for the current state.
 2. **Rule-based scoring is blunt.** Keyword/regex signals and structural checks cannot
    capture nuance, sarcasm, paraphrase, or genuinely novel-but-good responses. They can be
    gamed by surface matching and can both false-positive and false-negative. Scoring **v1.1**

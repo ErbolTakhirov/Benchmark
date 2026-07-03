@@ -1,12 +1,17 @@
-"""Guard test: keep misleading framing out of the public docs.
+"""Guard test: public docs use precise, scoped framing — not branding or overclaims.
 
-CompanionBench is a general companion-communication benchmark — not an "EMOTomo benchmark" and
-not an "OpenRouter benchmark" (EMOTomo is one example *model set*; OpenRouter is one *provider*).
-This test fails if those bare phrases appear in the public prose docs **except** in an explicitly
-negating / policy context (e.g. "not an EMOTomo benchmark", "there is no OpenRouter benchmark").
+CompanionBench is the tasks + scoring; a run's model set and provider are recorded as **run
+metadata**. This guard keeps two things out of visitor/contributor-facing Markdown:
 
-``docs/public_claims.md`` is exempt by design: it is the policy document that *catalogs* the
-forbidden phrases, so it necessarily quotes them. A linter does not lint its own rule list.
+1. **branding** that treats a model set / provider as the benchmark's identity ("EMOTomo
+   benchmark", "OpenRouter benchmark");
+2. **overclaims** the repository does not support ("most human", "human-validated", "final
+   leaderboard", "safe for vulnerable users", "definitive benchmark").
+
+A flagged phrase is allowed only when the line clearly negates or hedges it (a policy / roadmap
+context). `docs/public_claims.md` is the policy catalog and is exempt (it lists the examples on
+purpose); this guard instead checks that it *states the positive scoped-reporting policy*. The dated
+`docs/audits/**` records are also exempt — they are point-in-time assessment artifacts.
 """
 
 from __future__ import annotations
@@ -16,48 +21,93 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-# Public prose we hold to the naming policy: the README and every Markdown doc...
-DOC_PATHS: list[Path] = [REPO_ROOT / "README.md", *sorted((REPO_ROOT / "docs").rglob("*.md"))]
-# ...except the policy doc itself, which intentionally quotes the bad phrases as examples.
-EXEMPT = {REPO_ROOT / "docs" / "public_claims.md"}
-
-# The phrases that brand a model set / provider as if it were the benchmark.
-BAD_PHRASE = re.compile(r"emotomo benchmark|open ?router benchmark", re.IGNORECASE)
-
-# A flagged line is acceptable only when it is clearly negating / disclaiming the phrase.
-ALLOW_MARKERS = ("not a", "no such thing", "never", "is not", "isn't", "❌")
+# Visitor- and contributor-facing Markdown held to the framing policy.
+DOC_PATHS: list[Path] = [
+    REPO_ROOT / "README.md",
+    REPO_ROOT / "CONTRIBUTING.md",
+    *sorted((REPO_ROOT / "docs").rglob("*.md")),
+    *sorted((REPO_ROOT / ".github").rglob("*.md")),
+]
 
 
-def _offending_lines(text: str) -> list[tuple[int, str]]:
+def _exempt(path: Path) -> bool:
+    # The policy doc catalogs the anti-patterns as examples; audit docs are dated artifacts.
+    return path.name == "public_claims.md" or "audits" in path.parts
+
+
+# Branding that treats a model set / provider as the benchmark's identity.
+BRANDING = re.compile(r"emotomo benchmark|open ?router benchmark", re.IGNORECASE)
+# Universal claims the repository does not support.
+OVERCLAIM = re.compile(
+    r"most human|human-validated|human-approved|final leaderboard|"
+    r"safe for vulnerable users|definitive benchmark",
+    re.IGNORECASE,
+)
+# A flagged line is acceptable only when it clearly negates / hedges the phrase.
+ALLOW_MARKERS = (
+    "not ",
+    "never",
+    "no such thing",
+    "isn't",
+    "is not",
+    "aren't",
+    "❌",
+    "avoid",
+    "do not",
+    "don't",
+    "without",
+    "pending",
+    "not yet",
+    "would require",
+    "requires real",
+    "instead of",
+    "rather than",
+)
+
+
+def _flagged(text: str, pattern: re.Pattern[str]) -> list[tuple[int, str]]:
     out: list[tuple[int, str]] = []
     for n, line in enumerate(text.splitlines(), start=1):
-        # Strip Markdown emphasis so "**not** an" / "**EMOTomo benchmark**" match plainly.
-        norm = re.sub(r"[*_`]", "", line)
-        if BAD_PHRASE.search(norm):
-            low = norm.lower()
-            if not any(marker in low for marker in ALLOW_MARKERS):
-                out.append((n, line.strip()))
+        norm = re.sub(r"[*_`]", "", line)  # strip markdown emphasis so "**not** an" matches plainly
+        if pattern.search(norm) and not any(m in norm.lower() for m in ALLOW_MARKERS):
+            out.append((n, line.strip()))
     return out
 
 
-def test_no_emotomo_or_openrouter_benchmark_framing() -> None:
+def _scan(pattern: re.Pattern[str]) -> list[str]:
     violations: list[str] = []
     for path in DOC_PATHS:
-        if path in EXEMPT or not path.is_file():
+        if _exempt(path) or not path.is_file():
             continue
-        for lineno, line in _offending_lines(path.read_text(encoding="utf-8")):
-            rel = path.relative_to(REPO_ROOT)
-            violations.append(f"{rel}:{lineno}: {line}")
+        for lineno, line in _flagged(path.read_text(encoding="utf-8"), pattern):
+            violations.append(f"{path.relative_to(REPO_ROOT)}:{lineno}: {line}")
+    return violations
+
+
+def test_public_docs_avoid_benchmark_branding() -> None:
+    violations = _scan(BRANDING)
     assert not violations, (
-        "Misleading 'EMOTomo/OpenRouter benchmark' framing in public docs "
-        "(use 'CompanionBench evaluation using the EMOTomo model set via OpenRouter' instead):\n"
+        "A model set / provider is run metadata, not the benchmark's identity. "
+        "Use 'CompanionBench evaluation using the EMOTomo model set via OpenRouter':\n"
         + "\n".join(violations)
     )
 
 
-def test_policy_doc_exists_and_catalogs_the_phrases() -> None:
-    # The exemption is only safe if the policy doc actually defines the rule.
+def test_public_docs_avoid_overclaims() -> None:
+    violations = _scan(OVERCLAIM)
+    assert not violations, (
+        "Keep public docs scoped to the evaluated tasks / settings / model versions — "
+        "avoid unsupported universal claims:\n" + "\n".join(violations)
+    )
+
+
+def test_public_claims_policy_states_scoped_framing() -> None:
+    # The policy doc must state the positive scoped-reporting framing (not just list anti-patterns).
     policy = (REPO_ROOT / "docs" / "public_claims.md").read_text(encoding="utf-8").lower()
-    assert "emotomo benchmark" in policy
-    assert "openrouter benchmark" in policy
-    assert "model set" in policy and "provider" in policy
+    for token in ("scoped", "model set", "provider", "metadata"):
+        assert token in policy, (
+            f"public_claims.md should state the scoped-reporting policy: {token!r}"
+        )
+    # The README must carry the same positive scoped framing a visitor reads first.
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8").lower()
+    assert "scoped" in readme and "task" in readme

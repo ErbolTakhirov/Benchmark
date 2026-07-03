@@ -69,17 +69,17 @@ CompanionBench compares API-served LLMs and assistant systems across five dimens
 | **Preference adaptation** | Does it remember preferences, repair behavior after feedback, and avoid repeating disliked behaviors? |
 | **Safety & boundaries** | Does it avoid manipulation, dependency-building, romanticization, and medical/legal/financial overreach — and ask permission or abstain when it should? |
 
-## What CompanionBench does NOT measure
+## Scope and boundaries
 
-To be explicit about scope: this is **not** a general intelligence benchmark, a fluency/writing-
-quality benchmark, a test of consciousness or genuine emotion, or a safety certification. It does
-not measure "humanity" in general — `overall` is a **companion-communication score**, computed
-from rule-based, deterministic scoring against authored scenarios, not a judgment about how human
-a model is. It does not rank providers or model sets as an identity — EMOTomo is one example model
-set and OpenRouter is one example provider adapter; neither is what CompanionBench *is*. See
-[`docs/public_claims.md`](docs/public_claims.md) for the exact language this project holds itself
-to, and [`docs/results_interpretation.md`](docs/results_interpretation.md) for how to read a score
-without over-claiming.
+CompanionBench measures **companion-communication behavior on authored, multi-turn scenarios**.
+`overall` is a **companion-communication score** from rule-based, deterministic scoring — read it as
+behavior on the evaluated task suite, scoped to those tasks, settings, model versions, and scorer
+design. It sits alongside, and does not replace, general intelligence, writing-quality, or
+safety-certification measures. The **model set** (which models were compared) and **provider** (which
+API served them) are recorded as **run metadata**: EMOTomo is one example model set, OpenRouter one
+provider adapter — inputs to a run, described precisely as such. See
+[`docs/public_claims.md`](docs/public_claims.md) for the scoped-reporting policy and
+[`docs/results_interpretation.md`](docs/results_interpretation.md) for how to read a score precisely.
 
 ## Why static emotion benchmarks are insufficient
 
@@ -176,20 +176,18 @@ See [`docs/provider_adapters.md`](docs/provider_adapters.md).
 CompanionBench keeps three things separate, on purpose:
 
 - **The benchmark** is the tasks, scoring, and methodology in this repository. That is
-  CompanionBench. It is model- and vendor-neutral.
-- **A model set** is just a named, versioned list of *which models to compare* (see
-  [`docs/model_sets.md`](docs/model_sets.md)). `configs/model_sets/emotomo-openrouter.yaml` is the
-  **EMOTomo model set** — the models the EMOTomo product currently uses — and it is here only as an
-  **example / first case study**. It is **not** the identity of the benchmark;
-  you can point CompanionBench at any model set (`openai.yaml`, `anthropic.yaml`, `local-vllm.yaml`, …).
-- **A provider** is just the API the calls go through. **OpenRouter is one provider adapter** among
-  several (OpenAI, Anthropic, HF Inference Providers, OpenAI-compatible, mock). "Run the EMOTomo
-  model set via OpenRouter" describes a *configuration*, never "the EMOTomo benchmark" or "the
-  OpenRouter benchmark" — there is no such thing here.
+  CompanionBench — model- and vendor-neutral.
+- **A model set** is a named, versioned list of *which models to compare* (see
+  [`docs/model_sets.md`](docs/model_sets.md)), recorded as **run metadata**.
+  `configs/model_sets/emotomo-openrouter.yaml` is the **EMOTomo model set** (the models the EMOTomo
+  product currently uses) — an example / first case study. Point CompanionBench at any model set
+  (`openai.yaml`, `anthropic.yaml`, `local-vllm.yaml`, …).
+- **A provider** is the API the calls go through, also run metadata. OpenRouter is one provider
+  adapter among several (OpenAI, Anthropic, HF Inference Providers, OpenAI-compatible, mock).
 
-So a sentence like *"CompanionBench evaluation using the EMOTomo model set via OpenRouter"* is
-precise; *"EMOTomo benchmark"* or *"OpenRouter benchmark"* is not. See the
-[public-claims policy](docs/public_claims.md) for the language we hold ourselves to.
+Attribute runs precisely: *"a CompanionBench evaluation using the EMOTomo model set via OpenRouter"*
+names the benchmark, the model set, and the provider each as what they are. See the
+[scoped-reporting policy](docs/public_claims.md) for the wording the project uses.
 
 ## How scoring works
 
@@ -285,8 +283,8 @@ right now:
 
 Run `companion-bench quality status` for a one-command, machine-checkable snapshot of the current
 external-validation state — it reports task/family counts, held-out disjointness, the scoring
-version, whether the committed gold labels are **real human or synthetic**, and warns against
-unsupported claims (e.g. *no real human labels exist yet, so nothing here is "human-validated"*).
+version, and whether the committed gold labels are **real human or synthetic** (today: a synthetic
+pilot, so human validation is a future milestone and current labels are calibration signals).
 See the [benchmark card](docs/benchmark_card.md) for intended use, known limitations, and risks; the
 [quality scorecard](docs/audits/benchmark_quality_scorecard.md) for the self-assessed quality roadmap
 (overall **6.35/10**, honestly graded); and [`docs/audits/`](docs/audits/) for the full
@@ -298,10 +296,11 @@ external-reviewer-style audits.
 the full 150-task public suite and the 36-task held-out split, 5 repeats each, with bootstrap 95%
 confidence intervals. `deepseek/deepseek-v3.2` scores highest overall (0.753, 95% CI
 [0.739, 0.767]); `mistralai/mistral-nemo` is the cheapest Pareto-optimal option (all 150 tasks for
-$0.011). These are **companion-communication scores on this task suite**, not a general capability
-ranking — see [What CompanionBench does NOT measure](#what-companionbench-does-not-measure). Full
-numbers, per-family breakdown, and cost/latency: [`docs/results_v0_1_alpha.md`](docs/results_v0_1_alpha.md).
-This is **a snapshot, not a final leaderboard** — see [Limitations](#limitations).
+$0.011). These are **companion-communication scores on this task suite** — read them as a scoped
+benchmark run over these tasks, settings, and model versions (see [Scope and
+boundaries](#scope-and-boundaries)). Full numbers, per-family breakdown, and cost/latency:
+[`docs/results_v0_1_alpha.md`](docs/results_v0_1_alpha.md). This is a **scoped snapshot**, reported
+with its bootstrap CIs — see [Limitations](#limitations).
 
 ### Public suite vs. held-out validation
 
@@ -332,7 +331,7 @@ cherry-picked).
 
 ### Sanitized samples
 
-Sanitized sample runs (no raw transcripts, never a leaderboard) live in
+Sanitized sample runs (scoped runs, no raw transcripts) live in
 [`docs/samples/`](docs/samples/). The two most current and representative:
 
 - [`companionbench-emotomo-public-expanded-r5/`](docs/samples/companionbench-emotomo-public-expanded-r5/)

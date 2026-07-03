@@ -170,10 +170,11 @@ CompanionBench is an early research instrument. Read every number with these in 
   Optimizing a model *to* CompanionBench would erode its meaning; the structured envelope and
   keyword signals are especially gameable. We mitigate with held-out scenarios and planned
   human/judge calibration, but the risk is real and permanent.
-- **No external validation yet.** No real human labels exist and the LLM judge is uncalibrated, so
-  nothing here is "human-validated". Run `companion-bench quality status` for the current snapshot,
-  and see the self-assessed [quality scorecard](audits/benchmark_quality_scorecard.md) (overall
-  6.35/10) for where the benchmark stands against a rigorous rubric and what would raise each score.
+- **External validation is a future milestone.** Real human labels are not yet collected and the LLM
+  judge is uncalibrated, so results are reported as **scoped runs** with calibration signals rather
+  than external validation. Run `companion-bench quality status` for the current snapshot, and see
+  the self-assessed [quality scorecard](audits/benchmark_quality_scorecard.md) (overall 6.55/10) for
+  where the benchmark stands against a rigorous rubric and what would raise each score.
 
 ## 11. Reproducibility
 
