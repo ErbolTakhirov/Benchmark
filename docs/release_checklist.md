@@ -18,6 +18,18 @@ the public-claims guard (`tests/test_public_claims.py`), confirming
 [`docs/samples/`](samples/) is still sanitized (no `events.jsonl`, no `run.json`, no raw
 transcripts). Don't tag a release until this skill's checklist is fully green.
 
+Also run the quality gates and read their output before tagging:
+
+```bash
+uv run companion-bench validate manifests/full.yaml --strict-quality   # suite invariants (0 errors)
+uv run companion-bench quality status                                  # external-validation snapshot
+```
+
+`quality status` prints the warnings that constrain public claims — e.g. it will say *no real human
+labels exist* until a real annotation round is imported, so the release notes must not claim
+"human-validated". Keep the scorecard ([`docs/audits/benchmark_quality_scorecard.md`](audits/benchmark_quality_scorecard.md)
++ its `.json`) in sync with the shipped state.
+
 ## 2. Where version numbers live (keep these in sync)
 
 | Location | Current value | Notes |

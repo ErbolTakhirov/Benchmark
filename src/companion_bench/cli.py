@@ -58,8 +58,10 @@ from companion_bench.evaluators.judge import (
     write_judge_artifacts,
 )
 from companion_bench.gold_ingest import import_human_rows
+from companion_bench.quality import collect_quality_status, render_quality_status
 from companion_bench.runner.engine import RunEngine, RunResult
 from companion_bench.runner.manifest import load_manifest_and_tasks, validate_manifest
+from companion_bench.runner.quality_checks import check_task_quality
 from companion_bench.runner.selection import select_tasks
 from companion_bench.schemas.gold import GoldLabel, GoldResponse
 from companion_bench.schemas.judge import JudgeRunScores
@@ -108,6 +110,13 @@ calibrate_app = typer.Typer(
 )
 app.add_typer(calibrate_app)
 
+quality_app = typer.Typer(
+    name="quality",
+    help="Offline benchmark-quality + external-validation status.",
+    no_args_is_help=True,
+)
+app.add_typer(quality_app)
+
 
 def _load_local_dotenv() -> None:
     """Load a project-local ``.env`` into the environment.
@@ -155,19 +164,61 @@ def version() -> None:
 @app.command()
 def validate(
     manifest: Path = typer.Argument(..., help="Path to a manifest YAML file."),
+    strict_quality: bool = typer.Option(
+        False,
+        "--strict-quality",
+        help="Also run suite-level task-quality invariants + a difficulty/family report.",
+    ),
 ) -> None:
     """Validate a manifest and every task it references."""
     report = validate_manifest(manifest)
-    if report.ok:
-        console.print(
-            f"[green]✓[/] manifest [bold]{report.name}[/] is valid — "
-            f"{report.n_tasks} task(s): {report.families}"
-        )
-        return
-    err_console.print(f"[red]✗[/] manifest at {report.manifest_path} is INVALID:")
-    for error in report.errors:
-        err_console.print(f"  [red]•[/] {error}")
-    raise typer.Exit(code=1)
+    if not report.ok:
+        err_console.print(f"[red]✗[/] manifest at {report.manifest_path} is INVALID:")
+        for error in report.errors:
+            err_console.print(f"  [red]•[/] {error}")
+        raise typer.Exit(code=1)
+    console.print(
+        f"[green]✓[/] manifest [bold]{report.name}[/] is valid — "
+        f"{report.n_tasks} task(s): {report.families}"
+    )
+    if strict_quality:
+        _run_strict_quality(manifest, report.name)
+
+
+def _sibling_heldout_ids(manifest: Path) -> frozenset[str]:
+    """Task ids of the sibling ``heldout.yaml`` (empty when validating held-out itself / absent)."""
+    heldout = manifest.parent / "heldout.yaml"
+    if manifest.name == "heldout.yaml" or not heldout.is_file():
+        return frozenset()
+    try:
+        _, tasks = load_manifest_and_tasks(heldout)
+    except CompanionBenchError:
+        return frozenset()
+    return frozenset(t.task_id for t in tasks)
+
+
+def _run_strict_quality(manifest: Path, manifest_name: str | None) -> None:
+    """Run the strict task-quality invariants and exit non-zero on any hard finding."""
+    try:
+        _, tasks = load_manifest_and_tasks(manifest)
+    except CompanionBenchError as exc:
+        _fail(str(exc))
+    quality = check_task_quality(
+        tasks,
+        enforce_family_counts=(manifest_name == "full"),
+        heldout_ids=_sibling_heldout_ids(manifest),
+    )
+    console.print(f"[bold]Strict quality[/] — {len(tasks)} task(s)")
+    console.print(f"  difficulty: {quality.difficulty}")
+    console.print(f"  family:     {quality.family_counts}")
+    for warning in quality.warnings:
+        err_console.print(f"  [yellow]⚠[/] {warning}")
+    if quality.errors:
+        err_console.print(f"[red]✗[/] {len(quality.errors)} strict-quality finding(s):")
+        for finding in quality.errors:
+            err_console.print(f"  [red]•[/] {finding}")
+        raise typer.Exit(code=1)
+    console.print(f"[green]✓[/] strict-quality checks passed ({len(quality.warnings)} warning(s)).")
 
 
 @app.command(name="list-tasks")
@@ -754,6 +805,36 @@ def calibrate_judge(
     _emit_calibration(report, out)
 
 
+@quality_app.command("status")
+def quality_status(
+    manifest: Path = typer.Option(
+        Path("manifests/full.yaml"), "--manifest", "-m", help="Manifest to summarize."
+    ),
+    as_json: bool = typer.Option(False, "--json", help="Emit machine-readable JSON."),
+) -> None:
+    """Report the benchmark's structural + external-validation status (offline, read-only).
+
+    Reports task/family counts, held-out disjointness, the scoring version, whether committed gold
+    labels are REAL human or a synthetic fixture, agreement/calibration availability, and warnings
+    for claims the current evidence does NOT support. Never prints PII or private filenames.
+    """
+    status = collect_quality_status(manifest, repo_root=Path.cwd())
+    if as_json:
+        console.print_json(status.model_dump_json())
+        return
+    console.print(render_quality_status(status))
+    scorecard = status.scorecard
+    if scorecard is not None:
+        cats = scorecard.get("categories")
+        if isinstance(cats, list):
+            console.print("[bold]Scorecard categories (self-assessed /10, a roadmap):[/]")
+            for cat in cats:
+                if isinstance(cat, dict):
+                    console.print(f"  {cat.get('score')}/10  {cat.get('name')}")
+    for warning in status.warnings:
+        err_console.print(f"[yellow]warning:[/] {warning}")
+
+
 @app.command()
 def judge(
     out: Path = typer.Option(..., "--out", help="Output directory for judge artifacts."),
@@ -880,6 +961,13 @@ def _print_scores(scores: RunScores) -> None:
     if scores.behavior_flags:
         top = ", ".join(f"{k} ({v})" for k, v in list(scores.behavior_flags.items())[:5])
         console.print(f"Top behavior flags: {top}")
+    if scores.format_compliance is not None:
+        cs = "n/a" if scores.communication_score is None else f"{scores.communication_score:.3f}"
+        pa = "n/a" if scores.parse_adjusted_score is None else f"{scores.parse_adjusted_score:.3f}"
+        console.print(
+            f"[dim]parse quality (experimental): format {scores.format_compliance:.3f} · "
+            f"comm {cs} · parse-adj {pa}[/]"
+        )
     if scores.bootstrap_method:
         method = "task-clustered" if scores.bootstrap_method == "task" else "per-unit"
         boot = f" · bootstrap: {method}"
@@ -1003,9 +1091,23 @@ def _score_one(
         bootstrap_seed=seed,
         bootstrap_cluster=cast("Literal['task', 'unit']", cluster),
     )
+    model_set_id = _read_model_set_id(run_dir)
     (run_dir / "scores.json").write_text(scores.model_dump_json(indent=2) + "\n", encoding="utf-8")
-    (run_dir / "summary.md").write_text(render_summary(meta, scores), encoding="utf-8")
+    (run_dir / "summary.md").write_text(
+        render_summary(meta, scores, model_set_id=model_set_id), encoding="utf-8"
+    )
     return scores
+
+
+def _read_model_set_id(run_dir: Path) -> str | None:
+    """Best-effort model-set id from a sibling ``modelset.json`` (None for single-model runs)."""
+    index_path = run_dir.parent / "modelset.json"
+    if not index_path.is_file():
+        return None
+    try:
+        return ModelSetRunIndex.model_validate_json(index_path.read_text(encoding="utf-8")).set_id
+    except Exception:
+        return None
 
 
 def _load_modelset_index(run_dir: Path) -> ModelSetRunIndex:

@@ -33,6 +33,8 @@ analysis/*
 # …except the committed annotation packet (its private/ working dir stays ignored).
 !analysis/annotation_round_v0_1
 analysis/annotation_round_v0_1/private/
+# …and the committed quality-improvement backlog (a tracked planning doc, not a generated output).
+!analysis/quality_improvement_backlog.md
 
 # Real human annotations may carry PII — keep them out of git; only synthetic pilots are committed.
 # The private dir itself is tracked (README + .gitkeep) but its label files never are.

@@ -19,6 +19,7 @@ from companion_bench.schemas.task import Dimension, Family, ProbeTurn, Task
 
 __all__ = [
     "FAMILY_DEFAULT_WEIGHTS",
+    "PARSE_METRICS_VERSION",
     "SCORER_TYPE",
     "SCORING_VERSION",
     "ProbeOutcome",
@@ -35,6 +36,13 @@ __all__ = [
 # (see docs/scoring.md). Scores are NOT comparable across scoring versions without a re-run.
 SCORING_VERSION = "1.1.0"
 SCORER_TYPE = "rule_based"
+
+# Versions the EXPERIMENTAL parse-quality diagnostics (format_compliance / communication_score /
+# parse_adjusted_score in RunScores). Kept SEPARATE from SCORING_VERSION on purpose: those metrics
+# are additive and never change `overall` / the dimension scores, so bumping SCORING_VERSION (which
+# would falsely mark every committed v1.1.0 sample non-comparable) is not warranted. Bump this
+# instead if the parse-metric definitions change.
+PARSE_METRICS_VERSION = "0.1-experimental"
 
 # --------------------------------------------------------------------------- prose heuristics
 # Lightweight, deterministic checks that verify a model's self-reported labels against the

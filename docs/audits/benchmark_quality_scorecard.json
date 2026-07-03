@@ -1,0 +1,103 @@
+{
+  "scorecard_version": "1",
+  "generated_at": "2026-07-03",
+  "companion_bench_version": "0.1.0",
+  "scoring_version": "1.1.0",
+  "parse_metrics_version": "0.1-experimental",
+  "kind": "self-assessment roadmap (NOT an external grade or marketing)",
+  "bands": {
+    "0-3": "weak",
+    "4-6": "usable MVP",
+    "7-8": "public-alpha / credible",
+    "9": "strong v0.1-ready",
+    "10": "mature benchmark-level"
+  },
+  "categories": [
+    {
+      "key": "methodology_validity",
+      "name": "Methodology validity",
+      "score": 7.0,
+      "band": "public-alpha / credible",
+      "justification": "Narrow, well-hedged objective + strong public-claims policy; docked for a benchmark card that still described a mock-only MVP (now refreshed) and one historically unreproducible statistic."
+    },
+    {
+      "key": "task_suite_quality",
+      "name": "Task suite quality",
+      "score": 6.5,
+      "band": "usable MVP -> approaching credible",
+      "justification": "186 tasks, perfect 6x31 family balance, held-out split, licensing; weakened by synthetic English-only scenarios, keyword-echo signals, and no external human review."
+    },
+    {
+      "key": "scoring_validity",
+      "name": "Scoring validity",
+      "score": 6.0,
+      "band": "usable MVP",
+      "justification": "v1.1.0 closed the parse-failure asymmetry, always-wait safety refuge, and self-report gaming; still substring/decision matching with zero human grounding, so scores are scorer-relative."
+    },
+    {
+      "key": "human_external_validation",
+      "name": "Human agreement / external validation",
+      "score": 2.5,
+      "band": "weak",
+      "justification": "NO real human labels exist (data/gold/private/ is empty of labels). Only a synthetic pilot fixture + a ready import/agreement workflow. No external reviewers. This is the single biggest gap."
+    },
+    {
+      "key": "llm_judge_calibration",
+      "name": "LLM-judge calibration quality",
+      "score": 3.5,
+      "band": "weak",
+      "justification": "Judge seam is implemented (offline mock + live-gated real) and stored separately, never as source of truth; but no live judge run and no real-human calibration have been performed."
+    },
+    {
+      "key": "statistical_reliability",
+      "name": "Statistical reliability",
+      "score": 6.5,
+      "band": "usable MVP -> approaching credible",
+      "justification": "Task-clustered bootstrap is now the default (fixes the ~1.7x-too-narrow CIs); headline correlations reproduce. Docked for prior over-claimed tier separability and a single suite generation."
+    },
+    {
+      "key": "reproducibility",
+      "name": "Reproducibility",
+      "score": 8.0,
+      "band": "public-alpha / credible",
+      "justification": "Byte-deterministic mock runs, green local gates, keyless offline path, provenance block (now incl. git commit + pricing). Docked for no resume/checkpoint and no hosted CI."
+    },
+    {
+      "key": "security_artifact_hygiene",
+      "name": "Security / artifact hygiene",
+      "score": 9.0,
+      "band": "strong v0.1-ready",
+      "justification": "No secrets in tree or history, .env untracked, raw runs/transcripts gitignored, sanitized samples, redaction + no-secret-in-artifact tests, PII-refusing gold importer."
+    },
+    {
+      "key": "architecture_maintainability",
+      "name": "Architecture / maintainability",
+      "score": 7.5,
+      "band": "public-alpha / credible",
+      "justification": "Clean layered DAG, provable adapter isolation, injectable clock, strict mypy + ruff. Docked for a large single-module CLI."
+    },
+    {
+      "key": "open_source_usability_docs",
+      "name": "Open-source usability / documentation",
+      "score": 7.0,
+      "band": "public-alpha / credible",
+      "justification": "Apache-2.0, CONTRIBUTING/SECURITY/CODE_OF_CONDUCT/CITATION/CHANGELOG, thorough docs + skills. Docked for no PyPI release, no hosted CI, and occasional doc drift."
+    }
+  ],
+  "overall_average": 6.35,
+  "lowest_categories": ["human_external_validation", "llm_judge_calibration"],
+  "highest_categories": ["security_artifact_hygiene", "reproducibility"],
+  "claims_supported": [
+    "reproducible, deterministic, rule-based companion-communication scoring on a defined task suite",
+    "coarse good-vs-weak behavior ordering that generalizes across the public/held-out split",
+    "secret-safe, sanitized artifacts"
+  ],
+  "claims_not_supported": [
+    "human-validated / human-aligned / human-approved",
+    "most human-like / best companion",
+    "EMOTomo benchmark / OpenRouter benchmark",
+    "a final leaderboard or statistically distinguishable fine rank order",
+    "safe for vulnerable users"
+  ],
+  "note": "Scores are a self-assessment against docs/audits/benchmark_quality_scorecard.md, updated as evidence changes. They are a quality roadmap, not a claim about any model."
+}

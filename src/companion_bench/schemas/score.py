@@ -100,5 +100,20 @@ class RunScores(BaseModel):
     # Scoring provenance: the scorer semantics version + type these numbers were produced with.
     scoring_version: str | None = None
     scorer_type: str | None = None
+    # EXPERIMENTAL parse-quality diagnostics — NOT part of `overall`, and may change without a
+    # SCORING_VERSION bump (see rule_based.PARSE_METRICS_VERSION). They disentangle "did the model
+    # emit a valid envelope" from "was it good when it did". `overall` remains the canonical,
+    # parse-inclusive companion-communication score. All None on runs scored before this was added
+    # (or when no probes were recorded). See docs/scoring.md.
+    #   format_compliance    : fraction of probes that parsed into a valid envelope.
+    #   communication_score  : `overall` restricted to fully-parsed (task, repeat) units — the score
+    #                          excluding parse-failure-contaminated tasks (quality when the format is
+    #                          correct). Identical to `overall` at 100% format compliance.
+    #   parse_adjusted_score : format_compliance * communication_score (rewards both axes at once;
+    #                          distinct from `overall`, which folds malformed probes in via the
+    #                          scorer's own 0-flooring rather than excluding them).
+    format_compliance: float | None = None
+    communication_score: float | None = None
+    parse_adjusted_score: float | None = None
     # Aggregated named behavior flags (flag -> occurrences across all probes/repeats).
     behavior_flags: dict[str, int] = Field(default_factory=dict)

@@ -283,8 +283,14 @@ right now:
 - **No GitHub Actions CI right now** — see [`docs/ci-disabled/`](docs/ci-disabled/) for why and
   [`docs/local_verification.md`](docs/local_verification.md) for the local replacement.
 
-See the [benchmark card](docs/benchmark_card.md) for intended use, known limitations, and risks,
-and [`docs/audits/`](docs/audits/) for the full external-reviewer-style audits.
+Run `companion-bench quality status` for a one-command, machine-checkable snapshot of the current
+external-validation state — it reports task/family counts, held-out disjointness, the scoring
+version, whether the committed gold labels are **real human or synthetic**, and warns against
+unsupported claims (e.g. *no real human labels exist yet, so nothing here is "human-validated"*).
+See the [benchmark card](docs/benchmark_card.md) for intended use, known limitations, and risks; the
+[quality scorecard](docs/audits/benchmark_quality_scorecard.md) for the self-assessed quality roadmap
+(overall **6.35/10**, honestly graded); and [`docs/audits/`](docs/audits/) for the full
+external-reviewer-style audits.
 
 ## Results (public alpha)
 

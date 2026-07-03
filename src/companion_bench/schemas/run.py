@@ -147,6 +147,13 @@ class RunMetadata(BaseModel):
     config: RunConfig
     task_ids: tuple[str, ...]
     n_repeats: int = 1
+    # Provenance (best-effort; ``None`` when unknown, never invented). ``git_commit`` records the
+    # git checkout the run was launched from (the CompanionBench source in a dev/editable install);
+    # pricing fields record which price table the run's cost numbers came from. Additive with
+    # defaults so older ``run.json`` still validates.
+    git_commit: str | None = None
+    pricing_version: str | None = None
+    pricing_as_of: str | None = None
 
 
 class ModelRunRef(BaseModel):

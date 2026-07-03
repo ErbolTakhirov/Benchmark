@@ -130,6 +130,22 @@ def score_run(
     overall = _mean([unit.total for unit in units])
     n_passed = sum(1 for ts in task_scores if ts.passed)
 
+    # EXPERIMENTAL parse-quality diagnostics (additive — they never feed back into `overall`).
+    # `format_compliance` is a per-probe parse rate; `communication_score` is `overall` restricted
+    # to fully-parsed (task, repeat) units — so both average whole task-units and are identical at
+    # 100% compliance (not a probe-level mean, which would diverge on unequal probe counts).
+    all_probe_scores = [ps for unit in units for ps in unit.probe_scores]
+    n_probe_scores = len(all_probe_scores)
+    n_parsed = sum(1 for ps in all_probe_scores if ps.parsed)
+    format_compliance = round(n_parsed / n_probe_scores, 6) if n_probe_scores else None
+    clean_units = [u for u in units if u.probe_scores and all(ps.parsed for ps in u.probe_scores)]
+    communication_score = _mean([u.total for u in clean_units]) if clean_units else None
+    parse_adjusted_score = (
+        round(format_compliance * communication_score, 6)
+        if format_compliance is not None and communication_score is not None
+        else None
+    )
+
     flag_counts: Counter[str] = Counter()
     for unit in units:
         flag_counts.update(behavior_flags(unit.probe_scores))
@@ -168,6 +184,9 @@ def score_run(
         bootstrap_method=bootstrap_cluster if bootstrap else None,
         scoring_version=SCORING_VERSION,
         scorer_type=SCORER_TYPE,
+        format_compliance=format_compliance,
+        communication_score=communication_score,
+        parse_adjusted_score=parse_adjusted_score,
         behavior_flags=dict(flag_counts.most_common()),
     )
 
@@ -266,26 +285,39 @@ def _percentile_ci(samples: list[float], lo: float = 2.5, hi: float = 97.5) -> t
 
 
 # --------------------------------------------------------------------------- rendering
-def _provenance_block(metadata: RunMetadata, scores: RunScores) -> list[str]:
+def _provenance_block(
+    metadata: RunMetadata, scores: RunScores, *, model_set_id: str | None = None
+) -> list[str]:
     """A compact, auditable record of exactly how these numbers were produced."""
     if scores.bootstrap_method:
         method = "task-clustered" if scores.bootstrap_method == "task" else "per-unit (legacy)"
         boot = f"{method}, {scores.bootstrap_resamples} resamples, seed {scores.bootstrap_seed}"
     else:
         boot = "none (point estimates only)"
-    return [
+    lines = [
         "## Provenance",
         "",
-        f"- **CompanionBench:** v{metadata.companion_bench_version}",
+        f"- **CompanionBench:** v{metadata.companion_bench_version}  ·  "
+        f"**Commit:** {metadata.git_commit or 'n/a'}",
         f"- **Scoring:** {scores.scorer_type or 'rule_based'} v{scores.scoring_version or 'n/a'} "
         "(rule-based, deterministic — not a human or calibrated-judge verdict)",
         f"- **Manifest:** `{metadata.manifest_name}` — `{metadata.manifest_path}` "
         f"({len(metadata.task_ids)} task(s))",
         f"- **Provider:** `{scores.provider}`  ·  **Model:** `{scores.model_id}`",
+    ]
+    if model_set_id:
+        lines.append(f"- **Model set:** `{model_set_id}`")
+    if metadata.pricing_version:
+        lines.append(
+            f"- **Pricing:** table v{metadata.pricing_version} · "
+            f"as-of {metadata.pricing_as_of or 'n/a'}"
+        )
+    lines += [
         f"- **Repeats:** {scores.n_repeats}  ·  **Run seed:** {metadata.config.seed}",
         f"- **Bootstrap:** {boot}",
         "",
     ]
+    return lines
 
 
 def _fmt(value: float | None) -> str:
@@ -296,7 +328,28 @@ def _ci(ci: tuple[float, float] | None) -> str:
     return "" if ci is None else f" [{ci[0]:.3f}, {ci[1]:.3f}]"
 
 
-def render_summary(metadata: RunMetadata, scores: RunScores) -> str:
+def _parse_quality_block(scores: RunScores) -> list[str]:
+    """EXPERIMENTAL: separate format-compliance from communication quality (additive to `overall`)."""
+    if scores.format_compliance is None:
+        return []
+    return [
+        "## Parse quality (experimental)",
+        "",
+        "> Disentangles *did the model emit a valid envelope* from *was it good when it did*. "
+        "`overall` above stays the canonical, parse-inclusive score. See docs/scoring.md.",
+        "",
+        "| Metric | Value |",
+        "| --- | --- |",
+        f"| format_compliance | {_fmt(scores.format_compliance)} |",
+        f"| communication_score (excl. parse failures) | {_fmt(scores.communication_score)} |",
+        f"| parse_adjusted_score | {_fmt(scores.parse_adjusted_score)} |",
+        "",
+    ]
+
+
+def render_summary(
+    metadata: RunMetadata, scores: RunScores, *, model_set_id: str | None = None
+) -> str:
     """Render a Markdown summary of a scored run."""
     repeats_note = f" · {scores.n_repeats} repeat(s)" if scores.n_repeats > 1 else ""
     lines: list[str] = [
@@ -313,7 +366,7 @@ def render_summary(metadata: RunMetadata, scores: RunScores) -> str:
         "> ⚠️ If the model is a `mock/*` profile, these scores validate the **pipeline**, "
         "not model quality. The mock is a deterministic simulator.",
         "",
-        *_provenance_block(metadata, scores),
+        *_provenance_block(metadata, scores, model_set_id=model_set_id),
         "## By dimension",
         "",
         "| Dimension | Mean | 95% CI |",
@@ -326,7 +379,14 @@ def render_summary(metadata: RunMetadata, scores: RunScores) -> str:
             f"{'—' if ci is None else f'[{ci[0]:.3f}, {ci[1]:.3f}]'} |"
         )
 
-    lines += ["", "## By family", "", "| Family | Mean |", "| --- | --- |"]
+    lines += [
+        "",
+        *_parse_quality_block(scores),
+        "## By family",
+        "",
+        "| Family | Mean |",
+        "| --- | --- |",
+    ]
     for family in Family:
         if family in scores.by_family:
             lines.append(f"| {family.value} | {scores.by_family[family]:.3f} |")

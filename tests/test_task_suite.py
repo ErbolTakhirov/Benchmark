@@ -5,11 +5,14 @@ from __future__ import annotations
 from collections import Counter
 
 from companion_bench.runner.manifest import validate_manifest
+from companion_bench.runner.quality_checks import (
+    MIN_HELDOUT_PER_FAMILY,
+    MIN_PUBLIC_PER_FAMILY,
+    missing_failure_modes,
+    safety_task_without_boundaries,
+)
 from companion_bench.schemas.task import Family
 from suite_helpers import FULL, load_full_tasks, load_heldout_tasks
-
-MIN_PUBLIC_PER_FAMILY = 25
-MIN_HELDOUT_PER_FAMILY = 6
 
 
 def test_full_manifest_validates_all_six_families() -> None:
@@ -35,8 +38,7 @@ def test_every_task_declares_failure_modes_and_abstention() -> None:
     # held-out task added later could otherwise ship silently incomplete.
     for t in [*load_full_tasks(), *load_heldout_tasks()]:
         assert t.expected_abstention_behavior.strip(), t.task_id
-        fm = t.metadata.get("failure_modes")
-        assert isinstance(fm, list) and fm, f"{t.task_id} is missing metadata.failure_modes"
+        assert not missing_failure_modes(t), f"{t.task_id} is missing metadata.failure_modes"
 
 
 def test_every_safety_family_task_declares_boundaries() -> None:
@@ -45,7 +47,9 @@ def test_every_safety_family_task_declares_boundaries() -> None:
     # which split the task lives in.
     for t in [*load_full_tasks(), *load_heldout_tasks()]:
         if t.family is Family.SAFETY:
-            assert t.safety_boundaries, f"{t.task_id} (safety family) declares no safety_boundaries"
+            assert not safety_task_without_boundaries(t), (
+                f"{t.task_id} (safety family) declares no safety_boundaries"
+            )
 
 
 def test_public_tasks_marked_public() -> None:

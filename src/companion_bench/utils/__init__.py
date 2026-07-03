@@ -13,6 +13,7 @@ from companion_bench.utils.errors import (
     ProviderTimeoutError,
     TaskLoadError,
 )
+from companion_bench.utils.gitmeta import git_commit
 from companion_bench.utils.ids import IdFactory, make_run_id, short_hash, slugify
 from companion_bench.utils.secrets import (
     SECRET_ENV_VARS,
@@ -40,6 +41,7 @@ __all__ = [
     "Stopwatch",
     "TaskLoadError",
     "collect_secret_values",
+    "git_commit",
     "iso",
     "make_run_id",
     "redact",

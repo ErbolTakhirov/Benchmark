@@ -95,6 +95,23 @@ and never read one round as validation. So: don't read a calibration number as a
 don't call the benchmark "human-validated", and don't treat the judge as a leaderboard. See
 [`human_gold_set.md`](human_gold_set.md) and [`judge_calibration.md`](judge_calibration.md).
 
+## Parse quality: is a low score a format problem?
+
+Before reading a low `overall` as "bad at companionship", check the **experimental parse-quality
+block** in `summary.md` / `scores.json`: `format_compliance` (fraction of probes that parsed),
+`communication_score` (the score excluding parse failures), and `parse_adjusted_score`. A model can
+have strong content but a low `overall` purely because it rarely returns the structured envelope.
+These are additive diagnostics — they never change `overall` — and are marked experimental. See
+[`scoring.md`](scoring.md).
+
+## Check the external-validation status first
+
+`companion-bench quality status` prints, from the committed repo alone: task/family counts,
+held-out disjointness, the scoring version, whether the gold labels are **real human or synthetic**,
+and warnings for claims the evidence doesn't support. Run it before writing anything public about a
+result — it is the fastest way to avoid over-claiming, and it is the machine-checkable companion to
+[`public_claims.md`](public_claims.md) and the [quality scorecard](audits/benchmark_quality_scorecard.md).
+
 ## What NOT to conclude from any of this
 
 Don't say a run "proves model X is the best" or is "the most human." Don't compare across

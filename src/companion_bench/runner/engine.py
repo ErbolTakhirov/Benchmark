@@ -39,6 +39,7 @@ from companion_bench.schemas.run import (
 from companion_bench.schemas.task import Task
 from companion_bench.storage.jsonl import EventWriter, write_model_json
 from companion_bench.utils.errors import AdapterError
+from companion_bench.utils.gitmeta import git_commit
 from companion_bench.utils.ids import IdFactory, make_run_id
 from companion_bench.utils.timing import Clock, RealClock
 
@@ -321,6 +322,9 @@ class RunEngine:
             end.event_id = ids.next_event_id()
             writer.write(end)
 
+        pricing_entry = (
+            ctx.pricing.lookup(model.provider, model.model) if ctx.pricing is not None else None
+        )
         metadata = RunMetadata(
             run_id=run_id,
             companion_bench_version=__version__,
@@ -332,6 +336,9 @@ class RunEngine:
             config=config,
             task_ids=tuple(t.task_id for t in tasks_to_run),
             n_repeats=n_repeats,
+            git_commit=git_commit(),
+            pricing_version=ctx.pricing.version if ctx.pricing is not None else None,
+            pricing_as_of=pricing_entry.as_of if pricing_entry is not None else None,
         )
         metadata_path = out / "run.json"
         write_model_json(metadata_path, metadata)

@@ -128,6 +128,27 @@ every report's **Provenance** block. When the scoring semantics change, this bum
 policy, safety-on-empty, self-report verification, timing de-redundancy, and task-clustered CIs
 above; earlier sample results were produced under the pre-1.1 rules.
 
+## Parse quality (experimental)
+
+A model that fails to return the structured envelope is penalized for *format* reasons that are
+separate from *communication* quality. To keep that visible, every `scores.json` and `summary.md`
+also carries three **experimental, additive** diagnostics (they never change `overall`, the
+dimension scores, or `scoring_version`):
+
+- **`format_compliance`** — the fraction of probes that parsed into a valid envelope.
+- **`communication_score`** — `overall` restricted to the **fully-parsed** `(task, repeat)` units
+  (i.e. *the score excluding parse-failure-contaminated tasks* — how good the model is on the tasks
+  it handled with a valid envelope throughout). It averages whole task-units exactly like `overall`,
+  so the two are **identical at 100% format compliance**; a parse failure drops that task-unit.
+- **`parse_adjusted_score`** — `format_compliance × communication_score` (rewards both axes at
+  once). It is deliberately **not** the same as `overall`, which folds malformed probes in via the
+  scorer's 0-flooring rather than excluding them.
+
+These are versioned separately (`PARSE_METRICS_VERSION`, currently `0.1-experimental`) precisely so
+adding them does **not** invalidate like-for-like comparison against v1.1.0 samples. `overall`
+remains the canonical, parse-inclusive companion-communication score; read the three metrics
+together when a low `overall` might be a format problem rather than a companionship one.
+
 ## Rule-based is the source of truth; judge + human are calibration
 
 Rule-based scoring is blunt but reproducible and auditable, which is the right foundation and the

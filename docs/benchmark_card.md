@@ -1,10 +1,13 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 # CompanionBench — benchmark card
 
 A short, honest description of what this benchmark is for, what it is **not** for, and how to
-read its numbers responsibly. Modeled on dataset/model cards.
+read its numbers responsibly. Modeled on dataset/model cards. For a one-command snapshot of the
+current external-validation state, run `companion-bench quality status`; for the full self-assessed
+quality roadmap see [`audits/benchmark_quality_scorecard.md`](audits/benchmark_quality_scorecard.md).
 
 - **Name:** CompanionBench
-- **Version:** 0.1 (MVP scaffold)
+- **Version:** 0.1.0-alpha (public alpha — not a mature, fully-validated benchmark)
 - **License:** Apache-2.0
 - **Scope:** Multi-turn evaluation of **human-like companion communication** in LLMs / proactive
   assistants across initiative, timing, emotional attunement, preference adaptation, abstention,
@@ -35,15 +38,20 @@ read its numbers responsibly. Modeled on dataset/model cards.
   provider Y", never the benchmark's identity. See the [public-claims policy](public_claims.md).
 - **Not** evidence that a model is "the most human-like" or "best companion" in general. Scores
   describe targeted behaviors on authored scenarios, for the model set and settings actually run.
-- **Not** a benchmark of real models *in its MVP form*: the default model is a deterministic
-  **mock simulator**, and mock scores validate the **pipeline**, not model quality.
+- **Not** defined by its default model: the offline default is a deterministic **mock simulator**,
+  and mock scores validate the **pipeline**, not model quality. Live provider runs *have* been
+  performed (see [`results_v0_1_alpha.md`](results_v0_1_alpha.md)), but those are scoped snapshots
+  for a specific model set / provider / settings, never a leaderboard.
 - **Not** a substitute for human judgment about emotionally loaded interactions.
 - **Not** a source of medical, legal, financial, or mental-health guidance.
 
 ## Known limitations
 
-1. **Mock-first MVP.** The shipped numbers come from a simulator. Real-model comparison
-   requires running the API adapters (which need keys) and, ideally, the judge/human path.
+1. **No real human validation yet.** The committed gold labels are a **synthetic** pilot fixture
+   (`data/gold/`, `not_human_collected`); no real annotation round has been run, so nothing here is
+   "human-validated". The offline default model is also a deterministic simulator (mock scores
+   validate the pipeline, not model quality); live runs exist but are scoped snapshots. Run
+   `companion-bench quality status` for the current state.
 2. **Rule-based scoring is blunt.** Keyword/regex signals and structural checks cannot
    capture nuance, sarcasm, paraphrase, or genuinely novel-but-good responses. They can be
    gamed by surface matching and can both false-positive and false-negative. Scoring **v1.1**
@@ -53,10 +61,11 @@ read its numbers responsibly. Modeled on dataset/model cards.
    scorer remains rule-based, and substring/paraphrase limits stand until a calibrated judge and a
    human gold set exist.
 3. **Authored, un-peer-reviewed task suite.** The suite spans **six families** (initiative, empathy,
-   timing, adaptation, abstention, safety) with ~10–15 scenarios each, plus a held-out hidden split
-   (`tasks/<family>/heldout/`, run via `manifests/heldout.yaml`) reserved for generalization. It
-   exercises every code path and dimension, but is author-written and not yet externally
-   peer-reviewed — read individual results as scoped, not population-level.
+   timing, adaptation, abstention, safety) with **25 public scenarios each** (150 total), plus a
+   **6-per-family held-out hidden split** (36 total; `tasks/<family>/heldout/`, run via
+   `manifests/heldout.yaml`) reserved for generalization. It exercises every code path and dimension,
+   but is author-written and not yet externally peer-reviewed — read individual results as scoped,
+   not population-level. `validate --strict-quality` enforces suite invariants at authoring time.
 4. **Structured-envelope assumption.** The MVP asks models for a `CompanionTurn` JSON. A model
    that is excellent in free-form prose but poor at the envelope is under-credited until the
    free-text + judge path lands.
@@ -73,8 +82,11 @@ read its numbers responsibly. Modeled on dataset/model cards.
 
 ## Risks of LLM-as-judge
 
-We deliberately **do not** ship an LLM judge in the MVP. When one is added (behind the
-`RubricEvaluator` interface), these risks must be measured and disclosed:
+The LLM judge is **opt-in and auxiliary**: it is implemented behind the `RubricEvaluator` interface
+(offline mock + live-gated real), stored separately (`judge_scores.json`), and is **never the source
+of truth** — the rule-based score is. It has **not** been calibrated against real humans yet, so
+judge numbers are not reported as results. Whenever the judge is used, these risks must be measured
+and disclosed:
 
 - **Self-preference / family bias.** Judges tend to prefer outputs from their own model family
   or stylistic distribution, inflating related models.

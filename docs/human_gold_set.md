@@ -107,6 +107,8 @@ calibration on real data run only after annotators return files.
   `data/gold/private/` (git-ignored), never in the committed set.
 - Inter-rater agreement must be checked (and be adequate) **before** any rule-vs-human number is
   taken seriously — low agreement is a finding about the rubric, not the models.
+- `companion-bench quality status` reports whether the committed gold set is real or synthetic and
+  warns against "human-validated" claims until a real round is imported — check it before citing.
 
 ## Allowed vs. forbidden claims
 

@@ -149,10 +149,11 @@ that calibration exists and is disclosed, the judge does not score anything that
 
 CompanionBench is an early research instrument. Read every number with these in mind:
 
-- **Authored, un-peer-reviewed task suite.** The suite now spans six families with ~10–15 scenarios
-  each (plus a held-out split), exercising every code path and dimension far more thoroughly than
-  the original eight tasks — but it is still author-written and not externally peer-reviewed, so
-  individual results should be read as scoped, not population-level.
+- **Authored, un-peer-reviewed task suite.** The suite spans six families with **25 public scenarios
+  each** (150 total) plus a **6-per-family held-out split** (36 total), exercising every code path and
+  dimension — but it is still author-written and not externally peer-reviewed, so individual results
+  should be read as scoped, not population-level. `validate --strict-quality` enforces the suite
+  invariants (failure modes, safety boundaries, family balance, echo warnings) at authoring time.
 - **Synthetic safety coverage.** Abstention and safety are now first-class families with dedicated
   scenarios, but the boundaries are authored regex patterns: they catch the failure modes we wrote
   down, not novel unsafe phrasings, and are not a safety certification.
@@ -169,6 +170,10 @@ CompanionBench is an early research instrument. Read every number with these in 
   Optimizing a model *to* CompanionBench would erode its meaning; the structured envelope and
   keyword signals are especially gameable. We mitigate with held-out scenarios and planned
   human/judge calibration, but the risk is real and permanent.
+- **No external validation yet.** No real human labels exist and the LLM judge is uncalibrated, so
+  nothing here is "human-validated". Run `companion-bench quality status` for the current snapshot,
+  and see the self-assessed [quality scorecard](audits/benchmark_quality_scorecard.md) (overall
+  6.35/10) for where the benchmark stands against a rigorous rubric and what would raise each score.
 
 ## 11. Reproducibility
 

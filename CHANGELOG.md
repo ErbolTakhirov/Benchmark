@@ -8,6 +8,43 @@ rather than being reconstructed here.
 
 ## [Unreleased]
 
+### Benchmark quality scorecard + validation status
+
+A quality-hardening sprint that measures CompanionBench against a rigorous rubric and makes its
+external-validation state machine-checkable — **without** fabricating human labels or making new
+benchmark claims. Overall self-assessment: **6.35/10** (lowest: human/external validation 2.5 and
+judge calibration 3.5; highest: security 9.0, reproducibility 8.0).
+
+- **Quality scorecard.** `docs/audits/benchmark_quality_scorecard.md` (10-category rubric with
+  0–3/4–6/7–8/9/10 bands + penalty rules), a machine-readable `benchmark_quality_scorecard.json`,
+  and an evidence-by-evidence `current_quality_against_scorecard.md`. Prioritized fixes in
+  `analysis/quality_improvement_backlog.md`. The scorecard is a **roadmap, not marketing**.
+- **`companion-bench quality status`** (new `quality` sub-app; `--json`). Offline, read-only report
+  of task/family counts, held-out disjointness, scoring version, **real-vs-synthetic gold labels**,
+  agreement/calibration availability, sample paths, the scorecard summary, and **warnings for
+  unsupported claims** (e.g. no real human labels → do NOT claim "human-validated"). Reports counts
+  and yes/no only — never PII or private filenames.
+- **`companion-bench validate --strict-quality`** (`runner/quality_checks.py`). Suite-level
+  invariants: failure modes present, safety-family boundaries, positive-signal/forbidden-pattern
+  disjointness (fast approximation; `test_signal_disjointness.py` stays authoritative), held-out
+  exclusion, per-family thresholds, WAIT/ABSTAIN coverage, plus a difficulty/family report. Keyword
+  echo is a **warning** (documented limitation), so the shipped suite passes. Shared predicates now
+  back both the CLI and `tests/test_task_suite.py`.
+- **Experimental parse-quality metrics** (additive; `overall` unchanged, `scoring_version` NOT
+  bumped). `scores.json`/`summary.md` now also carry `format_compliance`, `communication_score`
+  (score excluding parse failures), and `parse_adjusted_score`, versioned by a separate
+  `PARSE_METRICS_VERSION` so v1.1.0 samples stay comparable. See `docs/scoring.md`.
+- **Provenance block completed.** The summary's Provenance section now records the **git commit**
+  (`utils/gitmeta.py`, best-effort → `None` off-repo), the **pricing table version + as-of**, and
+  the **model-set id** — all captured at run time in `run.json`, never faked.
+- **Design doc only:** `docs/design/resume_checkpoint.md` (resume/checkpoint for long runs;
+  implementation deferred to protect the byte-stable engine path).
+- Tests: `test_quality_status.py`, `test_quality_checks.py`, `test_parse_quality.py`,
+  `test_provenance.py`, `test_scorecard.py`, and a `test_repo_hygiene.py` guard (no raw runs / `.env`
+  / private labels git-tracked). Docs refreshed: de-staled `benchmark_card.md` (SPDX header, correct
+  186-task counts, judge-seam + no-human-validation reality), README, `scoring.md`,
+  `results_interpretation.md`, `methodology.md`, `human_gold_set.md`, `release_checklist.md`.
+
 ### Real human-annotation workflow
 
 Prepares (but does not fabricate) a **real** human-annotation round to calibrate the rule scorer
