@@ -53,10 +53,10 @@ dev = [
 companion-bench = "companion_bench.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/ErbolTakhirov/Benchmark"
-Documentation = "https://github.com/ErbolTakhirov/Benchmark/tree/main/docs"
-Repository = "https://github.com/ErbolTakhirov/Benchmark"
-Issues = "https://github.com/ErbolTakhirov/Benchmark/issues"
+Homepage = "https://github.com/ErbolTakhirov/CompanionBenchmark"
+Documentation = "https://github.com/ErbolTakhirov/CompanionBenchmark/tree/main/docs"
+Repository = "https://github.com/ErbolTakhirov/CompanionBenchmark"
+Issues = "https://github.com/ErbolTakhirov/CompanionBenchmark/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/companion_bench"]

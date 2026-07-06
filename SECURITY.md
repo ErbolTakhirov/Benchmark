@@ -15,7 +15,7 @@ commit on `main`. There are no older maintained releases to backport fixes to ye
 
 This is a solo-maintained project — please set expectations accordingly (best-effort response,
 not a 24/7 security team). To report a vulnerability privately, use
-[GitHub's private security advisory feature](https://github.com/ErbolTakhirov/Benchmark/security/advisories/new)
+[GitHub's private security advisory feature](https://github.com/ErbolTakhirov/CompanionBenchmark/security/advisories/new)
 on this repository rather than opening a public issue. If that is unavailable to you, open an
 issue that says only "security issue, please contact me privately" with no details, and the
 maintainer will follow up for a private channel.

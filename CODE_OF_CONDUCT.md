@@ -58,7 +58,7 @@ an individual is officially representing the project in public spaces.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported by opening a
-[private security advisory](https://github.com/ErbolTakhirov/Benchmark/security/advisories/new)
+[private security advisory](https://github.com/ErbolTakhirov/CompanionBenchmark/security/advisories/new)
 on this repository (the same private channel used for security reports — see
 [`SECURITY.md`](SECURITY.md)), or via the contact listed on the maintainer's
 GitHub profile ([@ErbolTakhirov](https://github.com/ErbolTakhirov)). All
