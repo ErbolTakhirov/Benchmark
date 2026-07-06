@@ -4,8 +4,8 @@ type: software
 title: "CompanionBench: an open-source benchmark for human-like companion communication in LLMs"
 version: 0.1.0-alpha
 date-released: 2026-07-02
-url: "https://github.com/ErbolTakhirov/Benchmark"
-repository-code: "https://github.com/ErbolTakhirov/Benchmark"
+url: "https://github.com/ErbolTakhirov/CompanionBenchmark"
+repository-code: "https://github.com/ErbolTakhirov/CompanionBenchmark"
 license: Apache-2.0
 authors:
   - name: "CompanionBench contributors"
