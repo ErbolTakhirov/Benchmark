@@ -22,6 +22,11 @@ statistically separable from the top. **The middle reshuffled** (e.g. `deepseek-
 #7→#2 on 12 tasks) — expected, since the middle was a statistical tie. Total cost **$0.15** (budget
 $10). Full analysis + tier-survival table in [`summary.md`](summary.md).
 
+> **Recompute note (2026-07-06):** the **Spearman 0.573** quoted above is not reproducible from the
+> committed scores — it recomputes to **0.612** (Pearson 0.858 does reproduce). This 12-task split is
+> superseded by [`../companionbench-emotomo-heldout-expanded-r5/`](../companionbench-emotomo-heldout-expanded-r5/).
+> See [`../../audits/humanity_validity_and_reliance_audit.md`](../../audits/humanity_validity_and_reliance_audit.md), Appendix B.
+
 ## Contents (sanitized — no raw transcripts)
 
 ```

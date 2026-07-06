@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "companion-bench"
-version = "0.1.0"
+version = "0.1.0-alpha"
 description = "API-first open-source benchmark for evaluating LLM companions and proactive assistants across realistic multi-turn conversations."
 readme = "README.md"
 requires-python = ">=3.12"

@@ -51,7 +51,8 @@ models, compare them (see
 [`docs/samples/companionbench-emotomo-heldout-r5/summary.md`](samples/companionbench-emotomo-heldout-r5/summary.md)
 for a worked example). In that reference run: scores correlated strongly (Pearson 0.858) and the
 top and bottom of the ranking survived with non-overlapping CIs, but the exact rank order in the
-statistically-tied middle did not (Spearman 0.573) — meaning **a coarse "good vs. weak" read
+statistically-tied middle did not (Spearman 0.612 — recomputed from the committed scores; the
+earlier published 0.573 was not reproducible) — meaning **a coarse "good vs. weak" read
 generalizes off the public suite; a fine-grained ranking of adjacent models does not yet**, given
 the current suite size. Read any single-run ranking with that asymmetry in mind: trust large gaps,
 distrust close calls.
@@ -76,9 +77,9 @@ a claim that it's free.
 ## Scoring version and comparability
 
 Every `scores.json` and every report's **Provenance** block records a `scoring_version` (currently
-**1.1.0**) and `scorer_type`. Scores are only comparable across runs that share a scoring version.
-v1.1.0 changed the semantics (parse-failure handling, safety-on-empty, self-report verification,
-timing de-redundancy, and task-clustered CIs — see [`scoring.md`](scoring.md)), so its numbers are
+**1.2.0**) and `scorer_type`. Scores are only comparable across runs that share a scoring version.
+v1.1.0/v1.2.0 changed the semantics (parse-failure handling, safety-on-empty, self-report verification,
+timing de-redundancy, task-clustered CIs, and (v1.2.0) whole-token keyword matching — see [`scoring.md`](scoring.md)), so its numbers are
 **not directly comparable** to the pre-1.1 results in `docs/samples/` unless those are re-scored or
 re-run. When in doubt, compare the `scoring_version` fields before comparing the numbers.
 

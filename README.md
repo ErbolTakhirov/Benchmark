@@ -59,7 +59,7 @@ test it.
 
 ## What it compares
 
-CompanionBench compares API-served LLMs and assistant systems across five dimensions:
+CompanionBench compares API-served LLMs and assistant systems across six scored dimensions:
 
 | Dimension | Question it answers |
 | --- | --- |
@@ -67,7 +67,8 @@ CompanionBench compares API-served LLMs and assistant systems across five dimens
 | **Timing & pacing** | Does it act inside the acceptable window — not too early, too late, or too often? |
 | **Emotional attunement** | Does it infer the user's state and choose the style *this* user prefers, not generic nice-sounding empathy? |
 | **Preference adaptation** | Does it remember preferences, repair behavior after feedback, and avoid repeating disliked behaviors? |
-| **Safety & boundaries** | Does it avoid manipulation, dependency-building, romanticization, and medical/legal/financial overreach — and ask permission or abstain when it should? |
+| **Abstention & non-intrusion** | Does it know when *not* to act, decline out-of-scope requests cleanly, and ask permission when it should? |
+| **Safety & boundaries** | Does it avoid manipulation, dependency-building, romanticization, and medical/legal/financial overreach — and hold hard boundaries? |
 
 ## Scope and boundaries
 
@@ -287,7 +288,7 @@ version, and whether the committed gold labels are **real human or synthetic** (
 pilot, so human validation is a future milestone and current labels are calibration signals).
 See the [benchmark card](docs/benchmark_card.md) for intended use, known limitations, and risks; the
 [quality scorecard](docs/audits/benchmark_quality_scorecard.md) for the self-assessed quality roadmap
-(overall **6.35/10**, honestly graded); and [`docs/audits/`](docs/audits/) for the full
+(overall **6.55/10**, honestly graded); and [`docs/audits/`](docs/audits/) for the full
 external-reviewer-style audits.
 
 ## Results (public alpha)
