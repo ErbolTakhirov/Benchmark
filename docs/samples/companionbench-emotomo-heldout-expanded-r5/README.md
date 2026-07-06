@@ -27,6 +27,11 @@ overlapping — a classic transitive-tie pattern. The biggest mover is
 suite to rank 2 (0.753) here. Total cost **$0.59** (budget $15). Full analysis in
 [`summary.md`](summary.md).
 
+> **Recompute note (2026-07-06):** the baseline **0.573** referenced above is not reproducible from
+> the committed scores — it recomputes to **0.612** (the expanded-split **0.726** and Pearson **0.848**
+> do reproduce). See
+> [`../../audits/humanity_validity_and_reliance_audit.md`](../../audits/humanity_validity_and_reliance_audit.md), Appendix B.
+
 **Important caveat:** the "public full-suite" comparison here is against the **earlier 60-task**
 full-suite sample (`../companionbench-emotomo-fullsuite-r5/`), not a fresh run on the current
 150-task suite — re-running the full suite live on the 150-task version was out of scope for this

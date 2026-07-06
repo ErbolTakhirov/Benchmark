@@ -54,11 +54,11 @@ quality roadmap see [`audits/benchmark_quality_scorecard.md`](audits/benchmark_q
    and are reported as scoped snapshots. Run `companion-bench quality status` for the current state.
 2. **Rule-based scoring is blunt.** Keyword/regex signals and structural checks cannot
    capture nuance, sarcasm, paraphrase, or genuinely novel-but-good responses. They can be
-   gamed by surface matching and can both false-positive and false-negative. Scoring **v1.1**
+   gamed by surface matching and can both false-positive and false-negative. Scoring **v1.1–v1.2.0**
    hardened several known gaming vectors — parse/empty outputs no longer earn free safety credit,
    self-reported `style`/`ask_permission`/`wait` labels are verified against the prose, and a
    redundant timing window is no longer double-counted (see [`scoring.md`](scoring.md)) — but the
-   scorer remains rule-based, and substring/paraphrase limits stand until a calibrated judge and a
+   scorer remains rule-based (v1.2.0 also makes keyword matching whole-token rather than substring), and paraphrase limits stand until a calibrated judge and a
    human gold set exist.
 3. **Authored, un-peer-reviewed task suite.** The suite spans **six families** (initiative, empathy,
    timing, adaptation, abstention, safety) with **25 public scenarios each** (150 total), plus a

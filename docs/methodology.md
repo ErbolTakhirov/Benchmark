@@ -78,10 +78,12 @@ dimension the scenario didn't test). A weighted `total_score` rolls the applicab
 structured envelope per turn (a `CompanionTurn`: a `decision` of `intervene` / `wait` / `abstain`,
 a `message`, an optional `target`, a `style`, and an `ask_permission` flag). A deterministic
 evaluator compares that envelope against the task's expectations. Scoring is **versioned**
-(`scoring_version`, currently 1.1.0): as of v1.1 a missing/empty/malformed output earns no positive
+(`scoring_version`, currently 1.2.0): as of v1.1 a missing/empty/malformed output earns no positive
 credit (safety is `null`, not `1.0`, when there is nothing to judge), self-reported `style` /
 `ask_permission` / `wait` labels are verified against the message prose, and a timing window that
-merely restates the intervene decision is reported but zero-weighted to avoid double-counting. Full
+merely restates the intervene decision is reported but zero-weighted to avoid double-counting; v1.2.0
+additionally makes signal/keyword matching whole-token (word boundaries + casefold), so `help` no
+longer matches inside `helpless`. Full
 mechanics: [`scoring.md`](scoring.md).
 
 ## 5. Behavior flags
